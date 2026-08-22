@@ -1,0 +1,71 @@
+import { useEffect, useState } from 'react'
+import { invoke } from '@tauri-apps/api/core'
+import { Expand, MessageCircle, Monitor, Palette, Save, Sparkles } from 'lucide-react'
+import './SettingsApp.css'
+
+type Preferences = {
+  theme: string
+  liquidGlass: boolean
+  glassStrength: number
+  compactChats: boolean
+  largeChatText: boolean
+  reduceMotion: boolean
+  fullscreen: boolean
+  alwaysOnTop: boolean
+  zoom: number
+}
+
+const fallback: Preferences = {
+  theme: 'native', liquidGlass: false, glassStrength: 0.72, compactChats: false, largeChatText: false,
+  reduceMotion: false, fullscreen: false, alwaysOnTop: false, zoom: 1,
+}
+
+const themes = [
+  ['native', 'UnixGram', '#6e5fe4', 'без изменений'],
+  ['midnight', 'Midnight', '#8b7cff', 'сине-чёрная'],
+  ['oled', 'OLED', '#000000', 'чистый чёрный'],
+  ['graphite', 'Graphite', '#8d96a8', 'серая'],
+  ['aurora', 'Aurora', '#45d6ad', 'зелёная'],
+  ['light', 'Daylight', '#8aa4ff', 'светлый графит'],
+  ['lucifer', 'Lucifer', '#d44a62', 'в честь @Lucifer'],
+  ['basaltes', 'by basaltes', '#9d67ff', 'авторская'],
+  ['honey', 'Soft Honey', '#d6ad4a', 'тёплая жёлтая'],
+] as const
+
+function Toggle({ checked, label, note, onChange }: { checked: boolean; label: string; note: string; onChange: (value: boolean) => void }) {
+  return <label className="setting-row"><span><strong>{label}</strong><small>{note}</small></span><input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} /><i /></label>
+}
+
+export default function SettingsApp() {
+  const [prefs, setPrefs] = useState<Preferences>(fallback)
+  const [status, setStatus] = useState('')
+  useEffect(() => { void invoke<Preferences>('desktop_preferences').then(setPrefs) }, [])
+  const update = <K extends keyof Preferences>(key: K, value: Preferences[K]) => setPrefs((current) => ({ ...current, [key]: value }))
+  const save = async () => {
+    setStatus('сохраняем…')
+    try { setPrefs(await invoke<Preferences>('desktop_save_preferences', { preferences: prefs })); setStatus('применено') }
+    catch { setStatus('не удалось применить') }
+  }
+  return <main className="settings-app">
+    <header><div className="settings-logo"><Sparkles size={18} /></div><div><span>UNIXGRAM DESKTOP</span><h1>Настройки</h1></div><button onClick={() => void save()}><Save size={16} /> Применить</button></header>
+
+    <section><div className="section-title"><Palette size={19} /><div><h2>Оформление</h2></div></div>
+      <div className="theme-grid">{themes.map(([id, title, color, note]) => <button key={id} className={prefs.theme === id ? 'theme-card active' : 'theme-card'} onClick={() => update('theme', id)}><i style={{ background: color }} /><span><strong>{title}</strong><small>{note}</small></span><b /></button>)}</div>
+      <Toggle checked={prefs.liquidGlass} label="Liquid Glass" note="прозрачные панели и размытие" onChange={(value) => update('liquidGlass', value)} />
+      {prefs.liquidGlass && <label className="zoom-row glass-strength"><span><Sparkles size={17} /><strong>Прозрачность</strong></span><input type="range" min="0.58" max="0.90" step="0.01" value={prefs.glassStrength} onChange={(event) => update('glassStrength', Number(event.target.value))} /><b>{Math.round((1 - prefs.glassStrength) * 100)}%</b></label>}
+    </section>
+
+    <section><div className="section-title"><MessageCircle size={19} /><div><h2>Чаты</h2></div></div>
+      <Toggle checked={prefs.compactChats} label="Компактный список" note="строки диалогов ниже" onChange={(value) => update('compactChats', value)} />
+      <Toggle checked={prefs.largeChatText} label="Крупный текст" note="сообщения легче читать" onChange={(value) => update('largeChatText', value)} />
+      <Toggle checked={prefs.reduceMotion} label="Меньше анимаций" note="без плавных переходов" onChange={(value) => update('reduceMotion', value)} />
+    </section>
+
+    <section><div className="section-title"><Monitor size={19} /><div><h2>Окно</h2></div></div>
+      <Toggle checked={prefs.fullscreen} label="Полный экран" note="без рамок, на весь экран" onChange={(value) => update('fullscreen', value)} />
+      <Toggle checked={prefs.alwaysOnTop} label="Поверх остальных окон" note="окно всегда видно" onChange={(value) => update('alwaysOnTop', value)} />
+      <label className="zoom-row"><span><Expand size={17} /><strong>Масштаб</strong></span><input type="range" min="0.8" max="1.4" step="0.05" value={prefs.zoom} onChange={(event) => update('zoom', Number(event.target.value))} /><b>{Math.round(prefs.zoom * 100)}%</b></label>
+    </section>
+    <footer><span>{status}</span><button onClick={() => void save()}><Save size={16} /> Сохранить и применить</button></footer>
+  </main>
+}

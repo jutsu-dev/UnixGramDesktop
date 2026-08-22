@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-window",
+  "description": "Минимальные Tauri core permissions только для локального главного окна UnixGram Desktop.",
+  "windows": ["main", "settings"],
+  "permissions": ["core:default"]
+}
