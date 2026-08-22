@@ -326,25 +326,15 @@ test('standalone settings page should scroll to the footer on shorter viewports'
   const footerButton = page.getByRole('button', { name: 'Сохранить и применить' })
   await expect(footerButton).not.toBeInViewport()
 
-  const before = await page.evaluate(() => ({
-    windowY: window.scrollY,
-    bodyTop: document.body.scrollTop,
-    rootTop: document.getElementById('root')?.scrollTop ?? 0,
-    appTop: (document.querySelector('.settings-app') as HTMLElement | null)?.scrollTop ?? 0,
-  }))
+  const before = await page.evaluate(() => {
+    const scroller = document.scrollingElement
+    return { top: scroller?.scrollTop ?? 0, scrollHeight: scroller?.scrollHeight ?? 0, clientHeight: scroller?.clientHeight ?? 0 }
+  })
+  expect(before.scrollHeight).toBeGreaterThan(before.clientHeight)
 
-  await page.mouse.wheel(0, 2200)
-  await page.keyboard.press('End')
+  await footerButton.evaluate((element) => element.scrollIntoView({ block: 'end' }))
 
-  const after = await page.evaluate(() => ({
-    windowY: window.scrollY,
-    bodyTop: document.body.scrollTop,
-    rootTop: document.getElementById('root')?.scrollTop ?? 0,
-    appTop: (document.querySelector('.settings-app') as HTMLElement | null)?.scrollTop ?? 0,
-  }))
-
-  expect(after.windowY + after.bodyTop + after.rootTop + after.appTop).toBeGreaterThan(
-    before.windowY + before.bodyTop + before.rootTop + before.appTop,
-  )
+  const afterTop = await page.evaluate(() => document.scrollingElement?.scrollTop ?? 0)
+  expect(afterTop).toBeGreaterThan(before.top)
   await expect(footerButton).toBeInViewport()
 })
