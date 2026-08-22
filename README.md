@@ -1,9 +1,9 @@
 <div align="center">
-  <img src="public/unixgram-mark.svg" width="92" alt="Логотип UnixGram Desktop">
+  <img src="docs/images/unixgram-official.svg" width="108" alt="Актуальный логотип UnixGram">
 
   # UnixGram Desktop
 
-  **UnixGram в отдельном приложении для Windows**
+  ### UnixGram в отдельном приложении для Windows
 
   Лента, сообщения, профили, подарки и UnixPlace без лишней вкладки в браузере.
 
@@ -18,9 +18,31 @@
 
 <br>
 
-![Главный экран UnixGram Desktop: события, профиль и история операций](docs/images/overview.png)
+> [!IMPORTANT]
+> Это независимый open source клиент сообщества UnixGram History. Он не является официальным приложением UnixGram.
 
-## Что внутри
+## ✦ Живой UnixGram, отдельное окно
+
+Клиент открывает актуальный UnixGram, сохраняет сессию средствами Windows и добавляет системный трей, темы, масштаб, Liquid Glass и Discord Rich Presence. Данные не заменяются демонстрационными карточками.
+
+<table>
+  <tr>
+    <td width="46%" align="center">
+      <img src="docs/images/unixgram-current-profile.png" alt="Актуальный профиль UnixGram с обложкой, статусами и публикациями">
+    </td>
+    <td width="54%" align="center">
+      <img src="docs/images/unixgram-current-gifts.png" alt="Актуальная коллекция подарков UnixGram">
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><b>Профиль, статусы и публикации</b></td>
+    <td align="center"><b>Настоящие подарки из коллекции</b></td>
+  </tr>
+</table>
+
+<sub>Скриншоты сняты с актуальной версии UnixGram 22 августа 2026 года.</sub>
+
+## ✦ Что внутри
 
 | | Возможность | Как работает |
 |---|---|---|
@@ -32,18 +54,17 @@
 | 🖥️ | Windows | Системный трей, полноэкранный режим и окно поверх остальных |
 | 🎮 | Discord | Rich Presence без содержимого сообщений |
 
-<table>
-  <tr>
-    <td width="50%"><img src="docs/images/gifts.png" alt="Раздел подарков с коллекцией, рынком и последними передачами"></td>
-    <td width="50%"><img src="docs/images/settings.png" alt="Настройки тем, интерфейса и состояния сервисов"></td>
-  </tr>
-  <tr>
-    <td align="center"><b>Подарки и рынок</b></td>
-    <td align="center"><b>Настройки клиента</b></td>
-  </tr>
-</table>
+## ✦ Основа клиента
 
-## Установка
+<p align="center">
+  <img src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white" alt="Rust">
+  <img src="https://img.shields.io/badge/Tauri_2-24C8DB?style=for-the-badge&logo=tauri&logoColor=white" alt="Tauri 2">
+  <img src="https://img.shields.io/badge/React-15171c?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/NSIS-755EE8?style=for-the-badge&logo=windows11&logoColor=white" alt="NSIS">
+</p>
+
+## ✦ Установка
 
 ### Готовая сборка
 
@@ -66,7 +87,7 @@ npm run tauri:build:windows
 
 Установщик появится в `src-tauri/target/release/bundle/nsis/`.
 
-## Вход и данные
+## ✦ Вход и данные
 
 Доступны вход по паролю, подтверждение в браузере и QR-код. Пароль не сохраняется. Cookie сессии хранится в Windows Credential Manager, а запросы идут напрямую к `https://unixgram.com` по HTTPS.
 
@@ -74,7 +95,7 @@ Discord Rich Presence выключен по умолчанию. Он не пол
 
 Подробнее: [конфиденциальность](PRIVACY.md) и [модель безопасности](SECURITY.md).
 
-## Проверки
+## ✦ Проверки
 
 ```powershell
 npm run lint
@@ -86,14 +107,22 @@ npm run tauri:test:windows
 
 Для релизов также запускаются Gitleaks, Trivy, Semgrep и аудит npm. В репозитории хранится [CycloneDX SBOM](sbom.cdx.json). Полный список проверок находится в [релизном чеклисте](docs/RELEASE-CHECKLIST.md).
 
-## Статус
+## ✦ Статус
 
 Версия 1.3.0 является release candidate. Основные сценарии и установщик собраны, но стабильный публичный релиз требует цифровой подписи Windows и финальной проверки на чистой системе.
 
 Клиент зависит от web-интерфейсов UnixGram. Если сервис недоступен или изменит формат ответа, отдельные разделы могут временно перестать работать.
 
-## О проекте
+## ✦ Лицензия и проект
 
 UnixGram Desktop развивается командой UnixGram History и участниками сообщества. Это независимый проект. Он не является официальным клиентом и не связан с создателями UnixGram.
 
-Код распространяется по лицензии [MIT](LICENSE).
+Код распространяется по лицензии [MIT](LICENSE). Можно использовать, изучать, изменять и собирать собственные версии при сохранении текста лицензии.
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/Открыть_лицензию-MIT-35B779?style=for-the-badge" alt="Открыть лицензию MIT"></a>
+  <a href="PRIVACY.md"><img src="https://img.shields.io/badge/Конфиденциальность-15171C?style=for-the-badge" alt="Политика конфиденциальности"></a>
+  <a href="SECURITY.md"><img src="https://img.shields.io/badge/Безопасность-755EE8?style=for-the-badge" alt="Правила безопасности"></a>
+</p>
+
+<p align="center"><sub>Сделано сообществом UnixGram History.</sub></p>
