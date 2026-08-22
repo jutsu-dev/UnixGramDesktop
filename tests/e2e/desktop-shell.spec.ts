@@ -303,3 +303,48 @@ test('native client settings expose themes, chat controls and window controls', 
   await expect(page.getByText('Полный экран')).toBeVisible()
   await expect(page.getByText('Масштаб')).toBeVisible()
 })
+
+test('standalone settings page has named controls and no serious accessibility violations', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 })
+  await page.goto('/?desktop-settings=1')
+  await expect(page.getByRole('heading', { name: 'Настройки' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Применить', exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Сохранить и применить' })).toBeVisible()
+  await expect(page.getByRole('checkbox', { name: 'Liquid Glass прозрачные панели и размытие' })).toBeVisible()
+  await expect(page.getByRole('checkbox', { name: 'Компактный список строки диалогов ниже' })).toBeVisible()
+  await expect(page.getByRole('slider', { name: 'Масштаб' })).toBeVisible()
+
+  const result = await new AxeBuilder({ page }).analyze()
+  const serious = result.violations.filter((violation) => violation.impact === 'critical' || violation.impact === 'serious')
+  expect(serious, `standalone settings: ${serious.map((violation) => violation.id).join(', ')}`).toEqual([])
+})
+
+test('standalone settings page should scroll to the footer on shorter viewports', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 })
+  await page.goto('/?desktop-settings=1')
+
+  const footerButton = page.getByRole('button', { name: 'Сохранить и применить' })
+  await expect(footerButton).not.toBeInViewport()
+
+  const before = await page.evaluate(() => ({
+    windowY: window.scrollY,
+    bodyTop: document.body.scrollTop,
+    rootTop: document.getElementById('root')?.scrollTop ?? 0,
+    appTop: (document.querySelector('.settings-app') as HTMLElement | null)?.scrollTop ?? 0,
+  }))
+
+  await page.mouse.wheel(0, 2200)
+  await page.keyboard.press('End')
+
+  const after = await page.evaluate(() => ({
+    windowY: window.scrollY,
+    bodyTop: document.body.scrollTop,
+    rootTop: document.getElementById('root')?.scrollTop ?? 0,
+    appTop: (document.querySelector('.settings-app') as HTMLElement | null)?.scrollTop ?? 0,
+  }))
+
+  expect(after.windowY + after.bodyTop + after.rootTop + after.appTop).toBeGreaterThan(
+    before.windowY + before.bodyTop + before.rootTop + before.appTop,
+  )
+  await expect(footerButton).toBeInViewport()
+})

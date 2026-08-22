@@ -19,6 +19,7 @@ use tauri::{
 };
 
 const BASE_URL: &str = "https://unixgram.com";
+const DISCORD_CLIENT_ID: &str = "1540399183276539904";
 const SESSION_SERVICE: &str = "com.unixgram.desktop.community";
 const SESSION_ACCOUNT: &str = "unixgram-session";
 
@@ -132,6 +133,8 @@ struct ClientPreferences {
     fullscreen: bool,
     always_on_top: bool,
     zoom: f64,
+    discord_presence: bool,
+    discord_show_section: bool,
 }
 
 impl Default for ClientPreferences {
@@ -146,6 +149,8 @@ impl Default for ClientPreferences {
             fullscreen: false,
             always_on_top: false,
             zoom: 1.0,
+            discord_presence: true,
+            discord_show_section: false,
         }
     }
 }
@@ -1068,12 +1073,85 @@ fn validate_unixgram_url(url: &str) -> Result<Url, String> {
     Ok(parsed)
 }
 
+fn validate_discord_client_id(client_id: &str) -> Result<&str, String> {
+    let trimmed = client_id.trim();
+    if !(17..=24).contains(&trimmed.len())
+        || !trimmed.chars().all(|character| character.is_ascii_digit())
+    {
+        return Err("укажите корректный Discord Application ID".to_string());
+    }
+    Ok(trimmed)
+}
+
+fn discord_activity_details(section: &str, show_section: bool) -> String {
+    if !show_section {
+        return "в приложении".to_string();
+    }
+    let clean = section
+        .trim()
+        .chars()
+        .filter(|character| !character.is_control())
+        .take(96)
+        .collect::<String>();
+    if clean.is_empty() {
+        "в приложении".to_string()
+    } else {
+        format!("раздел: {clean}")
+    }
+}
+
+fn discord_activity_payload(details: &str) -> activity::Activity<'_> {
+    activity::Activity::new()
+        .state("UnixGram Desktop")
+        .details(details)
+        .assets(
+            activity::Assets::new()
+                .large_image("unixgram")
+                .large_text("UnixGram Desktop"),
+        )
+        .buttons(vec![activity::Button::new("Открыть UnixGram", BASE_URL)])
+}
+
+fn connect_discord_client(client_id: &str) -> Result<DiscordIpcClient, String> {
+    let mut client = DiscordIpcClient::new(client_id);
+    client
+        .connect()
+        .map_err(|_| "Discord не запущен или RPC недоступен".to_string())?;
+    Ok(client)
+}
+
+fn set_discord_activity(client: &mut DiscordIpcClient, details: &str) -> Result<(), String> {
+    if client
+        .set_activity(discord_activity_payload(details))
+        .is_ok()
+    {
+        return Ok(());
+    }
+
+    client
+        .reconnect()
+        .map_err(|_| "Discord RPC недоступен; переподключение не удалось".to_string())?;
+    client
+        .set_activity(discord_activity_payload(details))
+        .map_err(|_| "Discord отклонил Rich Presence после переподключения".to_string())
+}
+
 #[tauri::command]
 fn discord_presence(
     state: tauri::State<'_, AppState>,
     enabled: bool,
     client_id: String,
     section: String,
+    show_section: bool,
+) -> Result<String, String> {
+    update_discord_presence(&state, enabled, &client_id, &section, show_section)
+}
+
+fn update_discord_presence(
+    state: &AppState,
+    enabled: bool,
+    client_id: &str,
+    section: &str,
     show_section: bool,
 ) -> Result<String, String> {
     let mut active = state
@@ -1087,13 +1165,7 @@ fn discord_presence(
         }
         return Ok("выключено".to_string());
     }
-    if client_id.len() < 17
-        || !client_id
-            .chars()
-            .all(|character| character.is_ascii_digit())
-    {
-        return Err("укажите Discord Application ID".to_string());
-    }
+    let client_id = validate_discord_client_id(client_id)?;
     if active
         .as_ref()
         .is_none_or(|client| client.client_id != client_id)
@@ -1101,31 +1173,18 @@ fn discord_presence(
         if let Some(mut old) = active.take() {
             let _ = old.close();
         }
-        let mut client = DiscordIpcClient::new(&client_id);
-        client
-            .connect()
-            .map_err(|_| "Discord не запущен или RPC недоступен".to_string())?;
-        *active = Some(client);
+        *active = Some(connect_discord_client(client_id)?);
     }
-    let details = if show_section {
-        format!("раздел: {section}")
-    } else {
-        "в приложении".to_string()
-    };
+    let details = discord_activity_details(&section, show_section);
     let result = active
         .as_mut()
-        .ok_or_else(|| "Discord RPC не подключён".to_string())?
-        .set_activity(
-            activity::Activity::new()
-                .state("UnixGram Desktop")
-                .details(details)
-                .buttons(vec![activity::Button::new("Открыть UnixGram", BASE_URL)]),
-        );
-    if result.is_err() {
+        .ok_or_else(|| "Discord RPC не подключён".to_string())
+        .and_then(|client| set_discord_activity(client, &details));
+    if let Err(error) = result {
         if let Some(mut stale) = active.take() {
             let _ = stale.close();
         }
-        return Err("Discord отклонил Rich Presence; подключение будет создано заново".to_string());
+        return Err(error);
     }
     Ok("активно".to_string())
 }
@@ -1208,6 +1267,21 @@ pub fn run() {
             }
             tray.build(app)?;
             apply_preferences(app.handle(), &load_preferences(app.handle()));
+            let discord_app = app.handle().clone();
+            std::thread::spawn(move || {
+                loop {
+                    let preferences = load_preferences(&discord_app);
+                    let state = discord_app.state::<AppState>();
+                    let _ = update_discord_presence(
+                        &state,
+                        preferences.discord_presence,
+                        DISCORD_CLIENT_ID,
+                        "UnixGram",
+                        preferences.discord_show_section,
+                    );
+                    std::thread::sleep(Duration::from_secs(15));
+                }
+            });
             Ok(())
         })
         .on_page_load(|window, _| {
@@ -1252,7 +1326,8 @@ pub fn run() {
 #[cfg(test)]
 mod tests {
     use super::{
-        ClientPreferences, CreatePostImage, CreatePostRequest, theme_css, validate_post_input,
+        ClientPreferences, CreatePostImage, CreatePostRequest, discord_activity_details,
+        discord_activity_payload, theme_css, validate_discord_client_id, validate_post_input,
         validate_unixgram_url,
     };
 
@@ -1356,5 +1431,37 @@ mod tests {
             client_post_id: None,
         };
         assert!(validate_post_input(&executable).is_err());
+    }
+
+    #[test]
+    fn validates_discord_application_ids() {
+        assert_eq!(
+            validate_discord_client_id("1540399183276539904").unwrap(),
+            "1540399183276539904"
+        );
+        assert!(validate_discord_client_id(" 1540399183276539904 ").is_ok());
+        assert!(validate_discord_client_id("discord-app").is_err());
+        assert!(validate_discord_client_id("12345").is_err());
+    }
+
+    #[test]
+    fn formats_discord_details_safely() {
+        assert_eq!(discord_activity_details("Лента", true), "раздел: Лента");
+        assert_eq!(discord_activity_details(" \n\t ", true), "в приложении");
+        assert_eq!(discord_activity_details("ignored", false), "в приложении");
+        assert!(
+            discord_activity_details(&"a".repeat(120), true)
+                .chars()
+                .count()
+                <= 104
+        );
+    }
+
+    #[test]
+    fn discord_activity_uses_the_published_unixgram_asset() {
+        let payload = serde_json::to_value(discord_activity_payload("в приложении"))
+            .expect("Discord activity must serialize");
+        assert_eq!(payload["assets"]["large_image"], "unixgram");
+        assert_eq!(payload["assets"]["large_text"], "UnixGram Desktop");
     }
 }

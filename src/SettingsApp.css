@@ -1,8 +1,10 @@
 :root { font-family: Inter, "Segoe UI", sans-serif; color: #f4f5fa; background: #08090d; font-synthesis: none; }
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 0; min-height: 100vh; background: radial-gradient(circle at 12% 0%, rgba(110,95,228,.2), transparent 34%), #08090d; }
+body:has(.settings-app) { overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; scrollbar-color: #454653 transparent; }
+#root:has(> .settings-app) { height: auto; min-height: 100vh; overflow: visible; }
 button, input { font: inherit; }
-.settings-app { width: min(720px, 100%); min-height: 100vh; margin: auto; padding: 22px; }
+.settings-app { width: min(720px, 100%); min-height: 100vh; margin: auto; padding: 22px 22px 38px; }
 .settings-app header { display: grid; grid-template-columns: 42px 1fr auto; align-items: center; gap: 12px; padding: 8px 4px 22px; }
 .settings-logo { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 13px; background: linear-gradient(145deg,#8173f1,#5748c8); box-shadow: 0 10px 30px rgba(110,95,228,.35); }
 .settings-app header span { color: #858794; font-size: 10px; font-weight: 800; letter-spacing: .14em; }

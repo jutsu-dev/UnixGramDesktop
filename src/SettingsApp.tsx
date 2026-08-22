@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { invoke } from '@tauri-apps/api/core'
-import { Expand, MessageCircle, Monitor, Palette, Save, Sparkles } from 'lucide-react'
+import { Expand, Gamepad2, MessageCircle, Monitor, Palette, Save, Sparkles } from 'lucide-react'
 import './SettingsApp.css'
 
 type Preferences = {
@@ -13,11 +13,14 @@ type Preferences = {
   fullscreen: boolean
   alwaysOnTop: boolean
   zoom: number
+  discordPresence: boolean
+  discordShowSection: boolean
 }
 
 const fallback: Preferences = {
   theme: 'native', liquidGlass: false, glassStrength: 0.72, compactChats: false, largeChatText: false,
   reduceMotion: false, fullscreen: false, alwaysOnTop: false, zoom: 1,
+  discordPresence: true, discordShowSection: false,
 }
 
 const themes = [
@@ -43,7 +46,17 @@ export default function SettingsApp() {
   const update = <K extends keyof Preferences>(key: K, value: Preferences[K]) => setPrefs((current) => ({ ...current, [key]: value }))
   const save = async () => {
     setStatus('сохраняем…')
-    try { setPrefs(await invoke<Preferences>('desktop_save_preferences', { preferences: prefs })); setStatus('применено') }
+    try {
+      const saved = await invoke<Preferences>('desktop_save_preferences', { preferences: prefs })
+      setPrefs(saved)
+      const rpc = await invoke<string>('discord_presence', {
+        enabled: saved.discordPresence,
+        clientId: '1540399183276539904',
+        section: 'UnixGram',
+        showSection: saved.discordShowSection,
+      }).catch((error) => String(error))
+      setStatus(saved.discordPresence ? `применено · Discord: ${rpc}` : 'применено')
+    }
     catch { setStatus('не удалось применить') }
   }
   return <main className="settings-app">
@@ -65,6 +78,10 @@ export default function SettingsApp() {
       <Toggle checked={prefs.fullscreen} label="Полный экран" note="без рамок, на весь экран" onChange={(value) => update('fullscreen', value)} />
       <Toggle checked={prefs.alwaysOnTop} label="Поверх остальных окон" note="окно всегда видно" onChange={(value) => update('alwaysOnTop', value)} />
       <label className="zoom-row"><span><Expand size={17} /><strong>Масштаб</strong></span><input type="range" min="0.8" max="1.4" step="0.05" value={prefs.zoom} onChange={(event) => update('zoom', Number(event.target.value))} /><b>{Math.round(prefs.zoom * 100)}%</b></label>
+    </section>
+    <section><div className="section-title"><Gamepad2 size={19} /><div><h2>Discord</h2><p>показывает использование UnixGram без личных данных</p></div></div>
+      <Toggle checked={prefs.discordPresence} label="Rich Presence" note="показывать UnixGram Desktop в профиле Discord" onChange={(value) => update('discordPresence', value)} />
+      <Toggle checked={prefs.discordShowSection} label="Название раздела" note="показывать только общий раздел без сообщений и имён" onChange={(value) => update('discordShowSection', value)} />
     </section>
     <footer><span>{status}</span><button onClick={() => void save()}><Save size={16} /> Сохранить и применить</button></footer>
   </main>
