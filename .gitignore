@@ -11,7 +11,8 @@ node_modules
 dist
 dist-ssr
 storybook-static
-artifacts
+artifacts/*
+!artifacts/README.md
 test-results
 playwright-report
 src-tauri/target

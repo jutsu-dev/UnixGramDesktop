@@ -1,7 +1,9 @@
 <div align="center">
   <img src="docs/images/unixgram-official.svg" width="104" alt="UnixGram">
 
-  # UnixGram Desktop
+# UnixGram Desktop
+
+> Для разработчиков: [карта папок и команды проекта](docs/PROJECT-STRUCTURE.md).
 
   ### UnixGram в отдельном приложении для Windows
 
@@ -70,7 +72,7 @@
 - Rich Presence не показывает сообщения, собеседников и имена профилей;
 - внешние переходы разрешены только на HTTPS-страницы UnixGram и UnixPlace;
 - релиз проходит npm audit, Gitleaks, Trivy, RustSec и автоматические тесты;
-- состав зависимостей опубликован в [CycloneDX SBOM](sbom.cdx.json).
+- состав зависимостей опубликован в [CycloneDX SBOM](docs/security/sbom.cdx.json).
 
 Подробнее: [политика безопасности](SECURITY.md) и [политика конфиденциальности](PRIVACY.md).
 

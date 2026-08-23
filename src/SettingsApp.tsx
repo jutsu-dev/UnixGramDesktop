@@ -20,7 +20,7 @@ type Preferences = {
 const fallback: Preferences = {
   theme: 'native', liquidGlass: false, glassStrength: 0.72, compactChats: false, largeChatText: false,
   reduceMotion: false, fullscreen: false, alwaysOnTop: false, zoom: 1,
-  discordPresence: true, discordShowSection: false,
+  discordPresence: false, discordShowSection: false,
 }
 
 const themes = [
@@ -40,9 +40,30 @@ function Toggle({ checked, label, note, onChange }: { checked: boolean; label: s
 }
 
 export default function SettingsApp() {
+  const isDesktopRuntime = '__TAURI_INTERNALS__' in window
   const [prefs, setPrefs] = useState<Preferences>(fallback)
   const [status, setStatus] = useState('')
-  useEffect(() => { void invoke<Preferences>('desktop_preferences').then(setPrefs) }, [])
+  useEffect(() => {
+    void invoke<Preferences>('desktop_preferences')
+      .then(setPrefs)
+      .catch(() => setStatus('предпросмотр · настройки не сохранены'))
+  }, [])
+  useEffect(() => {
+    const scrollWithKeyboard = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null
+      if (target?.matches('input, textarea, select, [contenteditable="true"]')) return
+      const scroller = document.querySelector<HTMLElement>('.settings-app')
+      if (!scroller) return
+      if (event.key === 'End') scroller.scrollTo({ top: scroller.scrollHeight, behavior: 'auto' })
+      else if (event.key === 'Home') scroller.scrollTo({ top: 0, behavior: 'auto' })
+      else if (event.key === 'PageDown') scroller.scrollBy({ top: scroller.clientHeight * 0.8, behavior: 'auto' })
+      else if (event.key === 'PageUp') scroller.scrollBy({ top: scroller.clientHeight * -0.8, behavior: 'auto' })
+      else return
+      event.preventDefault()
+    }
+    window.addEventListener('keydown', scrollWithKeyboard)
+    return () => window.removeEventListener('keydown', scrollWithKeyboard)
+  }, [])
   const update = <K extends keyof Preferences>(key: K, value: Preferences[K]) => setPrefs((current) => ({ ...current, [key]: value }))
   const save = async () => {
     setStatus('сохраняем…')
@@ -59,8 +80,8 @@ export default function SettingsApp() {
     }
     catch { setStatus('не удалось применить') }
   }
-  return <main className="settings-app">
-    <header><div className="settings-logo"><Sparkles size={18} /></div><div><span>UNIXGRAM DESKTOP</span><h1>Настройки</h1></div><button onClick={() => void save()}><Save size={16} /> Применить</button></header>
+  return <main className="settings-app" tabIndex={-1} autoFocus>
+    <header><div className="settings-logo"><Sparkles size={18} /></div><div><span>UNIXGRAM DESKTOP</span><h1>Настройки</h1></div><button disabled={!isDesktopRuntime} onClick={() => void save()}><Save size={16} /> {isDesktopRuntime ? 'Применить' : 'Предпросмотр'}</button></header>
 
     <section><div className="section-title"><Palette size={19} /><div><h2>Оформление</h2></div></div>
       <div className="theme-grid">{themes.map(([id, title, color, note]) => <button key={id} className={prefs.theme === id ? 'theme-card active' : 'theme-card'} onClick={() => update('theme', id)}><i style={{ background: color }} /><span><strong>{title}</strong><small>{note}</small></span><b /></button>)}</div>
@@ -80,9 +101,9 @@ export default function SettingsApp() {
       <label className="zoom-row"><span><Expand size={17} /><strong>Масштаб</strong></span><input type="range" min="0.8" max="1.4" step="0.05" value={prefs.zoom} onChange={(event) => update('zoom', Number(event.target.value))} /><b>{Math.round(prefs.zoom * 100)}%</b></label>
     </section>
     <section><div className="section-title"><Gamepad2 size={19} /><div><h2>Discord</h2><p>показывает использование UnixGram без личных данных</p></div></div>
-      <Toggle checked={prefs.discordPresence} label="Rich Presence" note="показывать UnixGram Desktop в профиле Discord" onChange={(value) => update('discordPresence', value)} />
+      <Toggle checked={prefs.discordPresence} label="Rich Presence" note="включается только по вашему выбору и работает в трее" onChange={(value) => update('discordPresence', value)} />
       <Toggle checked={prefs.discordShowSection} label="Название раздела" note="показывать только общий раздел без сообщений и имён" onChange={(value) => update('discordShowSection', value)} />
     </section>
-    <footer><span>{status}</span><button onClick={() => void save()}><Save size={16} /> Сохранить и применить</button></footer>
+    <footer><span>{status}</span><button disabled={!isDesktopRuntime} onClick={() => void save()}><Save size={16} /> {isDesktopRuntime ? 'Сохранить и применить' : 'Сохранение доступно в приложении'}</button></footer>
   </main>
 }

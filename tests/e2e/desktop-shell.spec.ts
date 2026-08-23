@@ -86,6 +86,7 @@ test('full client settings and all nine themes persist', async ({ page }) => {
   for (const section of ['Сессия UnixGram', 'Внешний вид', 'Интерфейс', 'Уведомления', 'Обновление данных', 'Окно и ссылки', 'Возможности', 'Discord', 'О приложении']) {
     await settingsNav.getByRole('button', { name: section, exact: true }).click()
     await expect(page.locator('.settings-panel')).not.toBeEmpty()
+    await expect.poll(() => page.locator('#workspace').evaluate((element) => element.scrollTop)).toBe(0)
   }
 
   await settingsNav.getByRole('button', { name: 'Внешний вид', exact: true }).click()
@@ -305,11 +306,13 @@ test('native client settings expose themes, chat controls and window controls', 
 })
 
 test('standalone settings page has named controls and no serious accessibility violations', async ({ page }) => {
+  const pageErrors: string[] = []
+  page.on('pageerror', (error) => pageErrors.push(error.message))
   await page.setViewportSize({ width: 1280, height: 720 })
   await page.goto('/?desktop-settings=1')
   await expect(page.getByRole('heading', { name: 'Настройки' })).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Применить', exact: true })).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Сохранить и применить' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Предпросмотр', exact: true })).toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Сохранение доступно в приложении' })).toBeDisabled()
   await expect(page.getByRole('checkbox', { name: 'Liquid Glass прозрачные панели и размытие' })).toBeVisible()
   await expect(page.getByRole('checkbox', { name: 'Компактный список строки диалогов ниже' })).toBeVisible()
   await expect(page.getByRole('slider', { name: 'Масштаб' })).toBeVisible()
@@ -317,24 +320,23 @@ test('standalone settings page has named controls and no serious accessibility v
   const result = await new AxeBuilder({ page }).analyze()
   const serious = result.violations.filter((violation) => violation.impact === 'critical' || violation.impact === 'serious')
   expect(serious, `standalone settings: ${serious.map((violation) => violation.id).join(', ')}`).toEqual([])
+  expect(pageErrors).toEqual([])
 })
 
 test('standalone settings page should scroll to the footer on shorter viewports', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 })
   await page.goto('/?desktop-settings=1')
 
-  const footerButton = page.getByRole('button', { name: 'Сохранить и применить' })
+  const footerButton = page.getByRole('button', { name: 'Сохранение доступно в приложении' })
   await expect(footerButton).not.toBeInViewport()
 
-  const before = await page.evaluate(() => {
-    const scroller = document.scrollingElement
-    return { top: scroller?.scrollTop ?? 0, scrollHeight: scroller?.scrollHeight ?? 0, clientHeight: scroller?.clientHeight ?? 0 }
-  })
+  const scroller = page.locator('.settings-app')
+  const before = await scroller.evaluate((element) => ({ top: element.scrollTop, scrollHeight: element.scrollHeight, clientHeight: element.clientHeight }))
   expect(before.scrollHeight).toBeGreaterThan(before.clientHeight)
 
-  await footerButton.evaluate((element) => element.scrollIntoView({ block: 'end' }))
+  await page.keyboard.press('End')
 
-  const afterTop = await page.evaluate(() => document.scrollingElement?.scrollTop ?? 0)
+  const afterTop = await scroller.evaluate((element) => element.scrollTop)
   expect(afterTop).toBeGreaterThan(before.top)
   await expect(footerButton).toBeInViewport()
 })

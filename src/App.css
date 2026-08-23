@@ -2439,6 +2439,68 @@
   .app-shell.is-settings .settings-nav__item svg:last-child { display: none; }
 }
 
+/* The source-derived shell below uses fixed dark colors to mirror UnixGram.
+   Restore the light palette after those rules so every surface and label
+   remains readable when Official Light is selected. */
+:root[data-theme='official-light'] .app-shell,
+:root[data-theme='official-light'] .app-rail,
+:root[data-theme='official-light'] .workspace,
+:root[data-theme='official-light'] .context-pane,
+:root[data-theme='official-light'] .message-pane {
+  color: var(--text) !important;
+  background: var(--canvas) !important;
+  border-color: var(--divider-strong) !important;
+}
+
+:root[data-theme='official-light'] :where(
+  .message-pane__head, .workspace-head, .context-head, .feed-head, .feed-tabs,
+  .unix-feed, .chat-view, .gift-workspace, .profile-native, .settings-layout
+) {
+  color: var(--text) !important;
+  background: var(--bg) !important;
+  border-color: var(--divider-strong) !important;
+}
+
+:root[data-theme='official-light'] :where(
+  .rail-logo, .rail-item.is-active, .sync-state, .feed-composer, .unix-post,
+  .gift-toolbar, .gift-summary article, .gift-card, .gift-inspector, .profile-posts,
+  .settings-nav, .settings-panel, .settings-block-card, .context-section, .toast,
+  .conversation, .chat-composer, .chat-bubble
+) {
+  color: var(--text) !important;
+  background: var(--card) !important;
+  border-color: var(--divider-strong) !important;
+}
+
+:root[data-theme='official-light'] .app-shell :where(
+  h1, h2, h3, p, strong, label, button, a, input, textarea, select
+) {
+  color: var(--text) !important;
+}
+
+:root[data-theme='official-light'] .app-shell :where(
+  small, time, .eyebrow, .feed-kicker, .unix-link, .post-meta-actions,
+  .feed-title > span, .gift-summary span, .gift-summary small
+) {
+  color: var(--secondary) !important;
+}
+
+:root[data-theme='official-light'] .app-shell :where(input, textarea, select) {
+  background-color: var(--surface) !important;
+  caret-color: var(--accent) !important;
+}
+
+:root[data-theme='official-light'] .app-shell :where(input, textarea)::placeholder {
+  color: var(--secondary) !important;
+  opacity: 1;
+}
+
+:root[data-theme='official-light'] .app-shell :where(.primary-action, button[type='submit'], .pending-pill) {
+  color: var(--accent-contrast) !important;
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
 /* 0.6.1 native pass — aligned with the current UnixGram feed/profile density. */
 .feed-composer-card {
   display: grid;
@@ -3651,4 +3713,45 @@
   .connection-banner {
     top: 8px;
   }
+}
+
+/* Final light-theme guard for the source-derived UnixGram shell. */
+:root[data-theme='official-light'] :where(
+  .app-shell, .app-rail, .workspace, .context-pane, .message-pane, .gift-workspace,
+  .gift-filterbar, .gift-sort, .gift-tabs, .gift-toolbar, .gift-summary,
+  .gift-summary article, .gift-metrics, .gift-metrics article, .gift-list,
+  .gift-card, .gift-inspector
+) {
+  color: var(--text) !important;
+  background-color: var(--bg) !important;
+  border-color: var(--divider-strong) !important;
+}
+
+:root[data-theme='official-light'] :where(
+  .gift-toolbar, .gift-summary article, .gift-metrics article, .gift-card, .gift-inspector,
+  .gift-filterbar button, .gift-sort select
+) {
+  background-color: var(--card) !important;
+}
+
+:root[data-theme='official-light'] :where(
+  .gift-workspace, .gift-workspace h1, .gift-workspace h2, .gift-workspace h3,
+  .gift-workspace p, .gift-workspace strong, .gift-workspace button,
+  .gift-workspace label, .gift-workspace select
+) {
+  color: var(--text) !important;
+}
+
+:root[data-theme='official-light'] :where(
+  .gift-workspace small, .gift-workspace time, .gift-workspace .eyebrow,
+  .gift-workspace .gift-summary span, .gift-workspace .gift-summary small,
+  .gift-workspace .gift-metrics span, .gift-workspace .gift-metrics small,
+  .gift-workspace .gift-sort span
+) {
+  color: var(--secondary) !important;
+}
+
+:root[data-theme='official-light'] .gift-workspace :where(.primary-action, button[type='submit'], .pending-pill) {
+  color: var(--accent-contrast) !important;
+  background-color: var(--accent) !important;
 }

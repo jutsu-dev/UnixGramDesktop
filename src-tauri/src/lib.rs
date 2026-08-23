@@ -149,7 +149,7 @@ impl Default for ClientPreferences {
             fullscreen: false,
             always_on_top: false,
             zoom: 1.0,
-            discord_presence: true,
+            discord_presence: false,
             discord_show_section: false,
         }
     }
@@ -208,7 +208,7 @@ fn theme_css(preferences: &ClientPreferences) -> String {
     );
     if preferences.theme != "native" {
         css.push_str(&format!(
-            "html{{color-scheme:{};}}body,main{{background-color:var(--ugd-bg)!important;color:var(--ugd-text)!important;}}header,aside,nav,article,[role=dialog]{{background-color:var(--ugd-panel)!important;color:var(--ugd-text)!important;border-color:var(--ugd-line)!important;}}button,a,input,textarea,select{{color:var(--ugd-text)!important;border-color:var(--ugd-line)!important;accent-color:var(--ugd-accent)!important;}}input,textarea,select{{background-color:color-mix(in srgb,var(--ugd-panel) 92%,var(--ugd-text) 8%)!important;caret-color:var(--ugd-accent)!important;}}input::placeholder,textarea::placeholder{{color:color-mix(in srgb,var(--ugd-text) 58%,transparent)!important;}}button{{background-color:transparent!important;}}button:hover,a:hover{{color:var(--ugd-accent)!important;}}button[aria-pressed='true'],button[aria-selected='true'],button[type='submit'],[role='tab'][aria-selected='true']{{background-color:var(--ugd-accent)!important;color:var(--ugd-on-accent)!important;border-color:var(--ugd-accent)!important;}}button:disabled,[aria-disabled='true']{{color:color-mix(in srgb,var(--ugd-text) 42%,transparent)!important;opacity:.68!important;}}svg{{color:inherit!important;}}img,video{{filter:none!important;}}",
+            "html{{color-scheme:{};}}body,main{{background-color:var(--ugd-bg)!important;color:var(--ugd-text)!important;}}header,aside,nav,article,[role=dialog]{{background-color:var(--ugd-panel)!important;color:var(--ugd-text)!important;border-color:var(--ugd-line)!important;}}button,a,input,textarea,select{{color:var(--ugd-text)!important;border-color:var(--ugd-line)!important;accent-color:var(--ugd-accent)!important;}}input,textarea,select{{background-color:color-mix(in srgb,var(--ugd-panel) 92%,var(--ugd-text) 8%)!important;caret-color:var(--ugd-accent)!important;}}input::placeholder,textarea::placeholder{{color:color-mix(in srgb,var(--ugd-text) 58%,transparent)!important;}}button{{background-color:transparent!important;}}button:hover,a:hover{{color:var(--ugd-accent)!important;}}button[aria-pressed='true'],button[aria-selected='true'],button[type='submit'],[role='tab'][aria-selected='true']{{background-color:var(--ugd-accent)!important;color:var(--ugd-on-accent)!important;border-color:var(--ugd-accent)!important;}}button:disabled,[aria-disabled='true']{{color:color-mix(in srgb,var(--ugd-text) 42%,transparent)!important;opacity:.68!important;}}img,video{{filter:none!important;}}",
             "dark",
         ));
     }
@@ -247,6 +247,24 @@ fn apply_preferences(app: &tauri::AppHandle, preferences: &ClientPreferences) {
               let style = document.getElementById('unixgram-desktop-preferences');
               if (!style) {{ style = document.createElement('style'); style.id = 'unixgram-desktop-preferences'; document.head.appendChild(style); }}
               style.textContent = {css};
+
+              const refreshExpiredQr = () => {{
+                const now = Date.now();
+                if (now - (window.__unixgramDesktopLastQrRefresh || 0) < 10_000) return;
+                const trigger = [...document.querySelectorAll('button')].find((button) => {{
+                  const text = (button.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
+                  const visible = button.getClientRects().length > 0 && !button.disabled;
+                  return visible && text.includes('qr-код истёк') && text.includes('обновить');
+                }});
+                if (trigger) {{
+                  window.__unixgramDesktopLastQrRefresh = now;
+                  trigger.click();
+                }}
+              }};
+              refreshExpiredQr();
+              if (window.__unixgramDesktopQrObserver) window.__unixgramDesktopQrObserver.disconnect();
+              window.__unixgramDesktopQrObserver = new MutationObserver(refreshExpiredQr);
+              window.__unixgramDesktopQrObserver.observe(document.body, {{ childList: true, subtree: true, characterData: true }});
             }})()
         "#
         );
@@ -1222,6 +1240,10 @@ fn show_settings_window(app: &tauri::AppHandle) {
     .build();
 }
 
+fn should_hide_on_close(label: &str) -> bool {
+    label == "main"
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -1291,7 +1313,9 @@ pub fn run() {
             }
         })
         .on_window_event(|window, event| {
-            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+            if should_hide_on_close(window.label())
+                && let tauri::WindowEvent::CloseRequested { api, .. } = event
+            {
                 api.prevent_close();
                 let _ = window.hide();
             }
@@ -1327,8 +1351,8 @@ pub fn run() {
 mod tests {
     use super::{
         ClientPreferences, CreatePostImage, CreatePostRequest, discord_activity_details,
-        discord_activity_payload, theme_css, validate_discord_client_id, validate_post_input,
-        validate_unixgram_url,
+        discord_activity_payload, should_hide_on_close, theme_css, validate_discord_client_id,
+        validate_post_input, validate_unixgram_url,
     };
 
     #[test]
@@ -1365,6 +1389,78 @@ mod tests {
                 assert!(css.contains("color:var(--ugd-text)!important"));
                 assert!(css.contains("backdrop-filter:blur(26px)"));
                 assert!(!css.contains("rgba(15,15,22"));
+            }
+        }
+    }
+
+    #[test]
+    fn renders_120_native_theme_setting_states_without_broken_css() {
+        let themes = [
+            "native", "midnight", "oled", "graphite", "aurora", "light", "lucifer", "basaltes",
+            "honey",
+        ];
+        let strengths = [0.58, 0.66, 0.72, 0.82, 0.90];
+
+        for state in 0..120 {
+            let preferences = ClientPreferences {
+                theme: themes[state % themes.len()].to_string(),
+                liquid_glass: state % 2 == 0,
+                glass_strength: strengths[(state / 2) % strengths.len()],
+                compact_chats: state % 3 == 0,
+                large_chat_text: state % 5 == 0,
+                reduce_motion: state % 7 == 0,
+                zoom: [0.8, 1.0, 1.2, 1.4][(state / 3) % 4],
+                ..ClientPreferences::default()
+            };
+            let css = theme_css(&preferences);
+
+            assert!(
+                css.contains("--ugd-bg:"),
+                "state {state} has no background token"
+            );
+            assert!(
+                css.contains("--ugd-text:"),
+                "state {state} has no text token"
+            );
+            assert!(
+                css.contains("--ugd-on-accent:"),
+                "state {state} has no control text token"
+            );
+            assert!(
+                !css.contains(";color:transparent!important"),
+                "state {state} hides text"
+            );
+            assert!(
+                !css.contains("img{filter:blur") && !css.contains("video{filter:blur"),
+                "state {state} blurs media or content"
+            );
+            assert!(
+                !css.contains("svg{"),
+                "state {state} globally overrides UnixGram SVG badges"
+            );
+            if preferences.liquid_glass {
+                assert!(
+                    css.contains("backdrop-filter:blur(26px)"),
+                    "state {state} lost glass styling"
+                );
+            }
+            if preferences.compact_chats {
+                assert!(
+                    css.contains("data-ugd-page='messages'"),
+                    "state {state} lost compact chat scope"
+                );
+            }
+            if preferences.large_chat_text {
+                assert!(
+                    css.contains("font-size:17px"),
+                    "state {state} lost large chat text"
+                );
+            }
+            if preferences.reduce_motion {
+                assert!(
+                    css.contains("animation-duration:.01ms"),
+                    "state {state} lost reduced motion"
+                );
             }
         }
     }
@@ -1463,5 +1559,34 @@ mod tests {
             .expect("Discord activity must serialize");
         assert_eq!(payload["assets"]["large_image"], "unixgram");
         assert_eq!(payload["assets"]["large_text"], "UnixGram Desktop");
+    }
+
+    #[test]
+    fn only_the_main_window_closes_to_tray() {
+        assert!(should_hide_on_close("main"));
+        assert!(!should_hide_on_close("settings"));
+    }
+
+    #[test]
+    fn remote_unixgram_window_keeps_a_browser_compatible_branded_user_agent() {
+        let config = include_str!("../tauri.conf.json");
+        assert!(
+            config.contains("Mozilla/5.0")
+                && config.contains("AppleWebKit/537.36")
+                && config.contains("Chrome/")
+                && config.contains("Safari/537.36")
+                && config.contains("Edg/")
+                && config.contains("UnixGramHistory/1.3.1"),
+            "the branded user agent must remain browser-compatible for UnixGram auth and assets"
+        );
+    }
+
+    #[test]
+    fn remote_window_automatically_refreshes_only_the_expired_qr_control() {
+        let source = include_str!("lib.rs");
+        assert!(source.contains("text.includes('qr-код истёк')"));
+        assert!(source.contains("text.includes('обновить')"));
+        assert!(source.contains("window.__unixgramDesktopLastQrRefresh"));
+        assert!(source.contains("< 10_000"));
     }
 }

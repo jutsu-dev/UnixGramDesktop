@@ -390,7 +390,7 @@ const defaultSettings: SettingsState = {
   unifiedSearchBeta: true,
   reducedMotion: false,
   dataSaver: false,
-  discordPresence: true,
+  discordPresence: false,
   discordShowSection: true,
   discordClientId: DEFAULT_DISCORD_CLIENT_ID,
   fontScale: 'normal',
@@ -2835,6 +2835,13 @@ function SettingsView({
   discordStatus: string
   onToast: (message: string) => void
 }) {
+  const selectSection = (next: SettingsSection) => {
+    onSection(next)
+    requestAnimationFrame(() => {
+      document.getElementById('workspace')?.scrollTo({ top: 0, behavior: 'auto' })
+    })
+  }
+
   return (
     <>
       <header className="workspace-head">
@@ -2855,7 +2862,7 @@ function SettingsView({
               key={id}
               className={`settings-nav__item ${section === id ? 'is-active' : ''}`}
               type="button"
-              onClick={() => onSection(id)}
+              onClick={() => selectSection(id)}
               aria-current={section === id ? 'page' : undefined}
             >
               <Icon size={17} />
