@@ -1,61 +1,78 @@
 <div align="center">
-  <img src="docs/images/unixgram-official.svg" width="112" alt="Логотип UnixGram">
+  <img src="docs/images/unixgram-official.svg" width="104" alt="UnixGram">
 
   # UnixGram Desktop
 
-  **Знакомый UnixGram в отдельном приложении для Windows**
+  ### UnixGram в отдельном приложении для Windows
 
-  Без нового интерфейса и переучивания. Внутри открывается актуальный сайт UnixGram, а клиент добавляет окно приложения, системный трей, темы, масштаб и Discord Rich Presence.
+  Лента, сообщения, профили, подарки и UnixPlace без лишней вкладки в браузере.
 
+  [![Скачать v1.3.0](https://img.shields.io/badge/Скачать-v1.3.0-755EE8?style=for-the-badge&logo=windows11&logoColor=white)](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest)
   [![Release quality](https://github.com/jutsu-dev/UnixGramDesktop/actions/workflows/release-quality.yml/badge.svg)](https://github.com/jutsu-dev/UnixGramDesktop/actions/workflows/release-quality.yml)
-  [![Latest release](https://img.shields.io/badge/release-v1.3.0-755ee8?style=flat-square)](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest)
-  ![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-2778c4?style=flat-square&logo=windows11&logoColor=white)
-  [![MIT](https://img.shields.io/badge/license-MIT-35b779?style=flat-square)](LICENSE)
+  [![Windows 10 и 11](https://img.shields.io/badge/Windows-10%20%7C%2011-2778C4?style=flat-square&logo=windows11&logoColor=white)](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest)
+  [![Tauri 2](https://img.shields.io/badge/Tauri-2-24C8D8?style=flat-square&logo=tauri&logoColor=white)](https://tauri.app/)
+  [![MIT License](https://img.shields.io/badge/license-MIT-35B779?style=flat-square)](LICENSE)
 
-  [Скачать](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest) · [Telegram](https://t.me/unixgramhistory) · [Бот](https://t.me/UnixGramHistoryBot) · [UnixGram](https://unixgram.com/u/basaltes)
+  [Скачать](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest) · [Как установить](docs/INSTALL-WINDOWS.md) · [Telegram](https://t.me/unixgramhistory) · [Бот](https://t.me/UnixGramHistoryBot) · [Сообщить об ошибке](https://github.com/jutsu-dev/UnixGramDesktop/issues)
 </div>
 
-> [!IMPORTANT]
+> [!NOTE]
 > UnixGram Desktop создан сообществом UnixGram History. Это независимый open source проект, неофициальный клиент и не представитель команды UnixGram.
 
-> [!WARNING]
-> Установщик пока не подписан платным сертификатом. Windows может показать окно «Система Windows защитила компьютер» и издателя «Неизвестный». Это не ошибка установки. Скачивайте файл только из [официальных Releases](https://github.com/jutsu-dev/UnixGramDesktop/releases), сверяйте SHA-256 и при желании собирайте приложение из открытого исходного кода. [Подробная инструкция](docs/INSTALL-WINDOWS.md).
+## Как выглядит
 
-## Приложение
-
-<p align="center">
-  <img src="docs/images/app-main.png" alt="UnixGram, запущенный в UnixGram Desktop">
-</p>
+<a href="docs/images/app-main.png">
+  <img src="docs/images/app-main.png" alt="Лента UnixGram в приложении UnixGram Desktop">
+</a>
 
 <p align="center">
-  <img src="docs/images/app-discord.png" width="760" alt="Настройки UnixGram Desktop: окно, темы и Discord Rich Presence">
-  <br><b>Настройки клиента и Discord Rich Presence</b>
+  <sub>Настоящий интерфейс UnixGram внутри отдельного окна Windows. Нажмите на снимок, чтобы открыть его полностью.</sub>
 </p>
 
-Снимки сделаны из Windows-приложения. Основной экран намеренно повторяет сайт: мы не заменяем дизайн UnixGram собственным интерфейсом.
+<a href="docs/images/app-discord.png">
+  <img src="docs/images/app-discord.png" alt="Настройки UnixGram Desktop и Discord Rich Presence">
+</a>
 
-## Что добавляет клиент
+<p align="center">
+  <sub>Настройки окна, масштаба, оформления и Discord Rich Presence.</sub>
+</p>
 
-| Возможность | Что получает пользователь |
-|---|---|
-| Официальный интерфейс | Актуальный сайт UnixGram без самодельной копии |
-| Отдельное окно | UnixGram не теряется среди вкладок браузера |
-| Системный трей | Быстрое открытие ленты, сообщений, UnixPlace и настроек |
-| Сохранение входа | Сессия остаётся в защищённом профиле WebView2 |
-| Темы | UnixGram, Midnight, OLED, Graphite, Aurora, Daylight, Lucifer, basaltes и Soft Honey |
-| Настройки окна | Масштаб, полный экран, режим поверх окон и компактные чаты |
-| Discord Rich Presence | Показывает использование UnixGram без текстов сообщений и личных данных |
-| Автовосстановление Discord | Клиент переподключается, если Discord был запущен позже |
+## Что добавляет приложение
 
-## Установка
+| | Возможность | Что меняется |
+|---|---|---|
+| 🪟 | Отдельное окно | UnixGram больше не теряется среди вкладок браузера |
+| 📌 | Системный трей | Лента, сообщения, UnixPlace и настройки открываются из меню рядом с часами |
+| 🎨 | Темы | Девять вариантов оформления, включая OLED, Daylight, Lucifer и basaltes |
+| 🔎 | Масштаб | Размер интерфейса настраивается без изменения масштаба всей Windows |
+| 🖥️ | Режимы окна | Полный экран, поверх остальных окон и компактные чаты |
+| 🎮 | Discord Rich Presence | Показывает общий раздел UnixGram без сообщений, имён и личных данных |
+| 🔁 | Восстановление Discord | Rich Presence подключается снова, если Discord запустили позже клиента |
+| 🔐 | Сохранение входа | Сессия остаётся в профиле WebView2 и Windows Credential Manager |
+
+Основной экран намеренно не заменяет UnixGram самодельной копией. Клиент открывает актуальный сайт и добавляет только функции Windows-приложения.
+
+## Быстрая установка
 
 1. Откройте [последний релиз](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest).
 2. Скачайте `UnixGram.Desktop_1.3.0_x64-setup.exe`.
-3. Сверьте SHA-256 с контрольной суммой в описании релиза.
+3. Сверьте SHA-256 с суммой в описании релиза.
 4. Запустите установщик.
-5. Если SmartScreen покажет предупреждение, прочитайте [инструкцию](docs/INSTALL-WINDOWS.md).
 
-Пароль от UnixGram не хранится в репозитории и не отправляется команде UnixGram History. Авторизация происходит внутри UnixGram.
+> [!WARNING]
+> Установщик пока не подписан коммерческим Code Signing сертификатом. Windows может показать SmartScreen и издателя «Неизвестный». Скачивайте приложение только из [GitHub Releases](https://github.com/jutsu-dev/UnixGramDesktop/releases) и сверяйте SHA-256. Подробные шаги есть в [инструкции по установке](docs/INSTALL-WINDOWS.md).
+
+## Приватность и безопасность
+
+- пароль не сохраняется в файлах проекта;
+- сессия хранится средствами Windows, а не в исходном коде;
+- Discord Rich Presence выключен по умолчанию;
+- Rich Presence не показывает сообщения, собеседников и имена профилей;
+- внешние переходы разрешены только на HTTPS-страницы UnixGram и UnixPlace;
+- релиз проходит npm audit, Gitleaks, Trivy, RustSec и автоматические тесты;
+- состав зависимостей опубликован в [CycloneDX SBOM](sbom.cdx.json).
+
+Подробнее: [политика безопасности](SECURITY.md) и [политика конфиденциальности](PRIVACY.md).
 
 ## Сборка из исходников
 
@@ -68,42 +85,46 @@ npm ci
 npm run tauri:build:windows
 ```
 
-Готовый NSIS-установщик появится в `src-tauri/target/release/bundle/nsis/`.
+NSIS-установщик появится в `src-tauri/target/release/bundle/nsis/`.
 
-## О проекте
-
-UnixGram History начинался как Telegram-бот с историей профилей, подарков и рынка. Desktop-клиент стал следующим шагом: оставить привычный UnixGram, но дать ему удобное место на Windows и добавить функции, которых не хватает обычной вкладке браузера.
-
-Мы не просим верить сборке на слово. Исходный код открыт, изменения проходят автоматические проверки, а к каждому неподписанному релизу прикладывается SHA-256.
-
-### Наши ссылки
-
-- [канал UnixGram History](https://t.me/unixgramhistory)
-- [бот UnixGram History](https://t.me/UnixGramHistoryBot)
-- [профиль проекта в UnixGram](https://unixgram.com/u/basaltes)
-- [ошибки и предложения](https://github.com/jutsu-dev/UnixGramDesktop/issues)
-- [правила безопасности](SECURITY.md)
-
-## Проверки релиза
+### Локальные проверки
 
 ```powershell
 npm run lint
 npm run build
 npm run test:e2e
+npm audit --audit-level=high
 npm run tauri:test:windows
-npm run tauri:build:windows
 ```
 
-GitHub Actions дополнительно запускает npm audit, Gitleaks и Trivy. В репозитории находится [CycloneDX SBOM](sbom.cdx.json).
+## Стек
+
+<p>
+  <img src="https://img.shields.io/badge/Tauri_2-24C8D8?style=for-the-badge&logo=tauri&logoColor=white" alt="Tauri 2">
+  <img src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white" alt="Rust">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React 19">
+  <img src="https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white" alt="Playwright">
+</p>
+
+## Проект и связь
+
+UnixGram History начинался как Telegram-бот с историей профилей, подарков и рынка. Desktop-клиент продолжает эту идею на Windows: привычный UnixGram остаётся на месте, а полезные функции живут рядом с ним.
+
+| Куда | Ссылка |
+|---|---|
+| Новости проекта | [t.me/unixgramhistory](https://t.me/unixgramhistory) |
+| Telegram-бот | [@UnixGramHistoryBot](https://t.me/UnixGramHistoryBot) |
+| UnixGram | [@basaltes](https://unixgram.com/u/basaltes) |
+| Ошибка или предложение | [GitHub Issues](https://github.com/jutsu-dev/UnixGramDesktop/issues) |
+| Уязвимость | [SECURITY.md](SECURITY.md) |
 
 ## Лицензия
 
-Проект распространяется по [MIT License](LICENSE). Лицензия разрешает использовать, изучать, изменять, собирать и распространять код, в том числе в коммерческих проектах, при сохранении текста лицензии и уведомления об авторских правах.
+[MIT License](LICENSE) разрешает использовать, изучать, изменять и распространять код при сохранении текста лицензии и уведомления об авторских правах.
 
-<p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/Открыть_лицензию-MIT-35B779?style=for-the-badge" alt="MIT License"></a>
-  <a href="PRIVACY.md"><img src="https://img.shields.io/badge/Конфиденциальность-15171C?style=for-the-badge" alt="Политика конфиденциальности"></a>
-  <a href="SECURITY.md"><img src="https://img.shields.io/badge/Безопасность-755EE8?style=for-the-badge" alt="Политика безопасности"></a>
-</p>
-
-<div align="center"><sub>Сделано сообществом UnixGram History для пользователей UnixGram.</sub></div>
+<div align="center">
+  <a href="https://github.com/jutsu-dev/UnixGramDesktop/releases/latest"><img src="https://img.shields.io/badge/Скачать_UnixGram_Desktop-755EE8?style=for-the-badge&logo=windows11&logoColor=white" alt="Скачать UnixGram Desktop"></a>
+  <br><br>
+  <sub>Сделано сообществом UnixGram History для пользователей UnixGram.</sub>
+</div>
