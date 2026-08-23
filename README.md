@@ -8,7 +8,7 @@
   Без нового интерфейса и переучивания. Внутри открывается актуальный сайт UnixGram, а клиент добавляет окно приложения, системный трей, темы, масштаб и Discord Rich Presence.
 
   [![Release quality](https://github.com/jutsu-dev/UnixGramDesktop/actions/workflows/release-quality.yml/badge.svg)](https://github.com/jutsu-dev/UnixGramDesktop/actions/workflows/release-quality.yml)
-  [![Latest release](https://img.shields.io/github/v/release/jutsu-dev/UnixGramDesktop?style=flat-square&color=755ee8)](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest)
+  [![Latest release](https://img.shields.io/badge/release-v1.3.0-755ee8?style=flat-square)](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest)
   ![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-2778c4?style=flat-square&logo=windows11&logoColor=white)
   [![MIT](https://img.shields.io/badge/license-MIT-35b779?style=flat-square)](LICENSE)
 
