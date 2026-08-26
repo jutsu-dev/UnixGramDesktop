@@ -14,8 +14,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jutsu-dev/UnixGramDesktop/releases/latest"><img src="https://img.shields.io/github/v/release/jutsu-dev/UnixGramDesktop?display_name=tag&style=for-the-badge&color=7257E8&label=скачать" alt="Последний релиз"></a>
-  <a href="https://github.com/jutsu-dev/UnixGramDesktop/actions/workflows/release-quality.yml"><img src="https://img.shields.io/github/actions/workflow/status/jutsu-dev/UnixGramDesktop/release-quality.yml?branch=main&style=for-the-badge&label=проверки&color=27A96B" alt="Статус проверок"></a>
+  <a href="https://github.com/jutsu-dev/UnixGramDesktop/releases/latest"><img src="https://img.shields.io/github/v/release/jutsu-dev/UnixGramDesktop?display_name=tag&style=for-the-badge&color=7257E8&label=release&logo=github" alt="Последний релиз"></a>
+  <a href="https://github.com/jutsu-dev/UnixGramDesktop/actions/workflows/release-quality.yml"><img src="https://img.shields.io/github/actions/workflow/status/jutsu-dev/UnixGramDesktop/release-quality.yml?branch=main&style=for-the-badge&label=checks&color=27A96B&logo=githubactions" alt="Статус проверок"></a>
   <img src="https://img.shields.io/badge/Windows-10%20%7C%2011-1976D2?style=for-the-badge&logo=windows11&logoColor=white" alt="Windows 10 и 11">
 </p>
 
