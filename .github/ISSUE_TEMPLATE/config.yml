@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Telegram UnixGram History
+    url: https://t.me/unixgramhistory
+    about: Новости проекта и обратная связь
+  - name: Вопрос по безопасности
+    url: https://github.com/jutsu-dev/UnixGramDesktop/blob/main/SECURITY.md
+    about: Как отправить приватный отчёт об уязвимости

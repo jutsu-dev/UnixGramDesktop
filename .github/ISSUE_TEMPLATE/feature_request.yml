@@ -1,0 +1,49 @@
+name: Feature request
+description: Предложить новую функцию или улучшение
+title: "[idea] "
+labels:
+  - enhancement
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Коротко
+      placeholder: Что именно хотите добавить
+    validations:
+      required: true
+  - type: dropdown
+    id: section
+    attributes:
+      label: Куда относится идея
+      options:
+        - Лента
+        - Сообщения
+        - Профиль
+        - Подарки
+        - UnixPlace
+        - Настройки
+        - Трей
+        - Discord Rich Presence
+        - Установщик
+        - Документация
+        - Другое
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Какую проблему это решает
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Как это должно работать
+      placeholder: Опишите сценарий от лица пользователя
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: Примеры и референсы
+      description: Можно приложить снимки, ссылки на UnixGram или другие клиенты

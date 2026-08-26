@@ -1,0 +1,69 @@
+name: Bug report
+description: Сообщить о баге в клиенте или установщике
+title: "[bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Спасибо за отчёт. Не прикладывайте токены, cookie, личные переписки и другие чувствительные данные.
+  - type: input
+    id: version
+    attributes:
+      label: Версия клиента
+      placeholder: 1.3.0
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Версия Windows
+      placeholder: Windows 11 24H2
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Где проявляется баг
+      options:
+        - Вход
+        - Лента
+        - Сообщения
+        - Профиль
+        - Подарки
+        - UnixPlace
+        - Настройки
+        - Discord Rich Presence
+        - Установщик
+        - Другое
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Как повторить
+      description: Опишите шаги по порядку
+      placeholder: |
+        1. Открыть...
+        2. Нажать...
+        3. Получить...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Что ожидалось
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Что произошло
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Дополнительно
+      description: Снимок окна, тема, масштаб, способ входа, логи без секретов
