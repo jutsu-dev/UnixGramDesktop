@@ -37,12 +37,14 @@ import {
   Sparkles,
   Star,
   Trash2,
+  UserPlus,
   UserRound,
   Users,
   Eye,
   X,
 } from 'lucide-react'
 import QRCode from 'qrcode'
+import { isTauri } from '@tauri-apps/api/core'
 import { createContext, startTransition, useCallback, useContext, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import './Messenger.css'
@@ -64,12 +66,14 @@ type GiftMode = 'account' | 'market' | 'transfers' | 'top'
 type HistoryMode = 'activity' | 'profiles' | 'status'
 type SettingsSection =
   | 'session'
+  | 'accounts'
   | 'appearance'
   | 'interface'
   | 'notifications'
   | 'data'
   | 'window'
   | 'advanced'
+  | 'security'
   | 'integrations'
   | 'about'
 type BootInfo = { channel: string; protocol: string; themes: number; status: string }
@@ -79,6 +83,8 @@ type SettingsState = {
   notifications: boolean
   largeText: boolean
   desktopToasts: boolean
+  windowsNotifications: boolean
+  trayUnreadBadge: boolean
   soundEffects: boolean
   bidAlerts: boolean
   transferAlerts: boolean
@@ -102,6 +108,34 @@ type SettingsState = {
   timelineRange: '24h' | '7d' | '30d'
   timeZoneMode: 'msk' | 'local'
   titlebarStyle: 'system' | 'clean'
+  reconnectEnabled: boolean
+  globalHotkeys: boolean
+}
+
+type SecurityStatus = {
+  httpsOnly: boolean
+  trustedHosts: string[]
+  sessionStorage: string
+  isolatedAccounts: number
+  maxAccounts: number
+  online: boolean
+  notificationsPrivate: boolean
+  discordPrivate: boolean
+  globalHotkeys: boolean
+  registeredHotkeys: number
+  expectedHotkeys: number
+  unavailableHotkeys: string[]
+  version: string
+}
+
+type AccountProfile = {
+  id: number
+  label: string
+}
+
+type DesktopAccountState = {
+  activeAccount: number
+  accounts: AccountProfile[]
 }
 
 type BooleanSettingKey = {
@@ -279,6 +313,7 @@ type SessionInfo = {
   username?: string | null
   storage: string
   message: string
+  activeAccount?: number | null
 }
 
 type QrStart = { approvalUrl: string; status: string }
@@ -356,12 +391,14 @@ const profileWatchRows: ProfileWatchRow[] = [
 
 const settingsSections: { id: SettingsSection; label: string; Icon: typeof Palette }[] = [
   { id: 'session', label: 'Сессия UnixGram', Icon: UserRound },
+  { id: 'accounts', label: 'Аккаунты', Icon: Users },
   { id: 'appearance', label: 'Внешний вид', Icon: Palette },
   { id: 'interface', label: 'Интерфейс', Icon: ChartColumnBig },
   { id: 'notifications', label: 'Уведомления', Icon: BellDot },
   { id: 'data', label: 'Обновление данных', Icon: Database },
   { id: 'window', label: 'Окно и ссылки', Icon: AppWindowMac },
   { id: 'advanced', label: 'Возможности', Icon: Sparkles },
+  { id: 'security', label: 'Безопасность', Icon: MonitorCog },
   { id: 'integrations', label: 'Discord', Icon: Link2 },
   { id: 'about', label: 'О приложении', Icon: MonitorCog },
 ]
@@ -379,6 +416,8 @@ const defaultSettings: SettingsState = {
   notifications: true,
   largeText: false,
   desktopToasts: true,
+  windowsNotifications: true,
+  trayUnreadBadge: true,
   soundEffects: false,
   bidAlerts: true,
   transferAlerts: true,
@@ -402,6 +441,8 @@ const defaultSettings: SettingsState = {
   timelineRange: '24h',
   timeZoneMode: 'msk',
   titlebarStyle: 'clean',
+  reconnectEnabled: true,
+  globalHotkeys: true,
 }
 
 function moveTabByArrow(event: React.KeyboardEvent<HTMLButtonElement>) {
@@ -416,6 +457,22 @@ function moveTabByArrow(event: React.KeyboardEvent<HTMLButtonElement>) {
   const next = tabs[(current + offset + tabs.length) % tabs.length]
   next.focus()
   next.click()
+}
+
+function moveListItemByArrow(event: React.KeyboardEvent<HTMLButtonElement>, selector: string) {
+  if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return
+  const items = Array.from(
+    event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(selector) ?? [],
+  )
+  const current = items.indexOf(event.currentTarget)
+  if (current < 0 || items.length === 0) return
+  event.preventDefault()
+  const nextIndex = event.key === 'Home'
+    ? 0
+    : event.key === 'End'
+      ? items.length - 1
+      : (current + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length
+  items[nextIndex].focus()
 }
 
 function moveRadioByArrow(event: React.KeyboardEvent<HTMLButtonElement>) {
@@ -1262,7 +1319,7 @@ function FeedView({ posts, onShare, onProfile, loading, error, hasMore, isPrevie
   )
 }
 
-function SearchView({ query, onQuery, onGift, onProfile, unified, giftRows, profiles, remotePayload, loading, error, live }: { query: string; onQuery: (value: string) => void; onGift: (id: string) => void; onProfile: (profile: ProfileWatchRow) => void; unified: boolean; giftRows: GiftRow[]; profiles: ProfileWatchRow[]; remotePayload: unknown; loading: boolean; error: string; live: boolean }) {
+function SearchView({ query, onQuery, onGift, onProfile, onPost, unified, giftRows, profiles, posts, remotePayload, loading, error, live }: { query: string; onQuery: (value: string) => void; onGift: (id: string) => void; onProfile: (profile: ProfileWatchRow) => void; onPost: (post: SocialPost) => void; unified: boolean; giftRows: GiftRow[]; profiles: ProfileWatchRow[]; posts: SocialPost[]; remotePayload: unknown; loading: boolean; error: string; live: boolean }) {
   type SearchCategory = 'all' | 'profiles' | 'communities' | 'gifts' | 'posts' | 'hashtags'
   const [category, setCategory] = useState<SearchCategory>('all')
   const needle = query.trim().toLowerCase()
@@ -1278,17 +1335,18 @@ function SearchView({ query, onQuery, onGift, onProfile, unified, giftRows, prof
   const resultProfiles = live ? remotePeople : profiles.filter((item) => !needle || Object.values(item).join(' ').toLowerCase().includes(needle))
   const remoteCommunities = buildCommunityRows({ communities: listOrItems(readValue(data, 'communities')) })
   const remotePosts = buildSocialPosts({ posts: readValue(readValue(data, 'posts'), 'items') || [] })
+  const resultPosts = live ? remotePosts : posts.filter((post) => !needle || `${post.displayName} ${post.username} ${post.text}`.toLowerCase().includes(needle))
   const remoteHashtags = asList(readValue(data, 'hashtags')).flatMap<{ tag: string; count: number }>((item) => {
     const hashtag = asRecord(item)
     const tag = readText(hashtag, 'tag').replace(/^#/, '')
     return tag ? [{ tag, count: readNumber(hashtag, 'postCount') ?? 0 }] : []
   })
   const categoryTabs: { id: SearchCategory; label: string; count?: number }[] = unified ? [
-    { id: 'all', label: 'Всё', count: resultProfiles.length + remoteCommunities.length + resultGifts.length + remotePosts.length + remoteHashtags.length },
+    { id: 'all', label: 'Всё', count: resultProfiles.length + remoteCommunities.length + resultGifts.length + resultPosts.length + remoteHashtags.length },
     { id: 'profiles', label: 'Люди', count: resultProfiles.length },
     { id: 'communities', label: 'Сообщества', count: remoteCommunities.length },
     { id: 'gifts', label: 'Подарки', count: resultGifts.length },
-    { id: 'posts', label: 'Посты', count: remotePosts.length },
+    { id: 'posts', label: 'Посты', count: resultPosts.length },
     { id: 'hashtags', label: 'Теги', count: remoteHashtags.length },
   ] : [
     { id: 'profiles', label: 'Люди', count: resultProfiles.length },
@@ -1299,7 +1357,7 @@ function SearchView({ query, onQuery, onGift, onProfile, unified, giftRows, prof
       <header className="workspace-head"><div><span className="eyebrow">{unified ? 'единый поиск' : 'поиск профилей'}</span><h1>Поиск</h1></div></header>
       <section className="search-workspace">
         <label className="hero-search"><span className="visually-hidden">Поиск в UnixGram</span><Search size={22} /><input name="unixgram-search" autoFocus value={query} onChange={(event) => onQuery(event.target.value)} placeholder="профиль, подарок, лот или событие" />{query && <button type="button" aria-label="Очистить поиск" onClick={() => onQuery('')}><X size={18} /></button>}</label>
-        <div className="search-summary"><ListFilter size={16} /><span>{query.trim().length < 2 ? (live ? 'введите минимум 2 символа' : 'популярное и недавнее в предпросмотре') : loading ? 'ищем в UnixGram…' : unified ? `профили ${resultProfiles.length} · сообщества ${remoteCommunities.length} · подарки ${resultGifts.length} · посты ${remotePosts.length} · теги ${remoteHashtags.length}` : `профили ${resultProfiles.length}`}</span></div>
+        <div className="search-summary"><ListFilter size={16} /><span>{query.trim().length < 2 ? (live ? 'введите минимум 2 символа' : 'популярное и недавнее в предпросмотре') : loading ? 'ищем в UnixGram…' : unified ? `профили ${resultProfiles.length} · сообщества ${remoteCommunities.length} · подарки ${resultGifts.length} · посты ${resultPosts.length} · теги ${remoteHashtags.length}` : `профили ${resultProfiles.length}`}</span></div>
         <div className="search-category-tabs" role="tablist" aria-label="Категории поиска">{categoryTabs.map((tab) => <button key={tab.id} type="button" role="tab" aria-selected={category === tab.id || (!unified && tab.id === 'profiles')} tabIndex={category === tab.id || (!unified && tab.id === 'profiles') ? 0 : -1} className={category === tab.id || (!unified && tab.id === 'profiles') ? 'is-active' : ''} onKeyDown={moveTabByArrow} onClick={() => setCategory(tab.id)}><span>{tab.label}</span>{tab.count !== undefined && <b>{tab.count}</b>}</button>)}</div>
         {error && <div className="feed-state is-error" role="alert"><strong>поиск недоступен</strong><p>{error}</p></div>}
         {loading && <div className="feed-skeleton" role="status" aria-label="Поиск в UnixGram"><span><i /><b /><em /></span></div>}
@@ -1307,10 +1365,10 @@ function SearchView({ query, onQuery, onGift, onProfile, unified, giftRows, prof
           {shows('profiles') && <section><h2>Профили</h2>{resultProfiles.map((profile) => <button key={profile.id} type="button" onClick={() => onProfile(profile)}>{profile.avatarUrl ? <img className="result-mark" src={profile.avatarUrl} alt="" referrerPolicy="no-referrer" /> : <span className={`asset-mark tone-${profile.tone}`}>{profile.name[0].toUpperCase()}</span>}<span><strong>{profile.displayName ?? `@${profile.name}`}<VerifiedBadge kind={profile.verificationBadge} />{profile.premium && <span className="premium-mark" aria-label="Unix Premium">✦</span>}{profile.emojiStatus && <span className="emoji-status">{profile.emojiStatus}</span>}</strong><small>@{profile.name} · {profile.note}</small></span></button>)}{!loading && needle.length >= 2 && resultProfiles.length === 0 && <p className="result-empty">профили не найдены</p>}</section>}
           {unified && shows('communities') && (remoteCommunities.length > 0 || category === 'communities') && <section><h2>Сообщества</h2>{remoteCommunities.map((community) => <button key={community.id} type="button" onClick={() => onProfile(community)}>{community.avatarUrl ? <img className="result-mark" src={community.avatarUrl} alt="" referrerPolicy="no-referrer" /> : <span className={`asset-mark tone-${community.tone}`}>{community.name[0].toUpperCase()}</span>}<span><strong>{community.displayName}<VerifiedBadge kind={community.verificationBadge} /></strong><small>{community.activity}</small></span></button>)}{!loading && remoteCommunities.length === 0 && <p className="result-empty">сообщества не найдены</p>}</section>}
           {unified && shows('gifts') && <section><h2>Подарки</h2>{resultGifts.map((giftItem) => <button key={giftItem.id} type="button" onClick={() => onGift(giftItem.id)}>{giftItem.imageUrl ? <img className="result-mark" src={giftItem.imageUrl} alt="" referrerPolicy="no-referrer" /> : <span className={`asset-mark tone-${giftItem.tone}`}>{giftItem.mark}</span>}<span><strong>{giftItem.name}</strong><small>{giftItem.owner} · {giftItem.price}</small></span></button>)}{!loading && needle.length >= 2 && resultGifts.length === 0 && <p className="result-empty">подарки не найдены</p>}</section>}
-          {unified && shows('posts') && (remotePosts.length > 0 || category === 'posts') && <section><h2>Публикации</h2>{remotePosts.map((post) => <SafeExternalLink key={post.id} className="search-post-result" href={`https://unixgram.com/post/${post.id}`}><span className={`asset-mark tone-${post.tone}`}>{post.displayName[0].toUpperCase()}</span><span><strong>{post.displayName}</strong><small>{post.text}</small></span></SafeExternalLink>)}{!loading && remotePosts.length === 0 && <p className="result-empty">публикации не найдены</p>}</section>}
+          {unified && shows('posts') && (resultPosts.length > 0 || category === 'posts') && <section><h2>Публикации</h2>{resultPosts.map((post) => <button key={post.id} className="search-post-result" type="button" onClick={() => onPost(post)}><span className={`asset-mark tone-${post.tone}`}>{post.displayName[0].toUpperCase()}</span><span><strong>{post.displayName}</strong><small>{post.text}</small></span></button>)}{!loading && resultPosts.length === 0 && <p className="result-empty">публикации не найдены</p>}</section>}
           {unified && shows('hashtags') && (remoteHashtags.length > 0 || category === 'hashtags') && <section><h2>Хэштеги</h2>{remoteHashtags.map((hashtag) => <button key={hashtag.tag} type="button" onClick={() => onQuery(`#${hashtag.tag}`)}><span className="asset-mark tone-cyan">#</span><span><strong>#{hashtag.tag}</strong><small>{hashtag.count.toLocaleString('ru-RU')} публикаций</small></span></button>)}{!loading && remoteHashtags.length === 0 && <p className="result-empty">хэштеги не найдены</p>}</section>}
         </div>
-        {!loading && !error && needle.length >= 2 && resultProfiles.length + resultGifts.length + remoteCommunities.length + remotePosts.length + remoteHashtags.length === 0 && <div className="empty-state">UnixGram ничего не нашёл по этому запросу</div>}
+        {!loading && !error && needle.length >= 2 && resultProfiles.length + resultGifts.length + remoteCommunities.length + resultPosts.length + remoteHashtags.length === 0 && <div className="empty-state">UnixGram ничего не нашёл по этому запросу</div>}
       </section>
     </>
   )
@@ -1462,7 +1520,7 @@ function StudioView({ settings, onToggle, onOpenSettings, activities, loading, e
 
 function ProfileView({ profile, summary, posts, onOpenGifts, onOpenSettings, onShare, onProfile, loading, error }: { profile: ProfileWatchRow; summary: ProfileSummary | null; posts: SocialPost[]; onOpenGifts: () => void; onOpenSettings: () => void; onShare: (post: SocialPost) => void; onProfile: (post: SocialPost) => void; loading: boolean; error: string }) {
   const openMedia = useContext(MediaViewerContext)
-  const [activeTab, setActiveTab] = useState<'posts' | 'media'>('posts')
+  const [activeTab, setActiveTab] = useState<'posts' | 'gifts' | 'media'>('posts')
   const isLive = summary?.watch.name.toLowerCase() === profile.name.toLowerCase()
   const heading = isLive ? summary.watch.displayName ?? profile.name : profile.displayName ?? profile.name
   const note = isLive ? summary.bio : profile.note
@@ -1473,6 +1531,16 @@ function ProfileView({ profile, summary, posts, onOpenGifts, onOpenSettings, onS
   const premium = isLive ? summary.watch.premium : profile.premium
   const emojiStatus = isLive ? summary.watch.emojiStatus : profile.emojiStatus
   const media = posts.flatMap((post) => post.imageUrls.map((url) => ({ url, post })))
+  const tabIds = {
+    posts: `profile-tab-posts-${normalizeHandle(profile.name)}`,
+    gifts: `profile-tab-gifts-${normalizeHandle(profile.name)}`,
+    media: `profile-tab-media-${normalizeHandle(profile.name)}`,
+  }
+  const panelIds = {
+    posts: `profile-panel-posts-${normalizeHandle(profile.name)}`,
+    gifts: `profile-panel-gifts-${normalizeHandle(profile.name)}`,
+    media: `profile-panel-media-${normalizeHandle(profile.name)}`,
+  }
   if (loading && !summary) return <><header className="workspace-head"><div><span className="eyebrow">ваш unixgram</span><h1>Профиль</h1></div></header><div className="feed-skeleton" role="status" aria-label="Загрузка профиля"><span><i /><b /><em /></span></div></>
   if (error && !summary) return <><header className="workspace-head"><div><span className="eyebrow">ваш unixgram</span><h1>Профиль</h1></div></header><div className="feed-state is-error" role="alert"><strong>профиль недоступен</strong><p>{error}</p></div></>
   if (!summary) return <><header className="workspace-head"><div><span className="eyebrow">ваш unixgram</span><h1>Профиль</h1></div></header><div className="feed-state"><strong>профиль ещё не загружен</strong><p>обновите данные UnixGram или заново подтвердите вход</p><button type="button" onClick={onOpenSettings}>проверить сессию</button></div></>
@@ -1487,15 +1555,30 @@ function ProfileView({ profile, summary, posts, onOpenGifts, onOpenSettings, onS
         <div className="profile-native__stats"><span><strong>{summary.postsCount?.toLocaleString('ru-RU') ?? '—'}</strong> постов</span><span><strong>{summary.followersCount?.toLocaleString('ru-RU') ?? '—'}</strong> подписчиков</span><span><strong>{summary.followingCount?.toLocaleString('ru-RU') ?? '—'}</strong> подписок</span><button type="button" onClick={onOpenGifts}><strong>{summary.giftCount?.toLocaleString('ru-RU') ?? giftsLabel}</strong> подарков</button></div>
         {summary.joinedAt && <small className="profile-native__joined">в UnixGram с {formatRelativeTime(summary.joinedAt)}</small>}
         <nav className="profile-native__tabs" role="tablist" aria-label="Разделы профиля">
-          <button role="tab" aria-selected={activeTab === 'posts'} tabIndex={activeTab === 'posts' ? 0 : -1} className={activeTab === 'posts' ? 'is-active' : ''} type="button" onKeyDown={moveTabByArrow} onClick={() => setActiveTab('posts')}>Посты</button>
-          <button type="button" onClick={onOpenGifts}>Подарки</button>
-          <button role="tab" aria-selected={activeTab === 'media'} tabIndex={activeTab === 'media' ? 0 : -1} className={activeTab === 'media' ? 'is-active' : ''} type="button" onKeyDown={moveTabByArrow} onClick={() => setActiveTab('media')}>Медиа</button>
+          <button id={tabIds.posts} role="tab" aria-controls={panelIds.posts} aria-selected={activeTab === 'posts'} tabIndex={activeTab === 'posts' ? 0 : -1} className={activeTab === 'posts' ? 'is-active' : ''} type="button" onKeyDown={moveTabByArrow} onClick={() => setActiveTab('posts')}>Посты</button>
+          <button id={tabIds.gifts} role="tab" aria-controls={panelIds.gifts} aria-selected={activeTab === 'gifts'} tabIndex={activeTab === 'gifts' ? 0 : -1} className={activeTab === 'gifts' ? 'is-active' : ''} type="button" onKeyDown={moveTabByArrow} onClick={() => setActiveTab('gifts')}>Подарки</button>
+          <button id={tabIds.media} role="tab" aria-controls={panelIds.media} aria-selected={activeTab === 'media'} tabIndex={activeTab === 'media' ? 0 : -1} className={activeTab === 'media' ? 'is-active' : ''} type="button" onKeyDown={moveTabByArrow} onClick={() => setActiveTab('media')}>Медиа</button>
         </nav>
       </section>
-      {activeTab === 'posts' ? (
-        <section className="profile-posts profile-posts--native" role="tabpanel"><div className="unix-feed unix-feed--profile">{posts.map((post) => <UnixPostCard key={post.id} post={post} onShare={onShare} onProfile={onProfile} origin="profile" />)}</div>{!loading && posts.length === 0 && <div className="empty-state">у этого профиля пока нет доступных публикаций</div>}</section>
-      ) : (
-        <section className="profile-media" role="tabpanel" aria-label={`Медиа ${heading}`}>
+      {activeTab === 'posts' && (
+        <section className="profile-posts profile-posts--native" role="tabpanel" id={panelIds.posts} aria-labelledby={tabIds.posts}><div className="unix-feed unix-feed--profile">{posts.map((post) => <UnixPostCard key={post.id} post={post} onShare={onShare} onProfile={onProfile} origin="profile" />)}</div>{!loading && posts.length === 0 && <div className="empty-state">у этого профиля пока нет доступных публикаций</div>}</section>
+      )}
+      {activeTab === 'gifts' && (
+        <section className="profile-gifts-panel" role="tabpanel" id={panelIds.gifts} aria-labelledby={tabIds.gifts}>
+          <div className="profile-gifts-panel__card">
+            <span className="eyebrow">коллекция аккаунта</span>
+            <h3>Подарки {heading}</h3>
+            <p>профиль уже выбран. вкладка подарков откроется для этого же аккаунта без потери текущего контекста.</p>
+            <div className="profile-gifts-panel__stats">
+              <span><strong>{summary.giftCount?.toLocaleString('ru-RU') ?? giftsLabel}</strong><small>подарков</small></span>
+              <span><strong>{summary.postsCount?.toLocaleString('ru-RU') ?? '—'}</strong><small>постов рядом с коллекцией</small></span>
+            </div>
+            <button className="primary-action" type="button" onClick={onOpenGifts}>Открыть подарки аккаунта</button>
+          </div>
+        </section>
+      )}
+      {activeTab === 'media' && (
+        <section className="profile-media" role="tabpanel" id={panelIds.media} aria-labelledby={tabIds.media} aria-label={`Медиа ${heading}`}>
           {media.map(({ url, post }, index) => <button key={`${post.id}-${url}`} type="button" onClick={() => openMedia(media.map((item) => item.url), index, `Медиа ${heading}`)}><img src={url} alt={`Фото из публикации ${post.displayName}`} loading="lazy" referrerPolicy="no-referrer" /></button>)}
           {!loading && media.length === 0 && <div className="empty-state">в загруженных публикациях нет фотографий</div>}
         </section>
@@ -1513,7 +1596,7 @@ function MessageContext({ conversation }: { conversation: ConversationRow | null
 }
 
 function App() {
-  const isDesktopRuntime = '__TAURI_INTERNALS__' in window
+  const isDesktopRuntime = isTauri()
   const [theme, setTheme] = useState<ThemeId>(() => {
     const stored = window.localStorage.getItem(themeStorageKey)
     return isThemeId(stored) ? stored : 'official-night'
@@ -1564,6 +1647,10 @@ function App() {
   const [profileInspectLoading, setProfileInspectLoading] = useState(false)
   const [profileInspectError, setProfileInspectError] = useState('')
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null)
+  const [desktopAccounts, setDesktopAccounts] = useState<AccountProfile[]>([{ id: 1, label: 'Основной' }])
+  const [activeAccount, setActiveAccount] = useState(1)
+  const [securityStatus, setSecurityStatus] = useState<SecurityStatus | null>(null)
+  const [desktopBridgeReady, setDesktopBridgeReady] = useState(false)
   const [livePosts, setLivePosts] = useState<SocialPost[]>([])
   const [feedCursor, setFeedCursor] = useState<string | null>(null)
   const [feedHasMore, setFeedHasMore] = useState(false)
@@ -1599,6 +1686,13 @@ function App() {
   const profileRequestRef = useRef(0)
   const deferredQuery = useDeferredValue(query)
 
+  const refreshSecurityStatus = useCallback(async () => {
+    if (!isDesktopRuntime) return
+    const { invoke } = await import('@tauri-apps/api/core')
+    const status = await invoke<SecurityStatus>('desktop_security_status')
+    setSecurityStatus(status)
+  }, [isDesktopRuntime])
+
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     document.documentElement.dataset.largeText = settings.largeText ? 'true' : 'false'
@@ -1614,6 +1708,47 @@ function App() {
   useEffect(() => {
     window.localStorage.setItem(settingsStorageKey, JSON.stringify(settings))
   }, [settings])
+
+  useEffect(() => {
+    if (!isDesktopRuntime || !desktopBridgeReady) return
+    const zoom = settings.fontScale === 'xlarge' ? 1.16 : settings.fontScale === 'large' ? 1.08 : 1
+    void import('@tauri-apps/api/core')
+      .then(({ invoke }) =>
+        invoke('desktop_save_preferences', {
+          preferences: {
+            compactChats: settings.compact,
+            largeChatText: settings.largeText,
+            reduceMotion: settings.reducedMotion,
+            zoom,
+            discordPresence: settings.discordPresence,
+            discordShowSection: settings.discordShowSection,
+            trayUnreadBadge: settings.trayUnreadBadge,
+            windowsNotifications: settings.notifications && settings.windowsNotifications,
+            reconnectEnabled: settings.reconnectEnabled,
+            globalHotkeys: settings.globalHotkeys,
+            activeAccount,
+            accounts: desktopAccounts,
+          },
+        }),
+      )
+      .catch(() => undefined)
+  }, [
+    activeAccount,
+    desktopAccounts,
+    desktopBridgeReady,
+    isDesktopRuntime,
+    settings.compact,
+    settings.discordPresence,
+    settings.discordShowSection,
+    settings.fontScale,
+    settings.globalHotkeys,
+    settings.largeText,
+    settings.notifications,
+    settings.reconnectEnabled,
+    settings.reducedMotion,
+    settings.trayUnreadBadge,
+    settings.windowsNotifications,
+  ])
 
   useEffect(() => {
     window.localStorage.setItem(layoutStorageKey, JSON.stringify(panelLayout))
@@ -1639,6 +1774,26 @@ function App() {
       window.removeEventListener('offline', handleOffline)
     }
   }, [])
+
+  useEffect(() => {
+    if (!isDesktopRuntime || !desktopBridgeReady) return
+    const section = view === 'gifts'
+      ? `подарки · ${giftMode === 'account' ? 'аккаунт' : giftMode === 'market' ? 'рынок' : giftMode === 'transfers' ? 'передачи' : 'топ'}`
+      : view === 'history'
+        ? `история · ${historyMode === 'activity' ? 'события' : historyMode === 'profiles' ? 'профили' : 'статус'}`
+        : view === 'settings'
+          ? `настройки · ${settingsSections.find((item) => item.id === settingsSection)?.label.toLowerCase() ?? 'клиент'}`
+          : viewLabel(view)
+    const unreadCount = readNumber(unwrapPayload(sections?.notifications), 'unreadCount') ?? 0
+    void import('@tauri-apps/api/core')
+      .then(({ invoke }) => invoke('desktop_shell_state', {
+        unreadCount,
+        section,
+        online,
+        windowLabel: 'desktop-shell',
+      }))
+      .catch(() => undefined)
+  }, [desktopBridgeReady, giftMode, historyMode, isDesktopRuntime, online, sections?.notifications, settingsSection, view])
 
   useEffect(() => {
     if (!('__TAURI_INTERNALS__' in window)) return
@@ -1680,6 +1835,46 @@ function App() {
       live = false
     }
   }, [])
+
+  useEffect(() => {
+    if (!isDesktopRuntime) return
+    let live = true
+    void import('@tauri-apps/api/core')
+      .then(async ({ invoke }) => {
+        const [preferences, accounts, status] = await Promise.all([
+          invoke<Partial<SettingsState> & {
+            compactChats?: boolean
+            largeChatText?: boolean
+            reduceMotion?: boolean
+            activeAccount?: number
+            accounts?: AccountProfile[]
+          }>('desktop_preferences'),
+          invoke<AccountProfile[]>('desktop_accounts'),
+          invoke<SecurityStatus>('desktop_security_status'),
+        ])
+        if (!live) return
+        setSettings((current) => ({
+          ...current,
+          discordPresence: preferences.discordPresence ?? current.discordPresence,
+          discordShowSection: preferences.discordShowSection ?? current.discordShowSection,
+          trayUnreadBadge: preferences.trayUnreadBadge ?? current.trayUnreadBadge,
+          windowsNotifications: preferences.windowsNotifications ?? current.windowsNotifications,
+          reconnectEnabled: preferences.reconnectEnabled ?? current.reconnectEnabled,
+          globalHotkeys: preferences.globalHotkeys ?? current.globalHotkeys,
+          compact: preferences.compactChats ?? current.compact,
+          largeText: preferences.largeChatText ?? current.largeText,
+          reducedMotion: preferences.reduceMotion ?? current.reducedMotion,
+        }))
+        setDesktopAccounts(accounts.length > 0 ? accounts : [{ id: 1, label: 'Основной' }])
+        setActiveAccount(Math.min(3, Math.max(1, preferences.activeAccount ?? 1)))
+        setSecurityStatus(status)
+        setDesktopBridgeReady(true)
+      })
+      .catch(() => live && setDesktopBridgeReady(true))
+    return () => {
+      live = false
+    }
+  }, [isDesktopRuntime])
 
   useEffect(() => {
     const timer = window.setTimeout(() => setSplashReady(true), 1600)
@@ -1754,7 +1949,7 @@ function App() {
   const activeSession = isDesktopRuntime ? sessionInfo : previewSession
   const sessionProbeReady = isDesktopRuntime ? sessionInfo !== null : true
   const shellUnlocked = Boolean(activeSession?.connected)
-  const showStartupSplash = !splashReady || !sessionProbeReady || !bootInfo
+  const showStartupSplash = !bootInfo || (isDesktopRuntime ? (!splashReady || !sessionProbeReady) : (!splashReady && !shellUnlocked))
 
   const updateSetting = useCallback(<K extends keyof SettingsState,>(key: K, value: SettingsState[K]) => {
     setSettings((current) => ({ ...current, [key]: value }))
@@ -1786,6 +1981,51 @@ function App() {
     }
     setSettings((current) => ({ ...current, [key]: !current[key] }))
   }
+
+  const addDesktopAccount = useCallback(async (label: string) => {
+    if (!isDesktopRuntime) return
+    const clean = label.trim()
+    const { invoke } = await import('@tauri-apps/api/core')
+    const saved = await invoke<DesktopAccountState>('desktop_add_account', { label: clean })
+    setDesktopAccounts(saved.accounts)
+    setActiveAccount(saved.activeAccount)
+    setSettingsSection('session')
+    setToast(`добавлен слот аккаунта ${saved.activeAccount}`)
+    await refreshSecurityStatus()
+  }, [isDesktopRuntime, refreshSecurityStatus])
+
+  const switchDesktopAccount = useCallback(async (id: number) => {
+    if (!isDesktopRuntime) return
+    const { invoke } = await import('@tauri-apps/api/core')
+    const saved = await invoke<DesktopAccountState>('desktop_switch_account', { id })
+    setDesktopAccounts(saved.accounts)
+    setActiveAccount(saved.activeAccount)
+    const info = await invoke<SessionInfo>('unixgram_session_status')
+    setSessionInfo(info)
+    setToast(`активен аккаунт ${saved.accounts.find((account) => account.id === id)?.label ?? id}`)
+    await refreshSecurityStatus()
+  }, [isDesktopRuntime, refreshSecurityStatus])
+
+  const removeDesktopAccount = useCallback(async (id: number) => {
+    if (!isDesktopRuntime) return
+    const prompt = id === 1
+      ? 'Сбросить вход основного аккаунта? Локальные cookie и сохранённая сессия будут удалены.'
+      : 'Удалить локальную сессию и изолированный профиль этого аккаунта?'
+    if (!window.confirm(prompt)) return
+    const { invoke } = await import('@tauri-apps/api/core')
+    const saved = await invoke<DesktopAccountState>('desktop_remove_account', { id })
+    setDesktopAccounts(saved.accounts)
+    setActiveAccount(saved.activeAccount)
+    const info = await invoke<SessionInfo>('unixgram_session_status')
+    setSessionInfo(info)
+    setToast(id === 1 ? 'вход основного аккаунта сброшен' : `аккаунт ${id} удалён`)
+    await refreshSecurityStatus()
+  }, [isDesktopRuntime, refreshSecurityStatus])
+
+  const openDesktopAccountWindow = useCallback(async (id: number) => {
+    if (!isDesktopRuntime) return
+    await switchDesktopAccount(id)
+  }, [isDesktopRuntime, switchDesktopAccount])
 
   const chooseView = (next: ViewId) => {
     startTransition(() => {
@@ -1952,6 +2192,7 @@ function App() {
       .then((info) => {
         if (!live) return
         setSessionInfo(info)
+        if (info.activeAccount) setActiveAccount(Math.min(3, Math.max(1, info.activeAccount)))
         const username = normalizeHandle(info.username || '')
         if (info.connected && username) {
           setSettings((current) => current.syncHandle ? current : { ...current, syncHandle: username })
@@ -1966,6 +2207,7 @@ function App() {
       const info = (event as CustomEvent<SessionInfo>).detail
       if (!info) return
       setSessionInfo(info)
+      if (info.activeAccount) setActiveAccount(Math.min(3, Math.max(1, info.activeAccount)))
       if (info.connected) {
         const username = normalizeHandle(info.username || '')
         if (username) setSettings((current) => current.syncHandle ? current : { ...current, syncHandle: username })
@@ -1978,10 +2220,11 @@ function App() {
         setSections(null)
         setSearchPayload(null)
       }
+      void refreshSecurityStatus().catch(() => undefined)
     }
     window.addEventListener('unixgram-session-changed', handleSessionChange)
     return () => window.removeEventListener('unixgram-session-changed', handleSessionChange)
-  }, [])
+  }, [refreshSecurityStatus])
 
   useEffect(() => {
     if (!sessionInfo?.connected || autoFeedLoaded.current) return
@@ -1989,6 +2232,23 @@ function App() {
     void loadFeed({ following: false })
     void loadSections()
   }, [loadFeed, loadSections, sessionInfo?.connected])
+
+  useEffect(() => {
+    if (!isDesktopRuntime || !desktopBridgeReady) return
+    // Native security state is an external source, so this effect intentionally refreshes it.
+    // oxlint-disable-next-line react/set-state-in-effect
+    void refreshSecurityStatus().catch(() => undefined)
+  }, [
+    activeAccount,
+    desktopAccounts,
+    desktopBridgeReady,
+    isDesktopRuntime,
+    refreshSecurityStatus,
+    settings.discordShowSection,
+    settings.globalHotkeys,
+    settings.notifications,
+    settings.windowsNotifications,
+  ])
 
   useEffect(() => {
     if (!isDesktopRuntime || !shellUnlocked || view !== 'search') return
@@ -2253,7 +2513,7 @@ function App() {
           <button role="tab" aria-selected={false} tabIndex={-1} type="button" onKeyDown={moveTabByArrow} onClick={() => chooseView('history')}>
             Обзор
           </button>
-          <button role="tab" aria-selected={view === 'messages'} tabIndex={view === 'messages' ? 0 : -1} className={view === 'messages' ? 'is-active' : ''} type="button" onKeyDown={moveTabByArrow} onClick={() => chooseView('messages')}>
+          <button role="tab" aria-selected={true} tabIndex={0} className="is-active" type="button" onKeyDown={moveTabByArrow} onClick={() => chooseView('messages')}>
             Сообщения
           </button>
           <button role="tab" aria-selected={false} tabIndex={-1} type="button" onKeyDown={moveTabByArrow} onClick={() => chooseView('feed')}>
@@ -2266,8 +2526,10 @@ function App() {
           {visibleConversations.map((item) => (
             <button
               key={item.id}
+              data-conversation-item="true"
               className={`conversation ${activeConversationId === item.id ? 'is-active' : ''}`}
               type="button"
+              onKeyDown={(event) => moveListItemByArrow(event, '[data-conversation-item="true"]')}
               onClick={() => {
                 setActiveConversationId(item.id)
                 chooseView('messages')
@@ -2299,16 +2561,18 @@ function App() {
       )}
 
       <main className="workspace" id="workspace" tabIndex={-1}>
-        {view === 'feed' && <FeedView posts={socialPosts} onShare={sharePost} onProfile={(post) => void openSearchedProfile({ id: `post-${post.username}`, name: post.username, displayName: post.displayName, note: 'профиль из ленты UnixGram', activity: 'публикация в ленте', gifts: 'подарки загружаются', tone: post.tone, avatarUrl: post.avatarUrl, verificationBadge: post.verificationBadge, premium: post.premium, emojiStatus: post.emojiStatus }, 'profile', [post])} loading={feedLoading} error={feedError} hasMore={feedHasMore} isPreview={!isDesktopRuntime} canPublish={isDesktopRuntime && Boolean(sessionInfo?.connected)} following={feedFollowing} onReload={() => void loadFeed({ following: feedFollowing })} onLoadMore={() => void loadFeed({ append: true, following: feedFollowing })} onTab={changeFeedTab} onOpenSearch={() => chooseView('search')} onOpenTags={() => { setQuery('#'); chooseView('search') }} onPublish={publishPost} viewer={liveProfileSummary?.watch ?? null} />}
+        {view === 'feed' && <FeedView posts={socialPosts} onShare={sharePost} onProfile={(post) => void openSearchedProfile(profileFromPost(post, 'профиль из ленты UnixGram', 'публикация в ленте'), 'profile', [post])} loading={feedLoading} error={feedError} hasMore={feedHasMore} isPreview={!isDesktopRuntime} canPublish={isDesktopRuntime && Boolean(sessionInfo?.connected)} following={feedFollowing} onReload={() => void loadFeed({ following: feedFollowing })} onLoadMore={() => void loadFeed({ append: true, following: feedFollowing })} onTab={changeFeedTab} onOpenSearch={() => chooseView('search')} onOpenTags={() => { setQuery('#'); chooseView('search') }} onPublish={publishPost} viewer={liveProfileSummary?.watch ?? null} />}
         {view === 'search' && (
           <SearchView
             query={query}
             onQuery={setQuery}
             onGift={(id) => { setActiveGiftId(id); chooseView('gifts') }}
             onProfile={(profile) => { void openSearchedProfile(profile) }}
+            onPost={(post) => { void openSearchedProfile(profileFromPost(post, 'публикация из поиска UnixGram', 'найденная публикация'), 'profile', [post]) }}
             unified={settings.unifiedSearchBeta}
             giftRows={isDesktopRuntime ? catalogGifts : gifts}
             profiles={mergedProfiles}
+            posts={socialPosts}
             remotePayload={searchPayload}
             loading={searchLoading}
             error={searchError}
@@ -2340,7 +2604,7 @@ function App() {
         {view === 'gifts' && (
           <GiftsView key={inspectedProfile?.watch.name ?? settings.syncHandle} mode={giftMode} onMode={setGiftMode} activeId={activeGiftId} onSelect={setActiveGiftId} onRefresh={refreshNow} refreshing={refreshing} selectedAccount={inspectedProfile?.watch.name ?? settings.syncHandle} liveGifts={inspectedProfile ? inspectedGiftRows : syncedGiftRows} catalogGifts={catalogGifts} synced={Boolean(snapshot)} live={isDesktopRuntime} loading={sectionsLoading || profileInspectLoading} error={sectionWarning('каталог подарков')} onAccount={(username) => void openSearchedProfile({ id: `gift-account-${username}`, name: username, note: 'коллекция аккаунта UnixGram', activity: 'подарки аккаунта', gifts: 'подарки загружаются', tone: 'amber' }, 'gifts')} onOpenProfile={(username) => void openSearchedProfile({ id: `gift-${username}`, name: username, note: 'владелец подарка UnixGram', activity: 'коллекция подарков', gifts: 'подарки загружаются', tone: 'amber' })} />
         )}
-        {view === 'profile' && <ProfileView profile={activeProfile} summary={profileViewSummary} posts={profilePosts} onOpenGifts={() => chooseView('gifts')} onOpenSettings={() => chooseView('settings')} onShare={sharePost} onProfile={(post) => void openSearchedProfile({ id: `profile-${post.username}`, name: post.username, displayName: post.displayName, note: 'автор публикации UnixGram', activity: 'публикация в профиле', gifts: 'подарки загружаются', tone: post.tone, avatarUrl: post.avatarUrl, verificationBadge: post.verificationBadge, premium: post.premium, emojiStatus: post.emojiStatus }, 'profile', [post])} loading={profileInspectLoading || (refreshing && !inspectedProfile)} error={profileInspectError || syncError} />}
+        {view === 'profile' && <ProfileView key={activeProfile.id} profile={activeProfile} summary={profileViewSummary} posts={profilePosts} onOpenGifts={() => chooseView('gifts')} onOpenSettings={() => chooseView('settings')} onShare={sharePost} onProfile={(post) => void openSearchedProfile(profileFromPost(post, 'автор публикации UnixGram', 'публикация в профиле'), 'profile', [post])} loading={profileInspectLoading || (refreshing && !inspectedProfile)} error={profileInspectError || syncError} />}
         {view === 'premium' && <PremiumView active={Boolean(liveProfileSummary?.watch.premium)} />}
         {view === 'settings' && (
           <SettingsView
@@ -2351,8 +2615,15 @@ function App() {
             onSection={setSettingsSection}
             onToggle={toggleSetting}
             onSelect={updateSetting}
+            accounts={desktopAccounts}
+            activeAccount={activeAccount}
+            onAddAccount={addDesktopAccount}
+            onSwitchAccount={switchDesktopAccount}
+            onRemoveAccount={removeDesktopAccount}
+            onOpenAccountWindow={openDesktopAccountWindow}
             bootInfo={bootInfo}
             discordStatus={'__TAURI_INTERNALS__' in window ? discordStatus : settings.discordPresence ? 'доступно в Windows-сборке' : 'выключено'}
+            securityStatus={securityStatus}
             onToast={setToast}
           />
         )}
@@ -2820,8 +3091,15 @@ function SettingsView({
   onSection,
   onToggle,
   onSelect,
+  accounts,
+  activeAccount,
+  onAddAccount,
+  onSwitchAccount,
+  onRemoveAccount,
+  onOpenAccountWindow,
   bootInfo,
   discordStatus,
+  securityStatus,
   onToast,
 }: {
   theme: ThemeId
@@ -2831,15 +3109,42 @@ function SettingsView({
   onSection: (section: SettingsSection) => void
   onToggle: (key: BooleanSettingKey) => void
   onSelect: <K extends keyof SettingsState>(key: K, value: SettingsState[K]) => void
+  accounts: AccountProfile[]
+  activeAccount: number
+  onAddAccount: (label: string) => Promise<void>
+  onSwitchAccount: (id: number) => Promise<void>
+  onRemoveAccount: (id: number) => Promise<void>
+  onOpenAccountWindow: (id: number) => Promise<void>
   bootInfo: BootInfo | null
   discordStatus: string
+  securityStatus: SecurityStatus | null
   onToast: (message: string) => void
 }) {
+  const [accountLabel, setAccountLabel] = useState('')
+  const [accountBusy, setAccountBusy] = useState(false)
+
   const selectSection = (next: SettingsSection) => {
     onSection(next)
     requestAnimationFrame(() => {
       document.getElementById('workspace')?.scrollTo({ top: 0, behavior: 'auto' })
     })
+  }
+
+  const addAccount = async () => {
+    const clean = accountLabel.trim()
+    if (!clean) {
+      onToast('сначала введите подпись нового аккаунта')
+      return
+    }
+    setAccountBusy(true)
+    try {
+      await onAddAccount(clean)
+      setAccountLabel('')
+    } catch (error) {
+      onToast(error instanceof Error ? error.message : String(error))
+    } finally {
+      setAccountBusy(false)
+    }
   }
 
   return (
@@ -2874,7 +3179,51 @@ function SettingsView({
 
         <div className="settings-panel">
           {section === 'session' && (
-            <SessionSettings syncHandle={settings.syncHandle} onSyncHandle={(value) => onSelect('syncHandle', value)} onToast={onToast} />
+            <SessionSettings
+              syncHandle={settings.syncHandle}
+              onSyncHandle={(value) => onSelect('syncHandle', value)}
+              onToast={onToast}
+              activeAccount={activeAccount}
+              activeAccountLabel={accounts.find((account) => account.id === activeAccount)?.label}
+            />
+          )}
+          {section === 'accounts' && (
+            <>
+              <SettingsBlock title="Аккаунты" note="до трёх изолированных профилей UnixGram с отдельными WebView-данными">
+                <div className="settings-note"><strong>Активный слот</strong><p>вход по паролю, QR и синхронизация работают для выбранного слота. каждый дополнительный аккаунт хранится отдельно.</p></div>
+                {accounts.map((account) => (
+                  <div className="connected-account" key={account.id}>
+                    <div className="connected-avatar">{account.id}</div>
+                    <div>
+                      <span>{account.id === activeAccount ? 'активный слот' : 'дополнительный слот'}</span>
+                      <h3>{account.label}</h3>
+                      <p>{account.id === 1 ? 'основной профиль Windows-клиента' : 'изолированный аккаунт UnixGram'}</p>
+                    </div>
+                    <button type="button" disabled={accountBusy || account.id === activeAccount} onClick={() => { setAccountBusy(true); void onSwitchAccount(account.id).catch((error) => onToast(error instanceof Error ? error.message : String(error))).finally(() => setAccountBusy(false)) }}>
+                      {account.id === activeAccount ? 'выбран' : 'сделать активным'}
+                    </button>
+                    <button type="button" disabled={accountBusy} onClick={() => { setAccountBusy(true); void onOpenAccountWindow(account.id).catch((error) => onToast(error instanceof Error ? error.message : String(error))).finally(() => setAccountBusy(false)) }}>
+                      открыть
+                    </button>
+                    <small>
+                      <button className="danger-inline" type="button" disabled={accountBusy} onClick={() => { setAccountBusy(true); void onRemoveAccount(account.id).catch((error) => onToast(error instanceof Error ? error.message : String(error))).finally(() => setAccountBusy(false)) }}>
+                        {account.id === 1 ? 'сменить аккаунт' : 'убрать слот'}
+                      </button>
+                    </small>
+                  </div>
+                ))}
+              </SettingsBlock>
+              <SettingsBlock title="Добавить аккаунт" note="создаём новый слот, потом входите в него через вкладку сессии">
+                <div className="account-editor">
+                  <span>@</span>
+                  <input name="desktop-account-label" aria-label="Подпись аккаунта" value={accountLabel} onChange={(event) => setAccountLabel(event.target.value.slice(0, 32))} placeholder="например, рынок / рабочий / тест" />
+                </div>
+                <div className="settings-note"><strong>Лимит</strong><p>{accounts.length} из 3 аккаунтов уже занято. каждый слот использует отдельный профиль WebView2.</p></div>
+                <button className="primary-action" type="button" disabled={accountBusy || accounts.length >= 3} onClick={() => void addAccount()}>
+                  {accountBusy ? 'готовим слот…' : 'добавить аккаунт'}
+                </button>
+              </SettingsBlock>
+            </>
           )}
           {section === 'appearance' && (
             <SettingsBlock title="Внешний вид" note="тема, размер текста и плотность интерфейса">
@@ -2959,6 +3308,8 @@ function SettingsView({
           {section === 'notifications' && (
             <SettingsBlock title="Уведомления" note="какие сигналы клиент должен поднимать поверх основной ленты">
               <ToggleRow title="Уведомления вообще" note="единый мастер-переключатель для локальных уведомлений" value={settings.notifications} onClick={() => onToggle('notifications')} />
+              <ToggleRow title="Центр уведомлений Windows" note="отправлять события в системный центр уведомлений Windows" value={settings.windowsNotifications} onClick={() => onToggle('windowsNotifications')} />
+              <ToggleRow title="Значок непрочитанных в трее" note="показывать счётчик на иконке приложения в системном трее" value={settings.trayUnreadBadge} onClick={() => onToggle('trayUnreadBadge')} />
               <ToggleRow title="Десктоп-тосты" note="показывать системные подсказки о крупных событиях" value={settings.desktopToasts} onClick={() => onToggle('desktopToasts')} />
               <ToggleRow title="Крупные покупки" note="сигналить при подтверждённых больших сделках" value={settings.purchaseAlerts} onClick={() => onToggle('purchaseAlerts')} />
               <ToggleRow title="Новые ставки" note="отдельно подсвечивать рост дорогих аукционов" value={settings.bidAlerts} onClick={() => onToggle('bidAlerts')} />
@@ -2993,6 +3344,7 @@ function SettingsView({
               />
               <ToggleRow title="Проверка обновлений при старте" note="сразу сверять состояние клиента и доступность сервисов" value={settings.checkUpdatesOnLaunch} onClick={() => onToggle('checkUpdatesOnLaunch')} />
               <ToggleRow title="Экономия трафика" note="не загружать тяжёлые превью до открытия карточки" value={settings.dataSaver} onClick={() => onToggle('dataSaver')} />
+              <ToggleRow title="Автовосстановление соединения" note="восстанавливать вкладки после сбоя, не стирая набранный черновик" value={settings.reconnectEnabled} onClick={() => onToggle('reconnectEnabled')} />
               <SegmentRow title="Таймаут API" note="сколько ждать ответ UnixGram до понятной ошибки" value={settings.requestTimeout} options={[{ value: '8', label: '8 сек' }, { value: '12', label: '12 сек' }, { value: '20', label: '20 сек' }]} onChange={(value) => onSelect('requestTimeout', value)} />
               <SegmentRow title="Повторные попытки" note="короткие повторы при временном сбое сети" value={settings.retryCount} options={[{ value: '1', label: '1' }, { value: '2', label: '2' }, { value: '3', label: '3' }]} onChange={(value) => onSelect('retryCount', value)} />
             </SettingsBlock>
@@ -3011,8 +3363,29 @@ function SettingsView({
           {section === 'advanced' && (
             <SettingsBlock title="Возможности" note="дополнительные функции приложения">
               <ToggleRow title="Единый поиск" note="искать профили, подарки и события в одном месте" value={settings.unifiedSearchBeta} onClick={() => onToggle('unifiedSearchBeta')} />
-              <InfoRow title="Защита ссылок" value="разрешён только unixgram.com" />
+              <ToggleRow title="Горячие клавиши" note="Ctrl + Shift + 1/2/3/4; старые Ctrl + Alt + U/M/G/S тоже работают" value={settings.globalHotkeys} onClick={() => onToggle('globalHotkeys')} />
+              <InfoRow title="Защита ссылок" value="разрешены только UnixGram и UnixPlace" />
               <InfoRow title="Хранилище сессии" value="Windows Credential Manager" />
+            </SettingsBlock>
+          )}
+
+          {section === 'security' && (
+            <SettingsBlock title="Центр безопасности" note="что именно клиент хранит и передаёт">
+              <InfoRow title="HTTPS" value={securityStatus?.httpsOnly === false ? 'требует внимания' : 'включён'} live />
+              <InfoRow title="Аккаунты" value={`${securityStatus?.isolatedAccounts ?? accounts.length} из ${securityStatus?.maxAccounts ?? 3} · изолированы`} />
+              <InfoRow title="Уведомления" value={securityStatus?.notificationsPrivate === false ? 'передают лишнее' : 'без текста сообщений'} />
+              <InfoRow title="Discord RPC" value={securityStatus?.discordPrivate === false ? 'передаёт лишнее' : 'только раздел клиента'} />
+              <InfoRow
+                title="Горячие клавиши"
+                value={securityStatus?.globalHotkeys
+                  ? `${securityStatus.registeredHotkeys} из ${securityStatus.expectedHotkeys} зарегистрированы`
+                  : settings.globalHotkeys ? 'конфликт сочетаний Windows' : 'выключены'}
+                live
+              />
+              {!!securityStatus?.unavailableHotkeys?.length && <div className="settings-note"><strong>Недоступные сочетания</strong><p>{securityStatus.unavailableHotkeys.join(' · ')}</p></div>}
+              <InfoRow title="Соединение" value={securityStatus?.online === false ? 'сейчас офлайн' : 'стабильно'} live />
+              <InfoRow title="Хранилище" value={securityStatus?.sessionStorage || 'Windows Credential Manager + WebView профили'} />
+              <div className="settings-note"><strong>Доверенные адреса</strong><p>{securityStatus?.trustedHosts?.join(' · ') || 'unixgram.com · place.unixgram.com'}</p></div>
             </SettingsBlock>
           )}
 
@@ -3031,7 +3404,9 @@ function SettingsView({
               <InfoRow title="Сборка" value={bootInfoLabel(bootInfo)} />
               <InfoRow title="Темы" value={String(themeCards.length)} />
               <InfoRow title="Ссылки" value="только UnixGram" />
-              <InfoRow title="Версия" value="0.8.0" />
+              <InfoRow title="Версия" value={securityStatus?.version || '1.3.1'} />
+              <div className="settings-note"><strong>Новости разработки</strong><p>подписка не выполняется скрыто: откройте профиль и нажмите «Подписаться» в UnixGram.</p></div>
+              <SafeExternalLink className="settings-action" href="https://unixgram.com/u/basaltes"><UserPlus size={18} /><span><strong>Читать @basaltes</strong><small>открыть профиль автора в UnixGram</small></span></SafeExternalLink>
             </SettingsBlock>
           )}
         </div>
@@ -3123,6 +3498,8 @@ function SessionSettings({
   syncHandle,
   onSyncHandle,
   onToast,
+  activeAccount = 1,
+  activeAccountLabel,
   standalone = false,
   previewMode = false,
   onPreviewUnlock,
@@ -3130,6 +3507,8 @@ function SessionSettings({
   syncHandle: string
   onSyncHandle: (value: string) => void
   onToast: (message: string) => void
+  activeAccount?: number
+  activeAccountLabel?: string
   standalone?: boolean
   previewMode?: boolean
   onPreviewUnlock?: () => void
@@ -3286,8 +3665,8 @@ function SessionSettings({
           {previewMode && onPreviewUnlock && <div className="login-preview-note"><strong>гостевой режим</strong><p>откройте интерфейс без аккаунта. синхронизация доступна после входа в приложении.</p><button className="secondary-action" type="button" onClick={onPreviewUnlock}>Открыть интерфейс</button></div>}
         </div>
       </div>}
-      {session.connected && <div className="connected-account"><div className="connected-avatar">{(session.username || 'U').slice(0,1).toUpperCase()}</div><div><span>Аккаунт подключён</span><h3>@{session.username || syncHandle}</h3><p>лента, профиль и подарки загружаются автоматически</p></div><button type="button" disabled={busy} onClick={() => void syncNow()}><RefreshCw className={busy ? 'is-spinning' : ''} size={17} /> Обновить</button><button className="danger-action" type="button" disabled={busy} onClick={() => void logout()}><Trash2 size={16} /> Выйти</button>{snapshot && <small>последняя синхронизация · {new Date(snapshot.fetchedAtEpoch * 1000).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</small>}</div>}
-      <div className={`session-status ${session.connected ? 'is-connected' : ''}`} role="status" aria-live="polite"><span><i /><strong>{session.connected ? 'Сессия активна' : 'Ожидается вход'}</strong><small>{session.message}</small></span><b>{session.storage}</b></div>
+      {session.connected && <div className="connected-account"><div className="connected-avatar">{(session.username || 'U').slice(0,1).toUpperCase()}</div><div><span>Аккаунт подключён · слот {session.activeAccount ?? activeAccount}</span><h3>@{session.username || syncHandle}</h3><p>{activeAccountLabel ? `${activeAccountLabel} · ` : ''}лента, профиль и подарки загружаются автоматически</p></div><button type="button" disabled={busy} onClick={() => void syncNow()}><RefreshCw className={busy ? 'is-spinning' : ''} size={17} /> Обновить</button><button className="danger-action" type="button" disabled={busy} onClick={() => void logout()}><Trash2 size={16} /> Выйти</button>{snapshot && <small>последняя синхронизация · {new Date(snapshot.fetchedAtEpoch * 1000).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</small>}</div>}
+      <div className={`session-status ${session.connected ? 'is-connected' : ''}`} role="status" aria-live="polite"><span><i /><strong>{session.connected ? `Сессия активна · слот ${session.activeAccount ?? activeAccount}` : `Ожидается вход · слот ${activeAccount}`}</strong><small>{session.message}</small></span><b>{session.storage}</b></div>
     </>
   )
 
@@ -3676,6 +4055,22 @@ function formatEventMeta(event: EventRow) {
   if (event.kind === 'покупка') return `@${event.actor} купил у @${event.target}`
   if (event.kind === 'ставка') return `@${event.actor} поднял ставку · владелец @${event.target}`
   return `аккаунт @${event.actor}`
+}
+
+function profileFromPost(post: SocialPost, note: string, activity: string): ProfileWatchRow {
+  return {
+    id: `post-${post.id}`,
+    name: post.username,
+    displayName: post.displayName,
+    note,
+    activity,
+    gifts: 'подарки загружаются',
+    tone: post.tone,
+    avatarUrl: post.avatarUrl,
+    verificationBadge: post.verificationBadge,
+    premium: post.premium,
+    emojiStatus: post.emojiStatus,
+  }
 }
 
 function giftModeDescription(mode: GiftMode) {

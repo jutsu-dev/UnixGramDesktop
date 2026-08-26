@@ -6,7 +6,14 @@ export default defineConfig({
   plugins: [react()],
   server: {
     watch: {
-      ignored: ['**/src-tauri/**', '**/artifacts/**'],
+      ignored: [
+        '**/src-tauri/**',
+        '**/artifacts/**',
+        '**/target-*/**',
+        '**/test-results/**',
+        '**/storybook-static/**',
+        '**/dist/**',
+      ],
     },
   },
 })

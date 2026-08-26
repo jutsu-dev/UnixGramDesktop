@@ -16,6 +16,7 @@ artifacts/*
 test-results
 playwright-report
 src-tauri/target
+/target-*/
 *.local
 .frame2code/
 gitleaks*.json

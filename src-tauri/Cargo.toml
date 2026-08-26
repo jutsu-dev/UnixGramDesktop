@@ -15,6 +15,7 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 discord-rich-presence = "1.1"
+image = { version = "0.25", default-features = false, features = ["png"] }
 keyring = "4.1"
 mime_guess = "2.0"
 open = "5.3"
@@ -22,5 +23,8 @@ reqwest = { version = "0.13", default-features = false, features = ["cookies", "
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-single-instance = "2"
 tokio = { version = "1", features = ["macros", "time"] }
 urlencoding = "2.1"

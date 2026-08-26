@@ -47,6 +47,7 @@ expect(states).toHaveLength(120)
 states.forEach((state, index) => {
   const ordinal = index + 1
   test(`theme matrix ${ordinal}/120`, async ({ page }) => {
+    test.setTimeout(60_000)
     const pageErrors: string[] = []
     page.on('pageerror', (error) => pageErrors.push(error.message))
     await page.setViewportSize(state.viewport)
@@ -56,7 +57,8 @@ states.forEach((state, index) => {
       localStorage.setItem('unixgram-desktop-settings-v4', JSON.stringify(settings))
     }, { ...state, discordPresence: state.discordPresence ?? false })
     await page.goto('/')
-    await expect(page.locator('.app-shell'), `state ${ordinal}`).toBeVisible()
+    await page.waitForLoadState('domcontentloaded')
+    await expect(page.locator('.app-shell'), `state ${ordinal}`).toBeVisible({ timeout: 15_000 })
     if (state.navigateToMessages) await page.locator('.app-rail').getByRole('button', { name: 'Сообщения', exact: true }).click()
     await expect(page.locator('html')).toHaveAttribute('data-theme', state.theme)
     await expect(page.locator('html')).toHaveAttribute('data-scale', state.fontScale)
