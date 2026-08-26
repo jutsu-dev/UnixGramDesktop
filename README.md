@@ -74,7 +74,7 @@
 ## Установить за минуту
 
 1. Откройте [последний релиз](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest).
-2. Скачайте файл `UnixGram.Desktop_1.3.0_x64-setup.exe`.
+2. Скачайте файл `UnixGram.Desktop_1.3.1_x64-setup.exe`.
 3. Сверьте SHA-256 с файлом `SHA256SUMS.txt` в том же релизе.
 4. Запустите установщик.
 
@@ -88,14 +88,12 @@
 ### Проверка SHA-256
 
 ```powershell
-Get-FileHash -Algorithm SHA256 ".\UnixGram.Desktop_1.3.0_x64-setup.exe"
+Get-FileHash -Algorithm SHA256 ".\UnixGram.Desktop_1.3.1_x64-setup.exe"
 ```
 
 Полученная строка должна полностью совпасть с суммой из `SHA256SUMS.txt`.
 
-## Что готовится в 1.3.1
-
-Код следующего обновления уже находится в `main`, но установщик ещё не опубликован как стабильный релиз.
+## Что нового в 1.3.1
 
 - до трёх изолированных аккаунтов с переключением и удалением локальной сессии;
 - счётчик непрочитанных в трее и приватные уведомления Windows;
@@ -104,7 +102,7 @@ Get-FileHash -Algorithm SHA256 ".\UnixGram.Desktop_1.3.0_x64-setup.exe"
 - глобальные сочетания `Ctrl+Shift+1…4` и запасные `Ctrl+Alt+U/M/G/S`;
 - исправления QR-входа, UnixPlace, переходов из достижений и привязки бота.
 
-Следить за ходом работы можно в [истории изменений](https://github.com/jutsu-dev/UnixGramDesktop/commits/main) и [проверках сборки](https://github.com/jutsu-dev/UnixGramDesktop/actions/workflows/release-quality.yml).
+Версия доступна на странице [последнего релиза](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest). Полная история сборок и проверок остаётся открытой в [GitHub Actions](https://github.com/jutsu-dev/UnixGramDesktop/actions/workflows/release-quality.yml).
 
 ## Приватность и безопасность
 

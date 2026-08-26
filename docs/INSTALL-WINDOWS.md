@@ -9,7 +9,7 @@ UnixGram Desktop пока выпускается без коммерческог
 3. Сверьте SHA-256 файла с суммой в описании релиза.
 
 ```powershell
-Get-FileHash -Algorithm SHA256 ".\UnixGram.Desktop_1.3.0_x64-setup.exe"
+Get-FileHash -Algorithm SHA256 ".\UnixGram.Desktop_1.3.1_x64-setup.exe"
 ```
 
 ## Если появился SmartScreen
