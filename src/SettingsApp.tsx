@@ -10,6 +10,8 @@ type Preferences = {
   compactChats: boolean
   largeChatText: boolean
   reduceMotion: boolean
+  smoothScroll: boolean
+  underlineLinks: boolean
   fullscreen: boolean
   alwaysOnTop: boolean
   zoom: number
@@ -43,25 +45,28 @@ type SecurityStatus = {
 const fallback: Preferences = {
   theme: 'native', liquidGlass: false, glassStrength: 0.72, compactChats: false, largeChatText: false,
   reduceMotion: false, fullscreen: false, alwaysOnTop: false, zoom: 1,
-  discordPresence: false, discordShowSection: false,
+  discordPresence: true, discordShowSection: false, smoothScroll: false, underlineLinks: false,
   trayUnreadBadge: true, windowsNotifications: true, reconnectEnabled: true, globalHotkeys: true,
   activeAccount: 1, accounts: [{ id: 1, label: 'Основной' }],
 }
 
 const themes = [
   ['native', 'UnixGram', '#6e5fe4', 'без изменений'],
-  ['midnight', 'Midnight', '#8b7cff', 'сине-чёрная'],
+  ['midnight', 'Midnight', '#a097ff', 'сине-чёрная'],
   ['oled', 'OLED', '#000000', 'чистый чёрный'],
-  ['graphite', 'Graphite', '#8d96a8', 'серая'],
-  ['aurora', 'Aurora', '#45d6ad', 'зелёная'],
+  ['graphite', 'Graphite', '#b3bdce', 'серая'],
+  ['aurora', 'Aurora', '#71dab5', 'зелёная'],
   ['light', 'Daylight', '#8aa4ff', 'светлый графит'],
-  ['lucifer', 'Lucifer', '#d44a62', 'в честь @Lucifer'],
-  ['basaltes', 'by basaltes', '#9d67ff', 'авторская'],
-  ['honey', 'Soft Honey', '#d6ad4a', 'тёплая жёлтая'],
+  ['lucifer', 'Lucifer', '#e78a9d', 'в честь @Lucifer'],
+  ['basaltes', 'by basaltes', '#bb97ff', 'фиолетово-чёрная'],
+  ['honey', 'Soft Honey', '#dfc171', 'тёплая жёлтая'],
+  ['ocean', 'Ocean', '#79c8ec', 'морская синяя'],
+  ['rose', 'Rose', '#e9a4c2', 'дымчатая розовая'],
+  ['forest', 'Forest', '#b7cc8c', 'хвойная зелёная'],
 ] as const
 
-function Toggle({ checked, label, note, onChange }: { checked: boolean; label: string; note: string; onChange: (value: boolean) => void }) {
-  return <label className="setting-row"><span><strong>{label}</strong><small>{note}</small></span><input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} /><i /></label>
+function Toggle({ checked, label, note, onChange }: { checked: boolean; label: string; note?: string; onChange: (value: boolean) => void }) {
+  return <label className="setting-row"><span><strong>{label}</strong>{note && <small>{note}</small>}</span><input type="checkbox" aria-label={label} checked={checked} onChange={(event) => onChange(event.target.checked)} /><i /></label>
 }
 
 export default function SettingsApp() {
@@ -140,13 +145,13 @@ export default function SettingsApp() {
       refreshSecurity()
     } catch (error) { setStatus(String(error)) }
   }
-  return <main className="settings-app" tabIndex={-1} autoFocus>
+  return <main className="settings-app" data-motion={prefs.reduceMotion ? 'reduce' : 'normal'} tabIndex={-1} autoFocus>
     <header><div className="settings-logo"><Sparkles size={18} /></div><div><span>UNIXGRAM DESKTOP</span><h1>Настройки</h1></div><button disabled={!isDesktopRuntime} onClick={() => void save()}><Save size={16} /> {isDesktopRuntime ? 'Применить' : 'Предпросмотр'}</button></header>
 
-    <section><div className="section-title"><Users size={19} /><div><h2>Аккаунты</h2><p>до трёх отдельных сессий UnixGram на одном компьютере</p></div></div>
+    <section><div className="section-title"><Users size={19} /><div><h2>Аккаунты</h2><p>До трёх аккаунтов</p></div></div>
       <div className="account-list" aria-label="Подключённые аккаунты">
         {prefs.accounts.map((account) => <article className={prefs.activeAccount === account.id ? 'account-card is-active' : 'account-card'} key={account.id}>
-          <span className="account-avatar">{account.id}</span><span><strong>{account.label}</strong><small>{account.id === 1 ? 'текущая сессия сохранена' : 'отдельный профиль WebView2'}</small></span>
+          <span className="account-avatar">{account.id}</span><span><strong>{account.label}</strong><small>{account.id === 1 ? 'Основной' : 'Дополнительный'}</small></span>
           <button type="button" disabled={!isDesktopRuntime || prefs.activeAccount === account.id} onClick={() => void switchAccount(account.id)}>{prefs.activeAccount === account.id ? 'Активен' : 'Открыть'}</button>
           <button className="icon-danger" type="button" disabled={!isDesktopRuntime} aria-label={account.id === 1 ? 'Сменить основной аккаунт' : `Удалить ${account.label}`} title={account.id === 1 ? 'Сменить аккаунт' : 'Удалить аккаунт'} onClick={() => void removeAccount(account.id)}><Trash2 size={16} /></button>
         </article>)}
@@ -163,20 +168,22 @@ export default function SettingsApp() {
     </section>
 
     <section><div className="section-title"><MessageCircle size={19} /><div><h2>Чаты</h2></div></div>
-      <Toggle checked={prefs.compactChats} label="Компактный список" note="строки диалогов ниже" onChange={(value) => update('compactChats', value)} />
-      <Toggle checked={prefs.largeChatText} label="Крупный текст" note="сообщения легче читать" onChange={(value) => update('largeChatText', value)} />
-      <Toggle checked={prefs.reduceMotion} label="Меньше анимаций" note="без плавных переходов" onChange={(value) => update('reduceMotion', value)} />
+      <Toggle checked={prefs.compactChats} label="Компактный текст" onChange={(value) => update('compactChats', value)} />
+      <Toggle checked={prefs.largeChatText} label="Крупный текст" onChange={(value) => update('largeChatText', value)} />
+      <Toggle checked={prefs.reduceMotion} label="Меньше анимаций" onChange={(value) => update('reduceMotion', value)} />
+      <Toggle checked={prefs.smoothScroll} label="Плавная прокрутка" note="При переходе к элементам. Не меняет прокрутку колёсиком." onChange={(value) => update('smoothScroll', value)} />
+      <Toggle checked={prefs.underlineLinks} label="Подчёркивать ссылки" onChange={(value) => update('underlineLinks', value)} />
     </section>
 
     <section><div className="section-title"><Monitor size={19} /><div><h2>Окно</h2></div></div>
-      <Toggle checked={prefs.fullscreen} label="Полный экран" note="без рамок, на весь экран" onChange={(value) => update('fullscreen', value)} />
-      <Toggle checked={prefs.alwaysOnTop} label="Поверх остальных окон" note="окно всегда видно" onChange={(value) => update('alwaysOnTop', value)} />
+      <Toggle checked={prefs.fullscreen} label="Полный экран" onChange={(value) => update('fullscreen', value)} />
+      <Toggle checked={prefs.alwaysOnTop} label="Поверх остальных окон" onChange={(value) => update('alwaysOnTop', value)} />
       <label className="zoom-row"><span><Expand size={17} /><strong>Масштаб</strong></span><input type="range" min="0.8" max="1.4" step="0.05" value={prefs.zoom} onChange={(event) => update('zoom', Number(event.target.value))} /><b>{Math.round(prefs.zoom * 100)}%</b></label>
     </section>
     <section><div className="section-title"><BellRing size={19} /><div><h2>Система</h2><p>трей, Центр уведомлений Windows и восстановление сети</p></div></div>
-      <Toggle checked={prefs.trayUnreadBadge} label="Непрочитанные в трее" note="красный счётчик на значке и точное число в подсказке" onChange={(value) => update('trayUnreadBadge', value)} />
-      <Toggle checked={prefs.windowsNotifications} label="Уведомления Windows" note="только общий сигнал без текста, имён и подарков" onChange={(value) => update('windowsNotifications', value)} />
-      <Toggle checked={prefs.reconnectEnabled} label="Восстанавливать соединение" note="повторять проверку с паузой и беречь незаконченный текст" onChange={(value) => update('reconnectEnabled', value)} />
+      <Toggle checked={prefs.trayUnreadBadge} label="Счётчик в трее" onChange={(value) => update('trayUnreadBadge', value)} />
+      <Toggle checked={prefs.windowsNotifications} label="Уведомления Windows" note="Без текста сообщений и имён" onChange={(value) => update('windowsNotifications', value)} />
+      <Toggle checked={prefs.reconnectEnabled} label="Переподключаться при обрыве" onChange={(value) => update('reconnectEnabled', value)} />
     </section>
     <section><div className="section-title"><Keyboard size={19} /><div><h2>Горячие клавиши</h2><p>работают, даже когда клиент свёрнут в трей</p></div></div>
       <Toggle checked={prefs.globalHotkeys} label="Глобальные сочетания" note="можно выключить одним переключателем" onChange={(value) => update('globalHotkeys', value)} />
@@ -185,13 +192,13 @@ export default function SettingsApp() {
       <p className="shortcut-legacy">Ctrl + Alt + U/M/G/S сохранены как дополнительные сочетания.</p>
     </section>
     <section><div className="section-title"><Gamepad2 size={19} /><div><h2>Discord</h2><p>показывает использование UnixGram без личных данных</p></div></div>
-      <Toggle checked={prefs.discordPresence} label="Rich Presence" note="включается только по вашему выбору и работает в трее" onChange={(value) => update('discordPresence', value)} />
-      <Toggle checked={prefs.discordShowSection} label="Название раздела" note="показывать только общий раздел без сообщений и имён" onChange={(value) => update('discordShowSection', value)} />
+      <Toggle checked={prefs.discordPresence} label="Показывать в Discord" note="Подключается при запуске. Discord должен быть открыт." onChange={(value) => update('discordPresence', value)} />
+      <Toggle checked={prefs.discordShowSection} label="Показывать раздел" note="Например, «Сообщения». Без имён и переписки." onChange={(value) => update('discordShowSection', value)} />
     </section>
     <section><div className="section-title"><ShieldCheck size={19} /><div><h2>Центр безопасности</h2><p>что хранится локально и какие возможности включены</p></div></div>
       <div className="security-grid" aria-live="polite"><span><Wifi size={17} /><b>Соединение</b><strong>{security?.online ? 'доступно' : 'проверяется'}</strong></span><span><LockKeyhole size={17} /><b>Сессии</b><strong>{security ? `${security.isolatedAccounts}/${security.maxAccounts}` : '—'}</strong></span><span><ShieldCheck size={17} /><b>Ссылки</b><strong>{security?.httpsOnly ? 'только HTTPS' : '—'}</strong></span><span><BellRing size={17} /><b>Превью</b><strong>{security?.notificationsPrivate ? 'скрыты' : '—'}</strong></span></div>
       <div className="security-details"><p><b>Разрешённые сайты</b><span>{security?.trustedHosts.join(', ') ?? 'unixgram.com, place.unixgram.com'}</span></p><p><b>Хранилище</b><span>{security?.sessionStorage ?? 'Windows Credential Manager'}</span></p><p><b>Версия</b><span>{security?.version ?? '1.3.1'}</span></p></div>
     </section>
-    <footer><span>{status}</span><button disabled={!isDesktopRuntime} onClick={() => void save()}><Save size={16} /> {isDesktopRuntime ? 'Сохранить и применить' : 'Сохранение доступно в приложении'}</button></footer>
+    <footer><span>{status}</span><button disabled={!isDesktopRuntime} onClick={() => void save()}><Save size={16} /> {isDesktopRuntime ? 'Применить' : 'Предпросмотр'}</button></footer>
   </main>
 }

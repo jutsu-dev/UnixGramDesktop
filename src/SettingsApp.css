@@ -1,10 +1,11 @@
 :root { font-family: Inter, "Segoe UI", sans-serif; color: #f4f5fa; background: #08090d; font-synthesis: none; }
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 0; min-height: 100vh; background: radial-gradient(circle at 12% 0%, rgba(110,95,228,.2), transparent 34%), #08090d; }
-body:has(.settings-app) { overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; scrollbar-color: #454653 transparent; }
-#root:has(> .settings-app) { height: auto; min-height: 100vh; overflow: visible; }
+html:has(.settings-app), body:has(.settings-app) { min-width: 0; height: 100%; overflow: hidden; }
+body:has(.settings-app) { overscroll-behavior: contain; scrollbar-color: #454653 transparent; }
+#root:has(> .settings-app) { width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: hidden; zoom: 1; }
 button, input { font: inherit; }
-.settings-app { width: min(720px, 100%); height: 100vh; margin: auto; overflow-y: auto; padding: 22px 22px 38px; outline: none; scrollbar-gutter: stable; }
+.settings-app { width: min(720px, 100%); height: 100vh; height: 100dvh; margin: auto; overflow-y: auto; overflow-x: hidden; padding: 22px 22px 38px; outline: none; scrollbar-gutter: stable; overscroll-behavior: contain; overflow-wrap: anywhere; }
 .settings-app header { display: grid; grid-template-columns: 42px 1fr auto; align-items: center; gap: 12px; padding: 8px 4px 22px; }
 .settings-logo { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 13px; background: linear-gradient(145deg,#8173f1,#5748c8); box-shadow: 0 10px 30px rgba(110,95,228,.35); }
 .settings-app header span { color: #858794; font-size: 10px; font-weight: 800; letter-spacing: .14em; }
@@ -44,4 +45,59 @@ button, input { font: inherit; }
 .security-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; padding: 12px; }.security-grid > span { display: grid; grid-template-columns: 26px 1fr auto; align-items: center; gap: 7px; min-height: 52px; padding: 9px 10px; border: 1px solid #292a34; border-radius: 10px; background: #15161c; }.security-grid svg { color: #71d8af; }.security-grid b { font-size: 11px; }.security-grid strong { color: #b7e9d5; font-size: 10px; }
 .security-details { border-top: 1px solid #24252e; }.security-details p { display: grid; grid-template-columns: 140px 1fr; gap: 12px; margin: 0; padding: 10px 16px; border-top: 1px solid #20212a; font-size: 11px; }.security-details p:first-child { border-top: 0; }.security-details b { color: #aeb0bc; }.security-details span { min-width: 0; overflow-wrap: anywhere; color: #858794; }
 .settings-app footer { display:flex;align-items:center;justify-content:flex-end;gap:14px;padding:4px; }.settings-app footer span { color:#8f91a0;font-size:12px; }
-@media(max-width:650px){.settings-app{padding:14px}.settings-app header>button{display:none}.theme-grid{grid-template-columns:repeat(2,1fr)}.account-card{grid-template-columns:38px 1fr auto}.account-card .icon-danger{grid-column:3}.account-add{grid-template-columns:1fr}.creator-follow{align-items:flex-start;flex-direction:column}.shortcut-list,.security-grid{grid-template-columns:1fr}.security-details p{grid-template-columns:1fr;gap:4px}}
+.settings-app svg { flex-shrink: 0; }
+.settings-app header { grid-template-columns: 42px minmax(0,1fr) auto; }
+.settings-app header > div, .section-title > div, .setting-row > span,
+.theme-card > span, .account-add > label, .creator-follow > span { min-width: 0; }
+.theme-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.theme-card { min-width: 0; grid-template-columns: 28px minmax(0,1fr) 12px; }
+.setting-row > i { flex: 0 0 38px; }
+.setting-row > i { transition: background-color 180ms ease; }
+.setting-row > i:after { transition: transform 180ms cubic-bezier(.2,.7,.2,1); }
+.zoom-row { grid-template-columns: 130px minmax(0,1fr) 44px; }
+.zoom-row input { width: 100%; min-width: 0; }
+.account-card small { white-space: normal; overflow-wrap: anywhere; }
+.account-add { grid-template-columns: minmax(0,1fr) auto; }
+.shortcut-list > span { flex-wrap: wrap; }
+.security-grid > span { grid-template-columns: 26px minmax(0,1fr) auto; }
+.settings-app footer { flex-wrap: wrap; }
+.settings-app footer > span { min-width: 0; flex: 1 1 160px; }
+.settings-app footer > button { max-width: 100%; text-align: left; }
+.settings-app button { transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease; }
+@media (hover: hover) {
+  .settings-app header button:not(:disabled):hover,
+  .settings-app footer button:not(:disabled):hover { background: #7a6bea; }
+  .account-card button:not(:disabled):hover,
+  .account-add button:not(:disabled):hover,
+  .creator-follow button:not(:disabled):hover { border-color: #8173d7; background: #2c2b3b; }
+}
+@media (max-width: 650px) {
+  .settings-app { padding: 14px 14px 28px; }
+  .theme-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .account-add { grid-template-columns: minmax(0,1fr); }
+  .creator-follow { align-items: flex-start; flex-direction: column; }
+  .shortcut-list, .security-grid { grid-template-columns: minmax(0,1fr); }
+  .security-details p { grid-template-columns: minmax(0,1fr); gap: 4px; }
+}
+@media (max-width: 440px) {
+  .settings-app { padding-inline: 10px; }
+  .settings-app header { grid-template-columns: 40px minmax(0,1fr); gap: 10px; }
+  .settings-app header > button { grid-column: 1 / -1; justify-self: stretch; justify-content: center; }
+  .account-card { grid-template-columns: 38px minmax(0,1fr) 36px; }
+  .account-card > button:not(.icon-danger) { grid-column: 1 / 3; grid-row: 2; justify-content: center; }
+  .account-card .icon-danger { grid-column: 3; grid-row: 2; }
+  .zoom-row { grid-template-columns: minmax(0,1fr) 44px; gap: 10px; }
+  .zoom-row > span { grid-column: 1 / -1; }
+  .setting-row { gap: 12px; padding-inline: 12px; }
+  .section-title { padding-inline: 12px; }
+}
+@media (max-width: 330px) {
+  .theme-grid { grid-template-columns: minmax(0,1fr); }
+  .security-grid > span { grid-template-columns: 26px minmax(0,1fr); }
+  .security-grid strong { grid-column: 2; }
+  .settings-app footer > button { width: 100%; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .settings-app *, .settings-app *::before, .settings-app *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+.settings-app[data-motion="reduce"] *, .settings-app[data-motion="reduce"] *::before, .settings-app[data-motion="reduce"] *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }

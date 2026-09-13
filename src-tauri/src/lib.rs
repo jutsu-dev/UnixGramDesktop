@@ -1,5 +1,8 @@
+mod navigation;
+
 use discord_rich_presence::{DiscordIpc, DiscordIpcClient, activity};
 use keyring::v1::Entry;
+use navigation::{Destination, PromptGate, destination};
 use reqwest::{
     Client, Url,
     cookie::{CookieStore, Jar},
@@ -22,6 +25,7 @@ use tauri::{
     menu::MenuBuilder,
     tray::{MouseButton, TrayIconBuilder, TrayIconEvent},
 };
+use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 use tauri_plugin_notification::NotificationExt;
 
@@ -30,7 +34,7 @@ const CREATOR_PROFILE_URL: &str = "https://unixgram.com/u/basaltes";
 const DISCORD_CLIENT_ID: &str = "1540399183276539904";
 const SESSION_SERVICE: &str = "com.unixgram.desktop.community";
 const SESSION_ACCOUNT_PREFIX: &str = "unixgram-session";
-const UNIXGRAM_HTTP_USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0 UnixGramHistory/1.3.1";
+const UNIXGRAM_HTTP_USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0 UnixGramHistory/1.3.2";
 const RECOVERY_SCRIPT: &str = r#"(() => {
   const fields = document.querySelectorAll('input, textarea, [contenteditable="true"]');
   const hasDraft = Array.from(fields).some((field) => {
@@ -152,6 +156,7 @@ struct QrFlow {
 }
 
 struct AppState {
+    external_link_prompt: Mutex<PromptGate>,
     qr: Mutex<Option<QrFlow>>,
     discord: Mutex<Option<DiscordIpcClient>>,
     unread_by_window: Mutex<HashMap<String, u32>>,
@@ -164,6 +169,7 @@ struct AppState {
 impl Default for AppState {
     fn default() -> Self {
         Self {
+            external_link_prompt: Mutex::new(PromptGate::default()),
             qr: Mutex::new(None),
             discord: Mutex::new(None),
             unread_by_window: Mutex::new(HashMap::new()),
@@ -200,6 +206,8 @@ struct ClientPreferences {
     compact_chats: bool,
     large_chat_text: bool,
     reduce_motion: bool,
+    smooth_scroll: bool,
+    underline_links: bool,
     fullscreen: bool,
     always_on_top: bool,
     zoom: f64,
@@ -222,10 +230,12 @@ impl Default for ClientPreferences {
             compact_chats: false,
             large_chat_text: false,
             reduce_motion: false,
+            smooth_scroll: false,
+            underline_links: false,
             fullscreen: false,
             always_on_top: false,
             zoom: 1.0,
-            discord_presence: false,
+            discord_presence: true,
             discord_show_section: false,
             tray_unread_badge: true,
             windows_notifications: true,
@@ -277,8 +287,9 @@ fn load_preferences(app: &tauri::AppHandle) -> ClientPreferences {
 }
 
 fn normalize_preferences(mut preferences: ClientPreferences) -> ClientPreferences {
-    const THEMES: [&str; 9] = [
+    const THEMES: [&str; 12] = [
         "native", "midnight", "oled", "graphite", "aurora", "light", "lucifer", "basaltes", "honey",
+        "ocean", "rose", "forest",
     ];
     if !THEMES.contains(&preferences.theme.as_str()) {
         preferences.theme = "native".to_string();
@@ -339,28 +350,37 @@ fn write_preferences(
 fn theme_css(preferences: &ClientPreferences) -> String {
     let palette = match preferences.theme.as_str() {
         "midnight" => (
-            "#080b16", "#11182a", "#8b7cff", "#edf0ff", "#29304a", "#ffffff",
+            "#0a0e1a", "#151d30", "#a097ff", "#edf0ff", "#35415b", "#101426",
         ),
         "oled" => (
-            "#000000", "#080808", "#7c6cff", "#ffffff", "#242424", "#ffffff",
+            "#000000", "#0b0b0e", "#a397ff", "#ffffff", "#303037", "#100c23",
         ),
         "graphite" => (
-            "#101113", "#1a1c20", "#8d96a8", "#f4f5f7", "#343740", "#101113",
+            "#121416", "#202328", "#b3bdce", "#f4f5f7", "#414752", "#101113",
         ),
         "aurora" => (
-            "#071411", "#0d211d", "#45d6ad", "#effffb", "#24443c", "#06120f",
+            "#091612", "#142820", "#71dab5", "#effffb", "#355348", "#06120f",
         ),
         "light" => (
             "#171a21", "#222731", "#8aa4ff", "#f4f6fb", "#3b4452", "#10131a",
         ),
         "lucifer" => (
-            "#090506", "#17090d", "#d44a62", "#fff1f3", "#4a1b25", "#ffffff",
+            "#10080b", "#241018", "#e78a9d", "#fff1f3", "#58303d", "#270b13",
         ),
         "basaltes" => (
-            "#050308", "#120b1c", "#9d67ff", "#f7efff", "#38224f", "#ffffff",
+            "#08050e", "#191023", "#bb97ff", "#f7efff", "#49315f", "#180d29",
         ),
         "honey" => (
-            "#100e08", "#1c180e", "#d6ad4a", "#fff8df", "#4a4024", "#171208",
+            "#15120b", "#272115", "#dfc171", "#fff8e6", "#584b2c", "#171208",
+        ),
+        "ocean" => (
+            "#08131c", "#112635", "#79c8ec", "#ecf8ff", "#304d60", "#071923",
+        ),
+        "rose" => (
+            "#180f17", "#2c1c29", "#e9a4c2", "#fff1f8", "#604154", "#27101d",
+        ),
+        "forest" => (
+            "#11160f", "#212b1b", "#b7cc8c", "#f1f7e9", "#47553b", "#15200d",
         ),
         _ => (
             "#050505", "#101014", "#6e5fe4", "#f5f6fa", "#282832", "#ffffff",
@@ -372,7 +392,7 @@ fn theme_css(preferences: &ClientPreferences) -> String {
     );
     if preferences.theme != "native" {
         css.push_str(&format!(
-            "html{{color-scheme:{};}}body,main{{background-color:var(--ugd-bg)!important;color:var(--ugd-text)!important;}}header,aside,nav,article,[role=dialog]{{background-color:var(--ugd-panel)!important;color:var(--ugd-text)!important;border-color:var(--ugd-line)!important;}}button,a,input,textarea,select{{color:var(--ugd-text)!important;border-color:var(--ugd-line)!important;accent-color:var(--ugd-accent)!important;}}input,textarea,select{{background-color:color-mix(in srgb,var(--ugd-panel) 92%,var(--ugd-text) 8%)!important;caret-color:var(--ugd-accent)!important;}}input::placeholder,textarea::placeholder{{color:color-mix(in srgb,var(--ugd-text) 58%,transparent)!important;}}button{{background-color:transparent!important;}}button:hover,a:hover{{color:var(--ugd-accent)!important;}}button[aria-pressed='true'],button[aria-selected='true'],button[type='submit'],[role='tab'][aria-selected='true']{{background-color:var(--ugd-accent)!important;color:var(--ugd-on-accent)!important;border-color:var(--ugd-accent)!important;}}button:disabled,[aria-disabled='true']{{color:color-mix(in srgb,var(--ugd-text) 42%,transparent)!important;opacity:.68!important;}}img,video{{filter:none!important;}}",
+            "html{{color-scheme:{};}}body,main{{background-color:var(--ugd-bg)!important;color:var(--ugd-text)!important;}}header,aside,nav,article,[role=dialog]{{background-color:var(--ugd-panel)!important;color:var(--ugd-text)!important;border-color:var(--ugd-line)!important;}}input,textarea,select{{color:var(--ugd-text)!important;border-color:var(--ugd-line)!important;accent-color:var(--ugd-accent)!important;background-color:color-mix(in srgb,var(--ugd-panel) 92%,var(--ugd-text) 8%)!important;caret-color:var(--ugd-accent)!important;}}input::placeholder,textarea::placeholder{{color:color-mix(in srgb,var(--ugd-text) 58%,transparent)!important;}}img,video{{filter:none!important;}}",
             "dark",
         ));
     }
@@ -382,16 +402,27 @@ fn theme_css(preferences: &ClientPreferences) -> String {
         css.push_str(&format!("body{{background-image:radial-gradient(circle at 12% 8%,color-mix(in srgb,var(--ugd-accent) 28%,transparent),transparent 34%),radial-gradient(circle at 88% 92%,color-mix(in srgb,var(--ugd-accent) 17%,transparent),transparent 38%)!important;background-color:var(--ugd-bg)!important;background-attachment:fixed!important;}}header,aside,nav,[role=dialog],article{{background-color:color-mix(in srgb,var(--ugd-panel) {panel_percent}%,transparent)!important;color:var(--ugd-text)!important;backdrop-filter:blur(26px) saturate(145%)!important;-webkit-backdrop-filter:blur(26px) saturate(145%)!important;box-shadow:inset 0 1px color-mix(in srgb,var(--ugd-text) 10%,transparent),0 18px 50px rgba(0,0,0,.18)!important;border-color:color-mix(in srgb,var(--ugd-text) 14%,transparent)!important;}}"));
     }
     if preferences.compact_chats {
-        css.push_str("html[data-ugd-page='messages'] main button{min-height:0!important;padding-top:7px!important;padding-bottom:7px!important;}html[data-ugd-page='messages'] main{line-height:1.25!important;}");
+        css.push_str("html[data-ugd-page='messages'] main{line-height:1.25!important;}");
     }
     if preferences.large_chat_text {
         css.push_str("html[data-ugd-page='messages'] main{font-size:17px!important;}");
     }
+    if preferences.smooth_scroll && !preferences.reduce_motion {
+        css.push_str("html,body,main,[role=log]{scroll-behavior:smooth!important;}");
+    }
+    if preferences.underline_links {
+        css.push_str("a[href]{text-decoration-line:underline!important;text-underline-offset:.18em;}");
+    }
+    css.push_str("@media(prefers-reduced-motion:reduce){html,body,main,[role=log],*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}");
     if preferences.reduce_motion {
         css.push_str("*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}");
     }
     css
 }
+
+#[cfg(test)]
+#[path = "theme_tests.rs"]
+mod theme_tests;
 
 fn apply_preferences_to_window(window: &tauri::WebviewWindow, preferences: &ClientPreferences) {
     let _ = window.set_fullscreen(preferences.fullscreen);
@@ -1293,11 +1324,10 @@ fn open_unixgram_url(url: String) -> Result<(), String> {
 
 fn validate_unixgram_url(url: &str) -> Result<Url, String> {
     let parsed = Url::parse(url).map_err(|_| "некорректная ссылка".to_string())?;
-    let trusted_host = matches!(
-        parsed.host_str(),
-        Some("unixgram.com" | "www.unixgram.com" | "place.unixgram.com")
-    );
-    if parsed.scheme() != "https" || !trusted_host {
+    if !matches!(
+        destination(&parsed),
+        Destination::Unixgram | Destination::Unixplace
+    ) {
         return Err("клиент открывает только защищённые ссылки UnixGram и UnixPlace".to_string());
     }
     Ok(parsed)
@@ -1424,7 +1454,9 @@ fn section_from_url(url: &Url) -> &'static str {
         return "UnixPlace";
     }
     let path = url.path();
-    if path.contains("/messages") {
+    if path == "/dashboard/bots" || path.starts_with("/dashboard/bots/") {
+        "Боты"
+    } else if path.contains("/messages") {
         "Сообщения"
     } else if path.contains("/notifications") {
         "Уведомления"
@@ -1681,6 +1713,20 @@ async fn prepare_unused_account_slot(app: &tauri::AppHandle, id: u8) -> Result<(
     Ok(())
 }
 
+fn fitted_window_size(width: f64, height: f64, scale: f64, preferred: (f64, f64)) -> (f64, f64) {
+    let scale = if scale.is_finite() && scale > 0.0 { scale } else { 1.0 };
+    // Leave room for window decorations; taskbar is excluded by work_area.
+    (preferred.0.min((width / scale - 32.0).max(1.0)),
+     preferred.1.min((height / scale - 64.0).max(1.0)))
+}
+
+fn initial_window_size(app: &tauri::AppHandle, preferred: (f64, f64)) -> (f64, f64) {
+    app.primary_monitor().ok().flatten().map(|monitor| {
+        let area = monitor.work_area();
+        fitted_window_size(area.size.width as f64, area.size.height as f64, monitor.scale_factor(), preferred)
+    }).unwrap_or((preferred.0.min(1000.0), preferred.1.min(640.0)))
+}
+
 fn create_account_window(
     app: &tauri::AppHandle,
     account: &AccountProfile,
@@ -1690,7 +1736,10 @@ fn create_account_window(
     if let Some(window) = app.get_webview_window(&label) {
         return Ok(window);
     }
+    let (width, height) = initial_window_size(app, (1520.0, 960.0));
     let callback_label = label.clone();
+    let popup_label = label.clone();
+    let popup_app = app.clone();
     let mut builder = WebviewWindowBuilder::new(
         app,
         &label,
@@ -1699,12 +1748,16 @@ fn create_account_window(
         ),
     )
     .title(format!("UnixGram Desktop · {}", account.label))
-    .inner_size(1520.0, 960.0)
-    .min_inner_size(900.0, 640.0)
+    .inner_size(width, height)
+    .min_inner_size(width.min(360.0), height.min(320.0))
     .resizable(true)
     .center()
     .visible(visible)
     .user_agent(UNIXGRAM_HTTP_USER_AGENT)
+    .on_new_window(move |url, _| {
+        handle_popup(&popup_app, &popup_label, url);
+        tauri::webview::NewWindowResponse::Deny
+    })
     .on_document_title_changed(move |window, title| {
         update_unread_for_window(window.app_handle(), &callback_label, &title);
     });
@@ -2171,12 +2224,71 @@ fn navigate_main_window(app: &tauri::AppHandle, url: &str) {
 }
 
 fn is_unixplace_url(url: &Url) -> bool {
-    url.scheme() == "https" && url.host_str() == Some("place.unixgram.com")
+    destination(url) == Destination::Unixplace
+}
+
+fn confirm_browser_link(app: &tauri::AppHandle, label: &str, url: &Url) {
+    if destination(url) != Destination::External {
+        return;
+    }
+    let Some(window) = app.get_webview_window(label) else {
+        return;
+    };
+    // Background pages cannot interrupt the active application with dialogs.
+    if !window.is_focused().unwrap_or(false) {
+        return;
+    }
+    let state = app.state::<AppState>();
+    if !state
+        .external_link_prompt
+        .lock()
+        .is_ok_and(|mut gate| gate.begin(std::time::Instant::now()))
+    {
+        return;
+    }
+    let target = url.clone();
+    let callback_app = app.clone();
+    // Display origin only: bot links can carry private start/payment parameters.
+    app.dialog()
+        .message(format!(
+            "Открыть ссылку на {} в системном браузере?\n\nСайт откроется вне UnixGram Desktop.",
+            url.origin().ascii_serialization()
+        ))
+        .title("Внешняя ссылка · UnixGram Desktop")
+        .parent(&window)
+        .buttons(MessageDialogButtons::OkCancelCustom(
+            "Открыть в браузере".into(),
+            "Отмена".into(),
+        ))
+        .show(move |confirmed| {
+            if confirmed && open::that_detached(target.as_str()).is_err() {
+                callback_app
+                    .dialog()
+                    .message("Не удалось открыть браузер. Повторите попытку позже.")
+                    .title("UnixGram Desktop")
+                    .show(|_| {});
+            }
+            if let Ok(mut gate) = callback_app.state::<AppState>().external_link_prompt.lock() {
+                gate.complete(std::time::Instant::now());
+            }
+        });
+}
+
+fn handle_popup(app: &tauri::AppHandle, label: &str, url: Url) {
+    match destination(&url) {
+        Destination::Unixgram | Destination::Unixplace => {
+            // Reuse the source account's webview; the navigation policy still applies.
+            if let Some(window) = app.get_webview_window(label) {
+                let _ = window.navigate(url);
+            }
+        }
+        Destination::External => confirm_browser_link(app, label, &url),
+        Destination::Blocked => {}
+    }
 }
 
 fn show_market_window(app: &tauri::AppHandle) {
-    let preferences = load_preferences(app);
-    let account_id = preferences.active_account;
+    let account_id = active_account_id(app);
     let label = if account_id == 1 {
         "unixplace".to_string()
     } else {
@@ -2188,19 +2300,49 @@ fn show_market_window(app: &tauri::AppHandle) {
         let _ = window.set_focus();
         return;
     }
+    let url = Url::parse("https://place.unixgram.com/").expect("trusted UnixPlace URL");
+    show_market_url(app, account_id, &url);
+}
 
-    let mut builder = WebviewWindowBuilder::new(
-        app,
-        &label,
-        WebviewUrl::External(
-            Url::parse("https://place.unixgram.com/").expect("trusted UnixPlace URL"),
-        ),
-    )
-    .title("UnixPlace")
-    .inner_size(1320.0, 860.0)
-    .min_inner_size(900.0, 640.0)
-    .center()
-    .user_agent(UNIXGRAM_HTTP_USER_AGENT);
+fn source_account_id(label: &str) -> u8 {
+    label
+        .strip_prefix("account-")
+        .or_else(|| label.strip_prefix("unixplace-"))
+        .and_then(|id| id.parse::<u8>().ok())
+        .filter(|id| (1..=3).contains(id))
+        .unwrap_or(1)
+}
+
+fn show_market_url(app: &tauri::AppHandle, account_id: u8, url: &Url) {
+    if !is_unixplace_url(url) {
+        return;
+    }
+    let label = if account_id == 1 {
+        "unixplace".to_string()
+    } else {
+        format!("unixplace-{account_id}")
+    };
+    if let Some(window) = app.get_webview_window(&label) {
+        let _ = window.navigate(url.clone());
+        let _ = window.unminimize();
+        let _ = window.show();
+        let _ = window.set_focus();
+        return;
+    }
+
+    let popup_app = app.clone();
+    let popup_label = label.clone();
+    let (width, height) = initial_window_size(app, (1320.0, 860.0));
+    let mut builder = WebviewWindowBuilder::new(app, &label, WebviewUrl::External(url.clone()))
+        .title("UnixPlace")
+        .inner_size(width, height)
+        .min_inner_size(width.min(360.0), height.min(320.0))
+        .center()
+        .user_agent(UNIXGRAM_HTTP_USER_AGENT)
+        .on_new_window(move |url, _| {
+            handle_popup(&popup_app, &popup_label, url);
+            tauri::webview::NewWindowResponse::Deny
+        });
     if account_id > 1
         && let Ok(directory) = account_profile_directory(app, account_id)
     {
@@ -2208,10 +2350,7 @@ fn show_market_window(app: &tauri::AppHandle) {
         builder = builder.data_directory(directory);
     }
     if let Ok(window) = builder.build() {
-        update_active_section(
-            app,
-            &Url::parse("https://place.unixgram.com/").expect("trusted UnixPlace URL"),
-        );
+        update_active_section(app, url);
         let _ = window.set_focus();
     }
 }
@@ -2224,14 +2363,15 @@ fn show_settings_window(app: &tauri::AppHandle) {
         let _ = window.set_focus();
         return;
     }
+    let (width, height) = initial_window_size(app, (760.0, 720.0));
     let _ = WebviewWindowBuilder::new(
         app,
         "settings",
         WebviewUrl::App("index.html?desktop-settings=1".into()),
     )
     .title("Настройки UnixGram Desktop")
-    .inner_size(760.0, 720.0)
-    .min_inner_size(680.0, 620.0)
+    .inner_size(width, height)
+    .min_inner_size(width.min(360.0), height.min(320.0))
     .center()
     .build();
 }
@@ -2248,20 +2388,41 @@ pub fn run() {
             show_active_account(app);
         }))
         .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(
             tauri::plugin::Builder::<tauri::Wry, ()>::new("unixgram-navigation")
                 .on_navigation(|webview, url| {
                     if should_hide_on_close(webview.label()) && is_unixplace_url(url) {
-                        show_market_window(webview.app_handle());
+                        show_market_url(
+                            webview.app_handle(),
+                            source_account_id(webview.label()),
+                            url,
+                        );
                         return false;
                     }
                     if should_hide_on_close(webview.label())
                         && validate_unixgram_url(url.as_str()).is_err()
                     {
+                        confirm_browser_link(webview.app_handle(), webview.label(), url);
                         return false;
                     }
                     if webview.label().starts_with("unixplace") && !is_unixplace_url(url) {
+                        if destination(url) == Destination::Unixgram {
+                            if let Some(window) =
+                                webview
+                                    .app_handle()
+                                    .get_webview_window(&account_window_label(source_account_id(
+                                        webview.label(),
+                                    )))
+                            {
+                                let _ = window.navigate(url.clone());
+                                let _ = window.show();
+                                let _ = window.set_focus();
+                            }
+                            return false;
+                        }
+                        confirm_browser_link(webview.app_handle(), webview.label(), url);
                         return false;
                     }
                     if should_hide_on_close(webview.label())
@@ -2431,6 +2592,7 @@ mod tests {
     fn every_custom_theme_keeps_controls_and_media_readable() {
         for theme in [
             "midnight", "oled", "graphite", "aurora", "light", "lucifer", "basaltes", "honey",
+            "ocean", "rose", "forest",
         ] {
             let preferences = ClientPreferences {
                 theme: theme.to_string(),
@@ -2438,7 +2600,7 @@ mod tests {
             };
             let css = theme_css(&preferences);
             assert!(css.contains("--ugd-on-accent:"));
-            assert!(css.contains("button[type='submit']"));
+            assert!(!css.contains("button{background-color:transparent!important;}"));
             assert!(css.contains("img,video{filter:none!important;}"));
         }
     }
@@ -2448,6 +2610,7 @@ mod tests {
         for theme in [
             "native", "midnight", "oled", "graphite", "aurora", "light", "lucifer", "basaltes",
             "honey",
+            "ocean", "rose", "forest",
         ] {
             for strength in [0.58, 0.72, 0.90] {
                 let preferences = ClientPreferences {
@@ -2470,6 +2633,7 @@ mod tests {
         let themes = [
             "native", "midnight", "oled", "graphite", "aurora", "light", "lucifer", "basaltes",
             "honey",
+            "ocean", "rose", "forest",
         ];
         let strengths = [0.58, 0.66, 0.72, 0.82, 0.90];
 
@@ -2535,6 +2699,62 @@ mod tests {
                 );
             }
         }
+    }
+
+    // Settings refresh: preserve saved choices while enabling automatic RPC for new users.
+    #[test]
+    fn new_preferences_enable_presence_without_overriding_saved_opt_out() {
+        let fresh: ClientPreferences = serde_json::from_str("{}").unwrap();
+        assert!(fresh.discord_presence);
+        assert!(!fresh.discord_show_section);
+        assert!(!fresh.smooth_scroll);
+        assert!(!fresh.underline_links);
+        let saved: ClientPreferences = serde_json::from_str(
+            r#"{"discordPresence":false,"smoothScroll":true,"underlineLinks":true}"#,
+        ).unwrap();
+        let restored = normalize_preferences(saved);
+        assert!(!restored.discord_presence);
+        assert!(restored.smooth_scroll);
+        assert!(restored.underline_links);
+        let encoded = serde_json::to_value(restored).unwrap();
+        assert_eq!(encoded["discordPresence"], false);
+        assert_eq!(encoded["smoothScroll"], true);
+        assert_eq!(encoded["underlineLinks"], true);
+    }
+
+    #[test]
+    fn new_themes_survive_normalization_with_distinct_palettes() {
+        for (theme, background) in [
+            ("ocean", "#08131c"), ("rose", "#180f17"), ("forest", "#11160f"),
+        ] {
+            let preferences = normalize_preferences(ClientPreferences {
+                theme: theme.to_string(), ..ClientPreferences::default()
+            });
+            assert_eq!(preferences.theme, theme);
+            assert!(theme_css(&preferences).contains(&format!("--ugd-bg:{background};")));
+        }
+        let invalid = normalize_preferences(ClientPreferences {
+            theme: "unknown".to_string(), ..ClientPreferences::default()
+        });
+        assert_eq!(invalid.theme, "native");
+    }
+
+    #[test]
+    fn smooth_scroll_respects_motion_preferences_and_links_are_opt_in() {
+        let mut preferences = ClientPreferences::default();
+        let default_css = theme_css(&preferences);
+        assert!(!default_css.contains("scroll-behavior:smooth"));
+        assert!(!default_css.contains("text-decoration-line:underline"));
+        preferences.smooth_scroll = true;
+        preferences.underline_links = true;
+        let css = theme_css(&preferences);
+        assert!(css.contains("a[href]{text-decoration-line:underline!important;"));
+        let smooth = css.find("scroll-behavior:smooth").unwrap();
+        let reduced = css.find("@media(prefers-reduced-motion:reduce){html,body,main,[role=log]").unwrap();
+        assert!(reduced > smooth);
+        assert!(css[reduced..].contains("scroll-behavior:auto!important"));
+        preferences.reduce_motion = true;
+        assert!(!theme_css(&preferences).contains("scroll-behavior:smooth"));
     }
 
     #[test]
@@ -2661,7 +2881,8 @@ mod tests {
         assert!(
             source.contains(".user_agent(UNIXGRAM_HTTP_USER_AGENT)")
                 && UNIXGRAM_HTTP_USER_AGENT.contains("Mozilla/5.0")
-                && UNIXGRAM_HTTP_USER_AGENT.contains("UnixGramHistory/1.3.1"),
+                && UNIXGRAM_HTTP_USER_AGENT
+                    .contains(concat!("UnixGramHistory/", env!("CARGO_PKG_VERSION"))),
             "the branded user agent must remain browser-compatible for UnixGram auth and assets"
         );
     }
@@ -2673,7 +2894,10 @@ mod tests {
         assert!(UNIXGRAM_HTTP_USER_AGENT.contains("Chrome/"));
         assert!(UNIXGRAM_HTTP_USER_AGENT.contains("Safari/537.36"));
         assert!(UNIXGRAM_HTTP_USER_AGENT.contains("Edg/"));
-        assert!(UNIXGRAM_HTTP_USER_AGENT.contains("UnixGramHistory/1.3.1"));
+        assert!(
+            UNIXGRAM_HTTP_USER_AGENT
+                .contains(concat!("UnixGramHistory/", env!("CARGO_PKG_VERSION")))
+        );
         assert!(!UNIXGRAM_HTTP_USER_AGENT.contains("UnixGramDesktop/0.1"));
     }
 
@@ -2777,6 +3001,14 @@ mod tests {
                 "Уведомления",
             ),
             ("https://unixgram.com/dashboard/gifts", "Подарки"),
+            // R2/S3: route boundaries; never include bot names in the label.
+            ("https://unixgram.com/dashboard/bots", "Боты"),
+            (
+                "https://unixgram.com/dashboard/bots/example?start=private",
+                "Боты",
+            ),
+            ("https://unixgram.com/dashboard/botshop", "Лента"),
+            ("https://unixgram.com/u/dashboard/bots", "Лента"),
             ("https://place.unixgram.com/auction/123", "UnixPlace"),
         ];
         for (url, expected) in cases {
