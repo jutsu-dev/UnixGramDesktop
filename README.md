@@ -9,8 +9,8 @@
 <h1 align="center">UnixGram Desktop</h1>
 
 <p align="center">
-  <strong>Знакомый UnixGram в отдельном приложении для Windows.</strong><br>
-  Лента, сообщения, профили, подарки и UnixPlace без лишней вкладки в браузере.
+  <strong>UnixGram для Windows</strong><br>
+  Проект UnixGram History
 </p>
 
 <p align="center">
@@ -28,21 +28,17 @@
 </p>
 
 > [!NOTE]
-> UnixGram Desktop создан сообществом UnixGram History. Это независимый open source проект, неофициальный клиент и не представитель команды UnixGram.
+> Это неофициальный клиент. К команде UnixGram проект не относится.
 
-## UnixGram остаётся UnixGram
+## О приложении
 
-Приложение открывает актуальный UnixGram, а не рисует его копию. Профили, лента, сообщения и подарки загружаются с самого сервиса. Desktop-слой добавляет окно Windows, системный трей, темы, масштаб, горячие клавиши и Discord Rich Presence.
+Внутри открывается сайт UnixGram. Лента, чаты, профили и подарки работают через сам сервис. Мы добавили трей, темы, настройки окна и статус в Discord.
 
 <a href="docs/images/app-main.png">
   <img src="docs/images/app-main.png" alt="Лента UnixGram в окне UnixGram Desktop">
 </a>
 
-<p align="center"><sub>Реальный экран приложения. Нажмите на снимок, чтобы открыть его полностью.</sub></p>
-
-## Главное без лишнего
-
-### Уже доступна · 1.3.2
+## Версия 1.3.2
 
 [Скачать для Windows](https://github.com/jutsu-dev/UnixGramDesktop/releases/download/v1.3.2/UnixGram.Desktop_1.3.2_x64-setup.exe) · [Что нового](docs/RELEASE-1.3.2.md) · [Все версии](https://github.com/jutsu-dev/UnixGramDesktop/releases)
 
@@ -51,22 +47,22 @@
 | 12 тем, включая Ocean, Rose и Forest | Настройки для узких окон и крупных масштабов | Автоматическое подключение на новых установках |
 | Обновлены семь тёмных палитр | Плавные переходы и подчёркивание ссылок | Сохранённое отключение остаётся в силе |
 
-Нужна помощь или нашли ошибку? Оставьте шаги воспроизведения в [Issues](https://github.com/jutsu-dev/UnixGramDesktop/issues).
+Об ошибках пишите в [Issues](https://github.com/jutsu-dev/UnixGramDesktop/issues).
 
 <table>
   <tr>
     <td width="50%" valign="top">
       <h3>Отдельное окно</h3>
-      UnixGram не теряется среди вкладок. Лента, сообщения и UnixPlace открываются из одного приложения.
+      Лента, сообщения и UnixPlace в окне Windows.
     </td>
     <td width="50%" valign="top">
       <h3>Системный трей</h3>
-      Быстрые переходы, счётчик непрочитанных и работа в фоне рядом с часами Windows.
+      Меню по правому клику, счётчик непрочитанных и работа в фоне.
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <h3>Настройка под себя</h3>
+      <h3>Настройки</h3>
       В сборке 1.3.2: двенадцать тем, масштаб, крупный текст, полный экран, окно поверх остальных и Liquid Glass.
     </td>
     <td width="50%" valign="top">
@@ -82,7 +78,7 @@
   <a href="docs/images/app-discord.png"><img src="docs/images/app-discord.png" width="760" alt="Настройки UnixGram Desktop и Discord Rich Presence"></a>
 </details>
 
-## Установить за минуту
+## Установка
 
 1. Откройте [последний релиз](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest).
 2. Скачайте файл `UnixGram.Desktop_1.3.2_x64-setup.exe`.
@@ -113,7 +109,7 @@ Get-FileHash -Algorithm SHA256 ".\UnixGram.Desktop_1.3.2_x64-setup.exe"
 - глобальные сочетания `Ctrl+Shift+1…4` и запасные `Ctrl+Alt+U/M/G/S`;
 - исправления QR-входа, UnixPlace, переходов из достижений и привязки бота.
 
-Версия доступна на странице [последнего релиза](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest). Полная история сборок и проверок остаётся открытой в [GitHub Actions](https://github.com/jutsu-dev/UnixGramDesktop/actions/workflows/release-quality.yml).
+Сборки и результаты проверок: [GitHub Actions](https://github.com/jutsu-dev/UnixGramDesktop/actions/workflows/release-quality.yml).
 
 ## Приватность и безопасность
 
@@ -171,10 +167,10 @@ npm run tauri:test:windows
 
 ## Лицензия
 
-Проект распространяется по [MIT License](LICENSE). Код можно использовать, изучать, изменять и распространять при сохранении текста лицензии и уведомления об авторских правах.
+[MIT License](LICENSE). При использовании кода сохраняйте текст лицензии и уведомление об авторских правах.
 
 <p align="center">
   <img src="docs/images/unixgram-official.svg" width="52" alt="UnixGram"><br><br>
   <strong>UnixGram History</strong><br>
-  <sub>Сделано сообществом для пользователей UnixGram.</sub>
+  <a href="https://t.me/unixgramhistory">Наш Telegram</a>
 </p>
