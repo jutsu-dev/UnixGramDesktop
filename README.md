@@ -42,16 +42,16 @@
 
 ## Главное без лишнего
 
-### Новая сборка · 1.3.2
+### Уже доступна · 1.3.2
 
-[Скачать 1.3.2 для тестирования](https://github.com/jutsu-dev/UnixGramDesktop/releases/tag/v1.3.2) · [Стабильная 1.3.1](https://github.com/jutsu-dev/UnixGramDesktop/releases/tag/v1.3.1)
+[Скачать для Windows](https://github.com/jutsu-dev/UnixGramDesktop/releases/download/v1.3.2/UnixGram.Desktop_1.3.2_x64-setup.exe) · [Что нового](docs/RELEASE-1.3.2.md) · [Все версии](https://github.com/jutsu-dev/UnixGramDesktop/releases)
 
 | Оформление | Удобство | Discord |
 | --- | --- | --- |
 | 12 тем, включая Ocean, Rose и Forest | Настройки для узких окон и крупных масштабов | Автоматическое подключение на новых установках |
 | Обновлены семь тёмных палитр | Плавные переходы и подчёркивание ссылок | Сохранённое отключение остаётся в силе |
 
-1.3.2 пока предварительная: живые сценарии входа, ботов и Discord требуют дополнительной проверки. О найденных проблемах пишите в [Issues](https://github.com/jutsu-dev/UnixGramDesktop/issues).
+Нужна помощь или нашли ошибку? Оставьте шаги воспроизведения в [Issues](https://github.com/jutsu-dev/UnixGramDesktop/issues).
 
 <table>
   <tr>
@@ -85,8 +85,8 @@
 ## Установить за минуту
 
 1. Откройте [последний релиз](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest).
-2. Скачайте файл `UnixGram.Desktop_1.3.1_x64-setup.exe`.
-3. Сверьте SHA-256 с файлом `SHA256SUMS.txt` в том же релизе.
+2. Скачайте файл `UnixGram.Desktop_1.3.2_x64-setup.exe`.
+3. Сверьте SHA-256 с файлом `SHA256SUMS-1.3.2.txt` в том же релизе.
 4. Запустите установщик.
 
 <p align="center">
@@ -99,12 +99,12 @@
 ### Проверка SHA-256
 
 ```powershell
-Get-FileHash -Algorithm SHA256 ".\UnixGram.Desktop_1.3.1_x64-setup.exe"
+Get-FileHash -Algorithm SHA256 ".\UnixGram.Desktop_1.3.2_x64-setup.exe"
 ```
 
-Полученная строка должна полностью совпасть с суммой из `SHA256SUMS.txt`.
+Полученная строка должна полностью совпасть с суммой из `SHA256SUMS-1.3.2.txt`.
 
-## Что нового в 1.3.1
+## Возможности клиента
 
 - до трёх изолированных аккаунтов с переключением и удалением локальной сессии;
 - счётчик непрочитанных в трее и приватные уведомления Windows;
