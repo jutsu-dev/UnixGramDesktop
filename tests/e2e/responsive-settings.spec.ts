@@ -3,8 +3,8 @@ import { expect, test } from '@playwright/test'
 // SETTINGS-UPDATE-PLAN R1/S1, R2/S2: new controls are interactive in preview.
 test('new themes and reading preferences can be selected', async ({ page }) => {
   await page.goto('/?desktop-settings=1')
-  await expect(page.locator('.theme-card')).toHaveCount(12)
-  for (const name of ['Ocean', 'Rose', 'Forest']) {
+  await expect(page.locator('.theme-card')).toHaveCount(13)
+  for (const name of ['Ocean', 'Rose', 'Forest', 'Mexican Pink']) {
     const theme = page.getByRole('button', { name: new RegExp(name) })
     await theme.click()
     await expect(theme).toHaveClass(/active/)

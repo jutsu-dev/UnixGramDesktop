@@ -1,6 +1,6 @@
 [package]
 name = "unixgram-desktop"
-version = "1.3.3"
+version = "1.3.4"
 description = "Community desktop fork foundation for UnixGram"
 authors = ["UnixGram History community"]
 license = "MIT"

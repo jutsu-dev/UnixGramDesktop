@@ -38,13 +38,17 @@
   <img src="docs/images/app-main.png" alt="Лента UnixGram в окне UnixGram Desktop">
 </a>
 
-## Версия 1.3.3
+## Версия 1.3.4
 
-[Скачать для Windows](https://github.com/jutsu-dev/UnixGramDesktop/releases/download/v1.3.3/UnixGram-Desktop-1.3.3-x64-setup.exe) · [Что нового](docs/RELEASE-1.3.3.md) · [Все версии](https://github.com/jutsu-dev/UnixGramDesktop/releases)
+[Скачать для Windows](https://github.com/jutsu-dev/UnixGramDesktop/releases/download/v1.3.4/UnixGram-Desktop-1.3.4-x64-setup.exe) · [Что нового](docs/RELEASE-1.3.4.md) · [Все версии](https://github.com/jutsu-dev/UnixGramDesktop/releases)
+
+**Mexican Pink в честь @cekc.** Розовый акцент, сливовые панели и светлый текст.
+
+![Предпросмотр настроек Mexican Pink](docs/images/settings-mexican-pink-1.3.4.png)
 
 | Оформление | Удобство | Discord |
 | --- | --- | --- |
-| 12 тем с согласованными кнопками и переключателями | Счётчик непрочитанных чатов с сервера | Исправлены названия разделов |
+| 13 тем с согласованными кнопками и переключателями | Счётчик непрочитанных чатов с сервера | Исправлены названия разделов |
 | Светлая Daylight, матовое и прозрачное стекло | Восстановление связи без принудительной перезагрузки | Сохранённое отключение остаётся в силе |
 
 Об ошибках пишите в [Issues](https://github.com/jutsu-dev/UnixGramDesktop/issues).

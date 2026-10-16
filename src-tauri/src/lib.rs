@@ -294,9 +294,20 @@ fn load_preferences(app: &tauri::AppHandle) -> ClientPreferences {
 }
 
 fn normalize_preferences(mut preferences: ClientPreferences) -> ClientPreferences {
-    const THEMES: [&str; 12] = [
-        "native", "midnight", "oled", "graphite", "aurora", "light", "lucifer", "basaltes",
-        "honey", "ocean", "rose", "forest",
+    const THEMES: [&str; 13] = [
+        "native",
+        "midnight",
+        "oled",
+        "graphite",
+        "aurora",
+        "light",
+        "lucifer",
+        "basaltes",
+        "honey",
+        "ocean",
+        "rose",
+        "forest",
+        "mexican-pink",
     ];
     if !THEMES.contains(&preferences.theme.as_str()) {
         preferences.theme = "native".to_string();
@@ -388,6 +399,9 @@ fn theme_css(preferences: &ClientPreferences) -> String {
         ),
         "rose" => (
             "#180f17", "#2c1c29", "#e9a4c2", "#fff1f8", "#604154", "#27101d",
+        ),
+        "mexican-pink" => (
+            "#140911", "#28121f", "#e4007c", "#fff3f9", "#60344d", "#ffffff",
         ),
         "forest" => (
             "#11160f", "#212b1b", "#b7cc8c", "#f1f7e9", "#47553b", "#15200d",
@@ -2760,8 +2774,18 @@ mod tests {
     #[test]
     fn every_custom_theme_keeps_controls_and_media_readable() {
         for theme in [
-            "midnight", "oled", "graphite", "aurora", "light", "lucifer", "basaltes", "honey",
-            "ocean", "rose", "forest",
+            "midnight",
+            "oled",
+            "graphite",
+            "aurora",
+            "light",
+            "lucifer",
+            "basaltes",
+            "honey",
+            "ocean",
+            "rose",
+            "forest",
+            "mexican-pink",
         ] {
             let preferences = ClientPreferences {
                 theme: theme.to_string(),
@@ -2777,8 +2801,19 @@ mod tests {
     #[test]
     fn glass_uses_each_theme_palette_at_every_supported_strength() {
         for theme in [
-            "native", "midnight", "oled", "graphite", "aurora", "light", "lucifer", "basaltes",
-            "honey", "ocean", "rose", "forest",
+            "native",
+            "midnight",
+            "oled",
+            "graphite",
+            "aurora",
+            "light",
+            "lucifer",
+            "basaltes",
+            "honey",
+            "ocean",
+            "rose",
+            "forest",
+            "mexican-pink",
         ] {
             for strength in [0.58, 0.72, 0.90] {
                 let preferences = ClientPreferences {
@@ -2797,14 +2832,25 @@ mod tests {
     }
 
     #[test]
-    fn renders_120_native_theme_setting_states_without_broken_css() {
+    fn renders_all_native_theme_setting_states_without_broken_css() {
         let themes = [
-            "native", "midnight", "oled", "graphite", "aurora", "light", "lucifer", "basaltes",
-            "honey", "ocean", "rose", "forest",
+            "native",
+            "midnight",
+            "oled",
+            "graphite",
+            "aurora",
+            "light",
+            "lucifer",
+            "basaltes",
+            "honey",
+            "ocean",
+            "rose",
+            "forest",
+            "mexican-pink",
         ];
         let strengths = [0.58, 0.66, 0.72, 0.82, 0.90];
 
-        for state in 0..120 {
+        for state in 0..themes.len() * 10 {
             let preferences = ClientPreferences {
                 theme: themes[state % themes.len()].to_string(),
                 liquid_glass: state % 2 == 0,
@@ -2896,6 +2942,7 @@ mod tests {
             ("ocean", "#08131c"),
             ("rose", "#180f17"),
             ("forest", "#11160f"),
+            ("mexican-pink", "#140911"),
         ] {
             let preferences = normalize_preferences(ClientPreferences {
                 theme: theme.to_string(),

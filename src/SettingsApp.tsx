@@ -66,6 +66,7 @@ const themes = [
   ['ocean', 'Ocean', '#79c8ec', 'морская синяя'],
   ['rose', 'Rose', '#e9a4c2', 'дымчатая розовая'],
   ['forest', 'Forest', '#b7cc8c', 'хвойная зелёная'],
+  ['mexican-pink', 'Mexican Pink', '#e4007c', 'в честь @cekc'],
 ] as const
 
 const surfaces: Record<string, [string, string, string]> = {
@@ -75,6 +76,7 @@ const surfaces: Record<string, [string, string, string]> = {
   lucifer: ['#10080b', '#241018', '#fff1f3'], basaltes: ['#08050e', '#191023', '#f7efff'],
   honey: ['#15120b', '#272115', '#fff8e6'], ocean: ['#08131c', '#112635', '#ecf8ff'],
   rose: ['#180f17', '#2c1c29', '#fff1f8'], forest: ['#11160f', '#212b1b', '#f1f7e9'],
+  'mexican-pink': ['#140911', '#28121f', '#fff3f9'],
 }
 
 function Toggle({ checked, label, note, onChange }: { checked: boolean; label: string; note?: string; onChange: (value: boolean) => void }) {

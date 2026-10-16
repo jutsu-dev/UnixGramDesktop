@@ -142,7 +142,7 @@ body:has(.settings-app) { background: var(--settings-page-bg, #08090d); }
 .device-actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 17px; }
 .device-actions button { flex: 1; min-height: 40px; padding: 8px 12px; border: 1px solid var(--settings-line); border-radius: 10px; background: var(--settings-panel); color: var(--settings-text); cursor: pointer; }
 .settings-app { --settings-on-accent: #101118; --settings-danger: #ff99aa; }
-.settings-app[data-theme="native"], .settings-app[data-theme="light"] { --settings-on-accent: #fff; }
+.settings-app[data-theme="native"], .settings-app[data-theme="light"], .settings-app[data-theme="mexican-pink"] { --settings-on-accent: #fff; }
 .settings-app[data-theme="light"] { --settings-danger: #a82039; }
 .settings-app header button, .settings-app footer button,
 .settings-app .account-avatar, .settings-app .settings-logo {

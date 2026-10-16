@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-for (const theme of ['UnixGram', 'Midnight', 'OLED', 'Graphite', 'Aurora', 'Daylight', 'Lucifer', 'By Basaltes', 'Soft Honey', 'Ocean', 'Rose', 'Forest']) {
+for (const theme of ['UnixGram', 'Midnight', 'OLED', 'Graphite', 'Aurora', 'Daylight', 'Lucifer', 'By Basaltes', 'Soft Honey', 'Ocean', 'Rose', 'Forest', 'Mexican Pink']) {
   test(`settings controls stay readable: ${theme}`, async ({ page }) => {
     await page.goto('/?desktop-settings=1')
     await page.locator('.theme-card').filter({ hasText: theme }).click()
@@ -16,8 +16,9 @@ for (const theme of ['UnixGram', 'Midnight', 'OLED', 'Graphite', 'Aurora', 'Dayl
     expect(contrast).toBeGreaterThanOrEqual(4.5)
     await page.locator('.theme-card.active').focus()
     await expect(page.locator('.theme-card.active')).toBeFocused()
-    if (theme === 'Daylight' || theme === 'Lucifer') {
-      await page.screenshot({ path: `artifacts/settings-${theme.toLowerCase()}-1.3.3.png` })
+    if (theme === 'Mexican Pink') {
+      await expect(page.locator('.theme-card.active')).toContainText('в честь @cekc')
+      await page.screenshot({ path: 'artifacts/settings-mexican-pink-1.3.4.png', fullPage: true })
     }
   })
 }

@@ -349,7 +349,7 @@ test('native client settings expose themes, chat controls and window controls', 
   await expect(page.getByRole('button', { name: /Читать @basaltes/ })).toBeVisible()
   await expect(page.getByRole('button', { name: /Добавить/ })).toBeDisabled()
   await expect(page.getByText('cookie и пароли не записываются')).toHaveCount(1)
-  await expect(page.locator('.theme-card')).toHaveCount(12)
+  await expect(page.locator('.theme-card')).toHaveCount(13)
 })
 
 test('both account settings views allow a blank second slot and expose primary reset', async ({ page }) => {

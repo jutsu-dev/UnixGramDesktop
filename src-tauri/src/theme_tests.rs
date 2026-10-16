@@ -50,8 +50,19 @@ fn window_fits_logical_work_area() {
 #[test]
 fn export_native_theme_fixtures() {
     let themes = [
-        "native", "midnight", "oled", "graphite", "aurora", "light", "lucifer", "basaltes",
-        "honey", "ocean", "rose", "forest",
+        "native",
+        "midnight",
+        "oled",
+        "graphite",
+        "aurora",
+        "light",
+        "lucifer",
+        "basaltes",
+        "honey",
+        "ocean",
+        "rose",
+        "forest",
+        "mexican-pink",
     ];
     let mut fixtures = Vec::new();
     for theme in themes {
@@ -73,7 +84,7 @@ fn export_native_theme_fixtures() {
             }
         }
     }
-    assert_eq!(fixtures.len(), 96);
+    assert_eq!(fixtures.len(), themes.len() * 8);
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../diagnostics");
     std::fs::create_dir_all(&path).unwrap();
     std::fs::write(
