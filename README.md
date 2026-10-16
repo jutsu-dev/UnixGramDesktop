@@ -42,7 +42,9 @@
 
 [Скачать для Windows](https://github.com/jutsu-dev/UnixGramDesktop/releases/download/v1.3.4/UnixGram-Desktop-1.3.4-x64-setup.exe) · [Что нового](docs/RELEASE-1.3.4.md) · [Все версии](https://github.com/jutsu-dev/UnixGramDesktop/releases)
 
-**Mexican Pink в честь @cekc.** Розовый акцент, сливовые панели и светлый текст.
+**Mexican Pink посвящена пользователю `@cekc` в UnixGram.**
+
+Розовый акцент, сливовые панели и светлый текст. Тема доступна всем: откройте настройки клиента → «Оформление» → Mexican Pink.
 
 ![Предпросмотр настроек Mexican Pink](docs/images/settings-mexican-pink-1.3.4.png)
 
@@ -78,7 +80,7 @@
   <tr>
     <td width="50%" valign="top">
       <h3>Настройки</h3>
-      В сборке 1.3.2: двенадцать тем, масштаб, крупный текст, полный экран, окно поверх остальных и Liquid Glass.
+      13 тем, масштаб, крупный текст, полный экран, окно поверх остальных и Liquid Glass.
     </td>
     <td width="50%" valign="top">
       <h3>Discord Rich Presence</h3>
@@ -96,8 +98,8 @@
 ## Установка
 
 1. Откройте [последний релиз](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest).
-2. Скачайте файл `UnixGram.Desktop_1.3.2_x64-setup.exe`.
-3. Сверьте SHA-256 с файлом `SHA256SUMS-1.3.2.txt` в том же релизе.
+2. Скачайте файл `UnixGram-Desktop-1.3.4-x64-setup.exe`.
+3. Сверьте SHA-256 с файлом `SHA256SUMS.txt` в том же релизе.
 4. Запустите установщик.
 
 <p align="center">
@@ -110,10 +112,10 @@
 ### Проверка SHA-256
 
 ```powershell
-Get-FileHash -Algorithm SHA256 ".\UnixGram.Desktop_1.3.2_x64-setup.exe"
+Get-FileHash -Algorithm SHA256 ".\UnixGram-Desktop-1.3.4-x64-setup.exe"
 ```
 
-Полученная строка должна полностью совпасть с суммой из `SHA256SUMS-1.3.2.txt`.
+Полученная строка должна полностью совпасть с суммой из `SHA256SUMS.txt`.
 
 ## Возможности клиента
 
@@ -132,8 +134,8 @@ Get-FileHash -Algorithm SHA256 ".\UnixGram.Desktop_1.3.2_x64-setup.exe"
 | --- | --- |
 | Пароль | Используется только для входа и не сохраняется приложением |
 | Сессия | Хранится локально средствами Windows и в изолированном профиле WebView2 |
-| Сеть | UnixGram и UnixPlace открываются внутри клиента; в 1.3.2 внешние HTTPS-ссылки требуют подтверждения для открытия в браузере |
-| Discord | В 1.3.2 включён для новых установок; можно отключить. Содержимое аккаунта не передаётся |
+| Сеть | UnixGram и UnixPlace открываются внутри клиента; внешние HTTPS-ссылки требуют подтверждения для открытия в браузере |
+| Discord | Включён для новых установок; можно отключить. Содержимое аккаунта не передаётся |
 | Уведомления | Без текста сообщений, имён и превью личных данных |
 | Публичная сборка | Проверяется CI, npm audit, Gitleaks, Trivy, Rust-тестами и Playwright |
 
