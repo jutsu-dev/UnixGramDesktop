@@ -30,21 +30,22 @@ use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut,
 use tauri_plugin_notification::NotificationExt;
 
 const BASE_URL: &str = "https://unixgram.com";
+const DESKTOP_RUNTIME: &str = include_str!("desktop-runtime.js");
 const CREATOR_PROFILE_URL: &str = "https://unixgram.com/u/basaltes";
 const DISCORD_CLIENT_ID: &str = "1540399183276539904";
 const SESSION_SERVICE: &str = "com.unixgram.desktop.community";
 const SESSION_ACCOUNT_PREFIX: &str = "unixgram-session";
-const UNIXGRAM_HTTP_USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0 UnixGramHistory/1.3.2";
+const UNIXGRAM_HTTP_USER_AGENT: &str = concat!(
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0 UnixGramHistory/",
+    env!("CARGO_PKG_VERSION")
+);
 const RECOVERY_SCRIPT: &str = r#"(() => {
+  if (window.__ugdRuntime) { window.__ugdRuntime.recover(); return; }
   const fields = document.querySelectorAll('input, textarea, [contenteditable="true"]');
   const hasDraft = Array.from(fields).some((field) => {
     const value = 'value' in field ? field.value : field.textContent;
     return typeof value === 'string' && value.trim().length > 0;
   });
-  if (!hasDraft && document.readyState !== 'loading') {
-    location.reload();
-    return;
-  }
   let notice = document.getElementById('unixgram-desktop-recovery-notice');
   if (!notice) {
     notice = document.createElement('div');
@@ -58,7 +59,7 @@ const RECOVERY_SCRIPT: &str = r#"(() => {
     });
     document.body.appendChild(notice);
   }
-  notice.textContent = 'Соединение восстановлено. Черновик сохранён — обновите страницу вручную.';
+  notice.textContent = hasDraft ? 'Связь восстановлена. Текст остался в окне. Обновите страницу после отправки.' : 'Связь восстановлена. Если данные устарели, обновите страницу вручную.';
   clearTimeout(window.__unixgramRecoveryNoticeTimer);
   window.__unixgramRecoveryNoticeTimer = setTimeout(() => notice?.remove(), 6000);
 })();"#;
@@ -160,6 +161,7 @@ struct AppState {
     qr: Mutex<Option<QrFlow>>,
     discord: Mutex<Option<DiscordIpcClient>>,
     unread_by_window: Mutex<HashMap<String, u32>>,
+    pending_titles: Mutex<HashMap<String, (std::time::Instant, String)>>,
     active_section: Mutex<String>,
     hotkeys: Mutex<HotkeyRuntimeStatus>,
     online: AtomicBool,
@@ -173,6 +175,7 @@ impl Default for AppState {
             qr: Mutex::new(None),
             discord: Mutex::new(None),
             unread_by_window: Mutex::new(HashMap::new()),
+            pending_titles: Mutex::new(HashMap::new()),
             active_section: Mutex::new("UnixGram".to_string()),
             hotkeys: Mutex::new(HotkeyRuntimeStatus::default()),
             online: AtomicBool::new(true),
@@ -203,6 +206,8 @@ struct ClientPreferences {
     theme: String,
     liquid_glass: bool,
     glass_strength: f64,
+    glass_mode: String,
+    reduce_transparency: bool,
     compact_chats: bool,
     large_chat_text: bool,
     reduce_motion: bool,
@@ -227,6 +232,8 @@ impl Default for ClientPreferences {
             theme: "native".to_string(),
             liquid_glass: false,
             glass_strength: 0.72,
+            glass_mode: "frosted".to_string(),
+            reduce_transparency: false,
             compact_chats: false,
             large_chat_text: false,
             reduce_motion: false,
@@ -288,14 +295,17 @@ fn load_preferences(app: &tauri::AppHandle) -> ClientPreferences {
 
 fn normalize_preferences(mut preferences: ClientPreferences) -> ClientPreferences {
     const THEMES: [&str; 12] = [
-        "native", "midnight", "oled", "graphite", "aurora", "light", "lucifer", "basaltes", "honey",
-        "ocean", "rose", "forest",
+        "native", "midnight", "oled", "graphite", "aurora", "light", "lucifer", "basaltes",
+        "honey", "ocean", "rose", "forest",
     ];
     if !THEMES.contains(&preferences.theme.as_str()) {
         preferences.theme = "native".to_string();
     }
     preferences.zoom = preferences.zoom.clamp(0.8, 1.4);
     preferences.glass_strength = preferences.glass_strength.clamp(0.58, 0.90);
+    if !["frosted", "clear"].contains(&preferences.glass_mode.as_str()) {
+        preferences.glass_mode = "frosted".to_string();
+    }
     preferences
         .accounts
         .retain(|account| (1..=3).contains(&account.id));
@@ -362,7 +372,7 @@ fn theme_css(preferences: &ClientPreferences) -> String {
             "#091612", "#142820", "#71dab5", "#effffb", "#355348", "#06120f",
         ),
         "light" => (
-            "#171a21", "#222731", "#8aa4ff", "#f4f6fb", "#3b4452", "#10131a",
+            "#f1f2f5", "#ffffff", "#5948c7", "#191b24", "#c5c8d2", "#ffffff",
         ),
         "lucifer" => (
             "#10080b", "#241018", "#e78a9d", "#fff1f3", "#58303d", "#270b13",
@@ -390,16 +400,22 @@ fn theme_css(preferences: &ClientPreferences) -> String {
         "html{{--ugd-bg:{};--ugd-panel:{};--ugd-accent:{};--ugd-text:{};--ugd-line:{};--ugd-on-accent:{};}}",
         palette.0, palette.1, palette.2, palette.3, palette.4, palette.5
     );
+    if preferences.theme == "native" {
+        css.push_str("html{--ugd-bg:var(--tg-bg,#050505);--ugd-panel:var(--tg-surface,#101014);--ugd-text:var(--tg-text,#f5f6fa);--ugd-line:var(--tg-divider,#282832);}html[data-theme=light]{--ugd-bg:var(--tg-bg,#f1f2f5);--ugd-panel:var(--tg-surface,#fff);--ugd-text:var(--tg-text,#191b24);--ugd-line:var(--tg-divider,#c5c8d2);}");
+    }
     if preferences.theme != "native" {
+        css.push_str("html:root{--background:var(--ugd-bg)!important;--foreground:var(--ugd-text)!important;--color-bg:var(--ugd-bg)!important;--tg-bg:var(--ugd-bg)!important;--tg-canvas:var(--ugd-bg)!important;--tg-card:var(--ugd-panel)!important;--tg-surface:var(--ugd-panel)!important;--tg-surface-2:var(--ugd-panel)!important;--tg-menu:var(--ugd-panel)!important;--tg-sheet:var(--ugd-panel)!important;--tg-in-bubble:var(--ugd-panel)!important;--tg-text:var(--ugd-text)!important;--tg-text-secondary:color-mix(in srgb,var(--ugd-text) 75%,var(--ugd-panel))!important;--tg-text-muted:color-mix(in srgb,var(--ugd-text) 68%,var(--ugd-panel))!important;--tg-divider:var(--ugd-line)!important;--tg-sheet-border:var(--ugd-line)!important;--tg-header-bg:var(--ugd-panel)!important;--unx-panel:var(--ugd-panel)!important;--unx-panel-hover:var(--ugd-panel)!important;--unx-panel-border:var(--ugd-line)!important;--tg-card-border:var(--ugd-line)!important;--accent:var(--ugd-accent)!important;--accent-strong:var(--ugd-accent)!important;}");
         css.push_str(&format!(
             "html{{color-scheme:{};}}body,main{{background-color:var(--ugd-bg)!important;color:var(--ugd-text)!important;}}header,aside,nav,article,[role=dialog]{{background-color:var(--ugd-panel)!important;color:var(--ugd-text)!important;border-color:var(--ugd-line)!important;}}input,textarea,select{{color:var(--ugd-text)!important;border-color:var(--ugd-line)!important;accent-color:var(--ugd-accent)!important;background-color:color-mix(in srgb,var(--ugd-panel) 92%,var(--ugd-text) 8%)!important;caret-color:var(--ugd-accent)!important;}}input::placeholder,textarea::placeholder{{color:color-mix(in srgb,var(--ugd-text) 58%,transparent)!important;}}img,video{{filter:none!important;}}",
-            "dark",
+            if preferences.theme == "light" { "light" } else { "dark" },
         ));
     }
-    if preferences.liquid_glass {
+    if preferences.liquid_glass && !preferences.reduce_transparency {
         let strength = preferences.glass_strength.clamp(0.58, 0.90);
-        let panel_percent = (strength * 100.0).round();
-        css.push_str(&format!("body{{background-image:radial-gradient(circle at 12% 8%,color-mix(in srgb,var(--ugd-accent) 28%,transparent),transparent 34%),radial-gradient(circle at 88% 92%,color-mix(in srgb,var(--ugd-accent) 17%,transparent),transparent 38%)!important;background-color:var(--ugd-bg)!important;background-attachment:fixed!important;}}header,aside,nav,[role=dialog],article{{background-color:color-mix(in srgb,var(--ugd-panel) {panel_percent}%,transparent)!important;color:var(--ugd-text)!important;backdrop-filter:blur(26px) saturate(145%)!important;-webkit-backdrop-filter:blur(26px) saturate(145%)!important;box-shadow:inset 0 1px color-mix(in srgb,var(--ugd-text) 10%,transparent),0 18px 50px rgba(0,0,0,.18)!important;border-color:color-mix(in srgb,var(--ugd-text) 14%,transparent)!important;}}"));
+        let clear = preferences.glass_mode == "clear";
+        let panel_percent = (strength.max(if clear { 0.70 } else { 0.88 }) * 100.0).round();
+        let blur = if clear { 18 } else { 10 };
+        css.push_str(&format!("header:not(article header),aside,nav,[role=dialog]{{background-color:var(--ugd-panel)!important;color:var(--ugd-text)!important;border-color:var(--ugd-line)!important;}}@supports(backdrop-filter:blur(1px)){{header:not(article header),aside,nav{{background-color:color-mix(in srgb,var(--ugd-panel) {panel_percent}%,transparent)!important;backdrop-filter:blur({blur}px) saturate(115%)!important;-webkit-backdrop-filter:blur({blur}px) saturate(115%)!important;box-shadow:inset 0 1px color-mix(in srgb,var(--ugd-text) 10%,transparent),0 8px 24px #0002!important;}}[role=dialog]{{background-color:color-mix(in srgb,var(--ugd-panel) 94%,transparent)!important;backdrop-filter:blur(10px)!important;}}}}@media(prefers-reduced-transparency:reduce),(forced-colors:active){{header:not(article header),aside,nav,[role=dialog]{{background-color:var(--ugd-panel)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none!important;}}}}"));
     }
     if preferences.compact_chats {
         css.push_str("html[data-ugd-page='messages'] main{line-height:1.25!important;}");
@@ -411,7 +427,9 @@ fn theme_css(preferences: &ClientPreferences) -> String {
         css.push_str("html,body,main,[role=log]{scroll-behavior:smooth!important;}");
     }
     if preferences.underline_links {
-        css.push_str("a[href]{text-decoration-line:underline!important;text-underline-offset:.18em;}");
+        css.push_str(
+            "a[href]{text-decoration-line:underline!important;text-underline-offset:.18em;}",
+        );
     }
     css.push_str("@media(prefers-reduced-motion:reduce){html,body,main,[role=log],*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}");
     if preferences.reduce_motion {
@@ -429,10 +447,34 @@ fn apply_preferences_to_window(window: &tauri::WebviewWindow, preferences: &Clie
     let _ = window.set_always_on_top(preferences.always_on_top);
     let _ = window.set_zoom(preferences.zoom.clamp(0.8, 1.4));
     let css = serde_json::to_string(&theme_css(preferences)).unwrap_or_else(|_| "\"\"".to_string());
+    let runtime_options = json!({"reconnectEnabled": preferences.reconnect_enabled, "trayUnreadBadge": preferences.tray_unread_badge, "windowsNotifications": preferences.windows_notifications});
+    let site_theme = if preferences.theme == "native" {
+        "native"
+    } else if preferences.theme == "light" {
+        "light"
+    } else {
+        "dark"
+    };
     let script = format!(
         r#"
             (() => {{
+              if (window.top !== window || !['https://unixgram.com','https://www.unixgram.com'].includes(location.origin)) return;
+              window.__ugdRuntime?.configure({runtime_options});
               const root = document.documentElement;
+              window.__ugdThemeObserver?.disconnect();
+              if ('{site_theme}' === 'native') {{
+                if (Object.hasOwn(window, '__ugdOriginalTheme')) {{
+                  if (window.__ugdOriginalTheme === null) root.removeAttribute('data-theme');
+                  else root.setAttribute('data-theme', window.__ugdOriginalTheme);
+                  delete window.__ugdOriginalTheme;
+                }}
+              }} else {{
+                if (!Object.hasOwn(window, '__ugdOriginalTheme')) window.__ugdOriginalTheme = root.getAttribute('data-theme');
+                const keepTheme = () => {{ if (root.getAttribute('data-theme') !== '{site_theme}') root.setAttribute('data-theme', '{site_theme}'); }};
+                keepTheme();
+                window.__ugdThemeObserver = new MutationObserver(keepTheme);
+                window.__ugdThemeObserver.observe(root, {{ attributes: true, attributeFilter: ['data-theme'] }});
+              }}
               const updatePage = () => {{ root.dataset.ugdPage = location.pathname.includes('/messages') ? 'messages' : 'default'; }};
               updatePage();
               if (window.__unixgramDesktopPageTimer) clearInterval(window.__unixgramDesktopPageTimer);
@@ -442,12 +484,15 @@ fn apply_preferences_to_window(window: &tauri::WebviewWindow, preferences: &Clie
               style.textContent = {css};
 
               const refreshExpiredQr = () => {{
+                if (document.hidden || location.pathname.startsWith('/dashboard')) return;
                 const now = Date.now();
                 if (now - (window.__unixgramDesktopLastQrRefresh || 0) < 10_000) return;
                 const trigger = [...document.querySelectorAll('button')].find((button) => {{
                   const text = (button.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
                   const visible = button.getClientRects().length > 0 && !button.disabled;
-                  return visible && text.includes('qr-код истёк') && text.includes('обновить');
+                  const expired = text.includes('qr-код истёк') && text.includes('обновить');
+                  const expiredEnglish = text.includes('qr code expired') && text.includes('refresh');
+                  return visible && (expired || expiredEnglish);
                 }});
                 if (trigger) {{
                   window.__unixgramDesktopLastQrRefresh = now;
@@ -456,7 +501,12 @@ fn apply_preferences_to_window(window: &tauri::WebviewWindow, preferences: &Clie
               }};
               refreshExpiredQr();
               if (window.__unixgramDesktopQrObserver) window.__unixgramDesktopQrObserver.disconnect();
-              window.__unixgramDesktopQrObserver = new MutationObserver(refreshExpiredQr);
+              let qrPending = false;
+              window.__unixgramDesktopQrObserver = new MutationObserver(() => {{
+                if (qrPending) return;
+                qrPending = true;
+                setTimeout(() => {{ qrPending = false; refreshExpiredQr(); }}, 250);
+              }});
               window.__unixgramDesktopQrObserver.observe(document.body, {{ childList: true, subtree: true, characterData: true }});
             }})()
         "#
@@ -490,7 +540,11 @@ fn desktop_save_preferences(
     app: tauri::AppHandle,
     preferences: ClientPreferences,
 ) -> Result<ClientPreferences, String> {
-    let preferences = normalize_preferences(preferences);
+    // Account membership is changed only by the account commands, never by a stale settings form.
+    let current = load_preferences(&app);
+    let mut preferences = normalize_preferences(preferences);
+    preferences.accounts = current.accounts;
+    preferences.active_account = current.active_account;
     write_preferences(&app, &preferences)?;
     apply_preferences(&app, &preferences);
     sync_global_shortcuts(&app, preferences.global_hotkeys);
@@ -1454,22 +1508,30 @@ fn section_from_url(url: &Url) -> &'static str {
         return "UnixPlace";
     }
     let path = url.path();
-    if path == "/dashboard/bots" || path.starts_with("/dashboard/bots/") {
-        "Боты"
-    } else if path.contains("/messages") {
-        "Сообщения"
-    } else if path.contains("/notifications") {
-        "Уведомления"
-    } else if path.contains("/communities") {
-        "Сообщества"
-    } else if path.contains("/studio") {
-        "Студия"
-    } else if path.contains("/gifts") {
-        "Подарки"
-    } else if path.contains("/profile") {
+    let route = |base: &str| {
+        path == base
+            || path
+                .strip_prefix(base)
+                .is_some_and(|tail| tail.starts_with('/'))
+    };
+    if route("/u") || route("/dashboard/profile") {
         "Профиль"
-    } else if path.contains("/search") {
+    } else if route("/dashboard/bots") {
+        "Боты"
+    } else if route("/dashboard/messages") {
+        "Сообщения"
+    } else if route("/dashboard/notifications") {
+        "Уведомления"
+    } else if route("/communities") || route("/dashboard/communities") {
+        "Сообщества"
+    } else if route("/dashboard/studio") || route("/dashboard/analytics") {
+        "Студия"
+    } else if route("/dashboard/gifts") {
+        "Подарки"
+    } else if route("/dashboard/search") || route("/dashboard/explore") {
         "Поиск"
+    } else if route("/dashboard/stars") {
+        "Звёзды"
     } else {
         "Лента"
     }
@@ -1611,6 +1673,41 @@ fn refresh_tray_status(app: &tauri::AppHandle, total_unread: u32) {
     }
 }
 
+fn queue_unread_for_window(app: &tauri::AppHandle, label: &str, title: &str) {
+    let changed_at = std::time::Instant::now();
+    let app = app.clone();
+    let label = label.to_string();
+    if let Ok(mut pending) = app.state::<AppState>().pending_titles.lock() {
+        pending.insert(
+            label.clone(),
+            (changed_at, title.chars().take(512).collect()),
+        );
+    }
+    tauri::async_runtime::spawn(async move {
+        tokio::time::sleep(Duration::from_millis(250)).await;
+        let title = app
+            .state::<AppState>()
+            .pending_titles
+            .lock()
+            .ok()
+            .and_then(|mut pending| {
+                if pending
+                    .get(&label)
+                    .is_some_and(|(time, _)| *time == changed_at)
+                {
+                    pending.remove(&label).map(|(_, title)| title)
+                } else {
+                    None
+                }
+            });
+        if let Some(title) = title {
+            if app.get_webview_window(&label).is_some() {
+                update_unread_for_window(&app, &label, &title);
+            }
+        }
+    });
+}
+
 fn update_unread_for_window(app: &tauri::AppHandle, label: &str, title: &str) {
     let count = unread_from_title(title);
     let state = app.state::<AppState>();
@@ -1624,13 +1721,11 @@ fn update_unread_for_window(app: &tauri::AppHandle, label: &str, title: &str) {
     };
     refresh_tray_status(app, total);
     let preferences = load_preferences(app);
-    if preferences.windows_notifications && previous.is_some_and(|old| count > old) {
-        let difference = count.saturating_sub(previous.unwrap_or(0));
-        let body = if difference == 1 {
-            "одно новое сообщение".to_string()
-        } else {
-            format!("новых сообщений: {difference}")
-        };
+    let focused = app
+        .get_webview_window(label)
+        .is_some_and(|window| window.is_focused().unwrap_or(false));
+    if preferences.windows_notifications && !focused && previous.is_some_and(|old| count > old) {
+        let body = format!("Непрочитанных чатов: {count}");
         let _ = app
             .notification()
             .builder()
@@ -1714,17 +1809,32 @@ async fn prepare_unused_account_slot(app: &tauri::AppHandle, id: u8) -> Result<(
 }
 
 fn fitted_window_size(width: f64, height: f64, scale: f64, preferred: (f64, f64)) -> (f64, f64) {
-    let scale = if scale.is_finite() && scale > 0.0 { scale } else { 1.0 };
+    let scale = if scale.is_finite() && scale > 0.0 {
+        scale
+    } else {
+        1.0
+    };
     // Leave room for window decorations; taskbar is excluded by work_area.
-    (preferred.0.min((width / scale - 32.0).max(1.0)),
-     preferred.1.min((height / scale - 64.0).max(1.0)))
+    (
+        preferred.0.min((width / scale - 32.0).max(1.0)),
+        preferred.1.min((height / scale - 64.0).max(1.0)),
+    )
 }
 
 fn initial_window_size(app: &tauri::AppHandle, preferred: (f64, f64)) -> (f64, f64) {
-    app.primary_monitor().ok().flatten().map(|monitor| {
-        let area = monitor.work_area();
-        fitted_window_size(area.size.width as f64, area.size.height as f64, monitor.scale_factor(), preferred)
-    }).unwrap_or((preferred.0.min(1000.0), preferred.1.min(640.0)))
+    app.primary_monitor()
+        .ok()
+        .flatten()
+        .map(|monitor| {
+            let area = monitor.work_area();
+            fitted_window_size(
+                area.size.width as f64,
+                area.size.height as f64,
+                monitor.scale_factor(),
+                preferred,
+            )
+        })
+        .unwrap_or((preferred.0.min(1000.0), preferred.1.min(640.0)))
 }
 
 fn create_account_window(
@@ -1754,12 +1864,37 @@ fn create_account_window(
     .center()
     .visible(visible)
     .user_agent(UNIXGRAM_HTTP_USER_AGENT)
+    .disable_drag_drop_handler()
+    .initialization_script(DESKTOP_RUNTIME)
+    .on_download(|webview, event| {
+        if let tauri::webview::DownloadEvent::Finished { success, .. } = event {
+            if load_preferences(webview.app_handle()).windows_notifications {
+                let _ = webview
+                    .app_handle()
+                    .notification()
+                    .builder()
+                    .title("UnixGram Desktop")
+                    .body(if success {
+                        "Файл скачан."
+                    } else {
+                        "Не удалось скачать файл. Повторите загрузку на странице."
+                    })
+                    .show();
+            }
+        }
+        true
+    })
     .on_new_window(move |url, _| {
         handle_popup(&popup_app, &popup_label, url);
         tauri::webview::NewWindowResponse::Deny
     })
     .on_document_title_changed(move |window, title| {
-        update_unread_for_window(window.app_handle(), &callback_label, &title);
+        queue_unread_for_window(window.app_handle(), &callback_label, &title);
+        if window.is_focused().unwrap_or(false) {
+            if let Ok(url) = window.url() {
+                update_active_section(window.app_handle(), &url);
+            }
+        }
     });
     if account.id > 1 {
         let directory = account_profile_directory(app, account.id)?;
@@ -1890,8 +2025,21 @@ async fn desktop_remove_account(
     app: tauri::AppHandle,
     id: u8,
 ) -> Result<ClientPreferences, String> {
+    if let Ok(mut pending) = app.state::<AppState>().pending_titles.lock() {
+        pending.remove(&account_window_label(id));
+    }
+    if let Ok(mut counts) = app.state::<AppState>().unread_by_window.lock() {
+        counts.remove(&account_window_label(id));
+        refresh_tray_status(&app, counts.values().copied().sum::<u32>().min(999));
+    }
     if id == 1 {
         delete_cookie_for_account(1)?;
+        if let Some(market) = app.get_webview_window("unixplace") {
+            market
+                .clear_all_browsing_data()
+                .map_err(|_| "не удалось очистить сессию UnixPlace".to_string())?;
+            let _ = market.destroy();
+        }
         if let Some(window) = app.get_webview_window("main") {
             window.clear_all_browsing_data().map_err(|_| {
                 "не удалось очистить локальную сессию основного аккаунта".to_string()
@@ -1942,6 +2090,17 @@ fn desktop_open_creator_profile(app: tauri::AppHandle) -> Result<(), String> {
     validate_unixgram_url(CREATOR_PROFILE_URL)?;
     navigate_active_account(&app, CREATOR_PROFILE_URL);
     Ok(())
+}
+
+#[tauri::command]
+fn desktop_media_settings(device: String) -> Result<(), String> {
+    let target = match device.as_str() {
+        "microphone" => "ms-settings:privacy-microphone",
+        "camera" => "ms-settings:privacy-webcam",
+        "sound" => "ms-settings:sound",
+        _ => return Err("неизвестное устройство".to_string()),
+    };
+    open::that_detached(target).map_err(|_| "не удалось открыть настройки Windows".to_string())
 }
 
 #[tauri::command]
@@ -2156,11 +2315,13 @@ fn start_connection_monitor(app: tauri::AppHandle) {
             .build();
         let Ok(client) = client else { return };
         loop {
-            let online = client
-                .get(BASE_URL)
-                .send()
-                .await
-                .is_ok_and(|response| response.status().is_success());
+            let online = match client.get(format!("{BASE_URL}/api/health")).send().await {
+                Ok(response) if response.status().is_success() => response
+                    .json::<Value>()
+                    .await
+                    .is_ok_and(|payload| payload.get("ok") == Some(&Value::Bool(true))),
+                _ => false,
+            };
             let state = app.state::<AppState>();
             let was_online = state.online.swap(online, Ordering::Relaxed);
             let failures = if online {
@@ -2182,6 +2343,13 @@ fn start_connection_monitor(app: tauri::AppHandle) {
                 .unwrap_or(0);
             refresh_tray_status(&app, total);
             let preferences = load_preferences(&app);
+            if let Some(window) =
+                app.get_webview_window(&account_window_label(preferences.active_account))
+            {
+                if let Ok(url) = window.url() {
+                    update_active_section(&app, &url);
+                }
+            }
             if !was_online && online && preferences.reconnect_enabled {
                 for id in 1..=3 {
                     if let Some(window) = app.get_webview_window(&account_window_label(id)) {
@@ -2548,6 +2716,7 @@ pub fn run() {
             desktop_switch_account,
             desktop_remove_account,
             desktop_open_creator_profile,
+            desktop_media_settings,
             desktop_security_status,
             desktop_open_account_window,
             desktop_shell_state,
@@ -2609,8 +2778,7 @@ mod tests {
     fn glass_uses_each_theme_palette_at_every_supported_strength() {
         for theme in [
             "native", "midnight", "oled", "graphite", "aurora", "light", "lucifer", "basaltes",
-            "honey",
-            "ocean", "rose", "forest",
+            "honey", "ocean", "rose", "forest",
         ] {
             for strength in [0.58, 0.72, 0.90] {
                 let preferences = ClientPreferences {
@@ -2622,7 +2790,7 @@ mod tests {
                 let css = theme_css(&preferences);
                 assert!(css.contains("var(--ugd-panel)"));
                 assert!(css.contains("color:var(--ugd-text)!important"));
-                assert!(css.contains("backdrop-filter:blur(26px)"));
+                assert!(css.contains("backdrop-filter:blur(10px)"));
                 assert!(!css.contains("rgba(15,15,22"));
             }
         }
@@ -2632,8 +2800,7 @@ mod tests {
     fn renders_120_native_theme_setting_states_without_broken_css() {
         let themes = [
             "native", "midnight", "oled", "graphite", "aurora", "light", "lucifer", "basaltes",
-            "honey",
-            "ocean", "rose", "forest",
+            "honey", "ocean", "rose", "forest",
         ];
         let strengths = [0.58, 0.66, 0.72, 0.82, 0.90];
 
@@ -2676,7 +2843,7 @@ mod tests {
             );
             if preferences.liquid_glass {
                 assert!(
-                    css.contains("backdrop-filter:blur(26px)"),
+                    css.contains("backdrop-filter:blur(10px)"),
                     "state {state} lost glass styling"
                 );
             }
@@ -2711,7 +2878,8 @@ mod tests {
         assert!(!fresh.underline_links);
         let saved: ClientPreferences = serde_json::from_str(
             r#"{"discordPresence":false,"smoothScroll":true,"underlineLinks":true}"#,
-        ).unwrap();
+        )
+        .unwrap();
         let restored = normalize_preferences(saved);
         assert!(!restored.discord_presence);
         assert!(restored.smooth_scroll);
@@ -2725,16 +2893,20 @@ mod tests {
     #[test]
     fn new_themes_survive_normalization_with_distinct_palettes() {
         for (theme, background) in [
-            ("ocean", "#08131c"), ("rose", "#180f17"), ("forest", "#11160f"),
+            ("ocean", "#08131c"),
+            ("rose", "#180f17"),
+            ("forest", "#11160f"),
         ] {
             let preferences = normalize_preferences(ClientPreferences {
-                theme: theme.to_string(), ..ClientPreferences::default()
+                theme: theme.to_string(),
+                ..ClientPreferences::default()
             });
             assert_eq!(preferences.theme, theme);
             assert!(theme_css(&preferences).contains(&format!("--ugd-bg:{background};")));
         }
         let invalid = normalize_preferences(ClientPreferences {
-            theme: "unknown".to_string(), ..ClientPreferences::default()
+            theme: "unknown".to_string(),
+            ..ClientPreferences::default()
         });
         assert_eq!(invalid.theme, "native");
     }
@@ -2750,7 +2922,9 @@ mod tests {
         let css = theme_css(&preferences);
         assert!(css.contains("a[href]{text-decoration-line:underline!important;"));
         let smooth = css.find("scroll-behavior:smooth").unwrap();
-        let reduced = css.find("@media(prefers-reduced-motion:reduce){html,body,main,[role=log]").unwrap();
+        let reduced = css
+            .find("@media(prefers-reduced-motion:reduce){html,body,main,[role=log]")
+            .unwrap();
         assert!(reduced > smooth);
         assert!(css[reduced..].contains("scroll-behavior:auto!important"));
         preferences.reduce_motion = true;
@@ -3008,7 +3182,12 @@ mod tests {
                 "Боты",
             ),
             ("https://unixgram.com/dashboard/botshop", "Лента"),
-            ("https://unixgram.com/u/dashboard/bots", "Лента"),
+            ("https://unixgram.com/u/dashboard/bots", "Профиль"),
+            ("https://unixgram.com/u/messages", "Профиль"),
+            ("https://unixgram.com/dashboard/explore", "Поиск"),
+            ("https://unixgram.com/dashboard/analytics", "Студия"),
+            ("https://unixgram.com/dashboard/stars", "Звёзды"),
+            ("https://unixgram.com/dashboard/messages-other", "Лента"),
             ("https://place.unixgram.com/auction/123", "UnixPlace"),
         ];
         for (url, expected) in cases {
@@ -3051,7 +3230,7 @@ mod tests {
         assert!(source.contains("Code::KeyM"));
         assert!(source.contains("Code::KeyG"));
         assert!(source.contains("Code::KeyS"));
-        assert!(source.contains("одно новое сообщение"));
+        assert!(source.contains("Непрочитанных чатов:"));
         assert!(source.contains(".body(body)"));
     }
 }

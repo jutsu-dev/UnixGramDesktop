@@ -1,14 +1,14 @@
 {
   "name": "unixgram-desktop",
   "private": true,
-  "version": "1.3.2",
+  "version": "1.3.3",
   "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "test:e2e": "playwright test desktop-shell.spec.ts theme-matrix.spec.ts responsive-settings.spec.ts",
+    "test:e2e": "playwright test desktop-shell.spec.ts theme-matrix.spec.ts responsive-settings.spec.ts desktop-runtime.spec.ts settings-palette.spec.ts",
     "test:native-e2e": "npm run tauri:test:windows && playwright test bot-theme-compatibility.spec.ts",
     "preview": "vite preview",
     "tauri:dev": "tauri dev",

@@ -101,3 +101,66 @@ button, input { font: inherit; }
   .settings-app *, .settings-app *::before, .settings-app *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
 .settings-app[data-motion="reduce"] *, .settings-app[data-motion="reduce"] *::before, .settings-app[data-motion="reduce"] *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+
+.settings-app {
+  --settings-muted: color-mix(in srgb, var(--settings-text) 73%, var(--settings-panel));
+  --settings-line: color-mix(in srgb, var(--settings-text) 23%, var(--settings-panel));
+  background: var(--settings-bg); color: var(--settings-text);
+  scrollbar-color: var(--settings-line) var(--settings-bg);
+}
+.settings-app section, .settings-app .theme-card, .settings-app .account-card,
+.settings-app .shortcut-list > span, .settings-app .security-grid > span {
+  background: var(--settings-panel); color: var(--settings-text); border-color: var(--settings-line);
+  backdrop-filter: none; box-shadow: none;
+}
+.settings-app .section-title, .settings-app .setting-row, .settings-app .zoom-row,
+.settings-app .privacy-note, .settings-app .creator-follow, .settings-app .security-details,
+.settings-app .shortcut-list { border-color: var(--settings-line); }
+.settings-app small, .settings-app .section-title p, .settings-app .privacy-note,
+.settings-app .shortcut-list b, .settings-app .shortcut-status, .settings-app .shortcut-legacy,
+.settings-app .zoom-row b, .settings-app header span, .settings-app .account-add label,
+.settings-app .security-details span, .settings-app footer span { color: var(--settings-muted); }
+.settings-app .theme-card.active, .settings-app .account-card.is-active {
+  border-color: var(--settings-accent); background: color-mix(in srgb, var(--settings-panel) 92%, var(--settings-accent));
+}
+.settings-app .section-title svg { color: var(--settings-accent); }
+.settings-app .security-grid strong { color: var(--settings-text); }
+.settings-app .account-add input { color: var(--settings-text); background: var(--settings-bg); border-color: var(--settings-line); }
+.settings-app .theme-card small { font-size: 11px; }
+.glass-modes { display: flex; gap: 8px; padding: 12px 17px; }
+.glass-modes button { flex: 1; min-height: 40px; border: 1px solid var(--settings-line); border-radius: 10px; background: var(--settings-panel); color: var(--settings-text); cursor: pointer; }
+.glass-modes button[aria-pressed="true"] { border-color: var(--settings-accent); background: color-mix(in srgb, var(--settings-panel) 88%, var(--settings-accent)); }
+.settings-app[data-glass="frosted"] section { background: color-mix(in srgb, var(--settings-panel) var(--settings-opacity), transparent); backdrop-filter: blur(10px); }
+.settings-app[data-glass="clear"] section { background: color-mix(in srgb, var(--settings-panel) var(--settings-opacity), transparent); backdrop-filter: blur(18px) saturate(115%); box-shadow: inset 0 1px color-mix(in srgb, var(--settings-text) 10%, transparent); }
+.settings-app[data-glass="clear"], .settings-app[data-glass="frosted"] { background-image: radial-gradient(ellipse at 100% 0, color-mix(in srgb, var(--settings-accent) 14%, transparent), transparent 55%); }
+@media (prefers-reduced-transparency: reduce), (forced-colors: active) {
+  .settings-app[data-glass] section { background: var(--settings-panel); backdrop-filter: none; box-shadow: none; }
+}
+body:has(.settings-app) { background: var(--settings-page-bg, #08090d); }
+.settings-app .section-title { justify-content: flex-start; text-align: left; }
+.settings-app .section-title > div { flex: 1; }
+.device-actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 17px; }
+.device-actions button { flex: 1; min-height: 40px; padding: 8px 12px; border: 1px solid var(--settings-line); border-radius: 10px; background: var(--settings-panel); color: var(--settings-text); cursor: pointer; }
+.settings-app { --settings-on-accent: #101118; --settings-danger: #ff99aa; }
+.settings-app[data-theme="native"], .settings-app[data-theme="light"] { --settings-on-accent: #fff; }
+.settings-app[data-theme="light"] { --settings-danger: #a82039; }
+.settings-app header button, .settings-app footer button,
+.settings-app .account-avatar, .settings-app .settings-logo {
+  background: var(--settings-accent); color: var(--settings-on-accent); box-shadow: none;
+}
+.settings-app .account-card button, .settings-app .account-add button,
+.settings-app .creator-follow button, .settings-app .shortcut-list kbd {
+  color: var(--settings-text); background: var(--settings-panel); border-color: var(--settings-line);
+}
+.settings-app .account-card .icon-danger { color: var(--settings-danger); border-color: var(--settings-danger); }
+.settings-app .security-details b, .settings-app .security-grid svg { color: var(--settings-text); }
+.settings-app .setting-row input:checked+i { background: var(--settings-accent); }
+.settings-app .setting-row input:checked+i:after { background: var(--settings-on-accent); }
+.settings-app .theme-card.active>b { border-color: var(--settings-accent); background: var(--settings-accent); box-shadow: none; }
+.settings-app .zoom-row input { accent-color: var(--settings-accent); }
+.settings-app button:focus-visible, .settings-app input:focus-visible { outline: 2px solid var(--settings-accent); outline-offset: 3px; }
+.settings-app .setting-row:has(input:focus-visible) { box-shadow: inset 0 0 0 2px var(--settings-accent); }
+@media (hover:hover) {
+  .settings-app button:not(:disabled):hover { filter: brightness(.95); }
+  .settings-app header button:not(:disabled):hover, .settings-app footer button:not(:disabled):hover { background: var(--settings-accent); }
+}

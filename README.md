@@ -38,16 +38,27 @@
   <img src="docs/images/app-main.png" alt="Лента UnixGram в окне UnixGram Desktop">
 </a>
 
-## Версия 1.3.2
+## Версия 1.3.3
 
-[Скачать для Windows](https://github.com/jutsu-dev/UnixGramDesktop/releases/download/v1.3.2/UnixGram.Desktop_1.3.2_x64-setup.exe) · [Что нового](docs/RELEASE-1.3.2.md) · [Все версии](https://github.com/jutsu-dev/UnixGramDesktop/releases)
+[Скачать для Windows](https://github.com/jutsu-dev/UnixGramDesktop/releases/download/v1.3.3/UnixGram-Desktop-1.3.3-x64-setup.exe) · [Что нового](docs/RELEASE-1.3.3.md) · [Все версии](https://github.com/jutsu-dev/UnixGramDesktop/releases)
 
 | Оформление | Удобство | Discord |
 | --- | --- | --- |
-| 12 тем, включая Ocean, Rose и Forest | Настройки для узких окон и крупных масштабов | Автоматическое подключение на новых установках |
-| Обновлены семь тёмных палитр | Плавные переходы и подчёркивание ссылок | Сохранённое отключение остаётся в силе |
+| 12 тем с согласованными кнопками и переключателями | Счётчик непрочитанных чатов с сервера | Исправлены названия разделов |
+| Светлая Daylight, матовое и прозрачное стекло | Восстановление связи без принудительной перезагрузки | Сохранённое отключение остаётся в силе |
 
 Об ошибках пишите в [Issues](https://github.com/jutsu-dev/UnixGramDesktop/issues).
+
+<details>
+<summary><strong>Настройки: Daylight и Lucifer</strong></summary>
+
+Предпросмотр окна настроек версии 1.3.3. Содержимое UnixGram остаётся интерфейсом сайта.
+
+| Daylight | Lucifer |
+| --- | --- |
+| ![Светлые настройки Daylight](docs/images/settings-daylight-1.3.3.png) | ![Бордовые настройки Lucifer](docs/images/settings-lucifer-1.3.3.png) |
+
+</details>
 
 <table>
   <tr>
