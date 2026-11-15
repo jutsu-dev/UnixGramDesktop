@@ -467,7 +467,7 @@ UnixGramDesktop/
 ├── scripts/                 сценарии сборки и проверки для Windows
 ├── docs/                    документация, заметки о выпусках, изображения
 ├── artifacts/               локальные результаты, не хранятся в Git
-├── .github/                 workflow, шаблоны и настройки Dependabot
+├── .github/                 workflow и шаблоны
 ├── CHANGELOG.md             история изменений
 ├── package.json             сценарии npm и зависимости интерфейса
 └── README.md                описание проекта

@@ -45,4 +45,4 @@
 
 ## Автоматические проверки
 
-На каждый запрос на слияние и каждое изменение `main` запускается workflow [Release quality](.github/workflows/release-quality.yml): `npm audit` с порогом `high`, Gitleaks (секреты) и Trivy (уязвимости, секреты и ошибки конфигурации уровней `HIGH` и `CRITICAL`). Обновления зависимостей предлагает Dependabot.
+На каждый запрос на слияние и каждое изменение `main` запускается workflow [Release quality](.github/workflows/release-quality.yml): `npm audit` с порогом `high`, Gitleaks (секреты) и Trivy (уязвимости, секреты и ошибки конфигурации уровней `HIGH` и `CRITICAL`).

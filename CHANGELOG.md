@@ -11,7 +11,6 @@
 - Документ [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): процесс и окна, модули Rust, контракт IPC, политика навигации, тестирование.
 - Сценарий `npm run typecheck`.
 - Проверки `cargo fmt --check` и `cargo clippy` в GitHub Actions.
-- Настройки Dependabot для npm, Cargo и GitHub Actions.
 - Файлы `.gitattributes` и `.editorconfig`.
 
 ### Изменено
