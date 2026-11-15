@@ -4,6 +4,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  # Manual run from the Actions tab, on any branch.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -23,6 +25,9 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+      # THIRD-PARTY-NOTICES.md must match Cargo.lock and package-lock.json.
+      # Uses the cargo that comes with the runner image.
+      - run: node scripts/third-party-notices.mjs --check
       - run: npm audit --audit-level=high
 
   rust:
@@ -53,3 +58,10 @@ jobs:
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           exit-code: 1
+
+  reuse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      # Every file must have a licence in REUSE.toml, and every licence a text in LICENSES/.
+      - uses: fsfe/reuse-action@676e2d560c9a403aa252096d99fcab3e1132b0f5 # v6.0.0

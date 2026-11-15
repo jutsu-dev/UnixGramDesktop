@@ -1,0 +1,27 @@
+UnixGram Desktop
+Copyright (c) 2026 UnixGram History contributors
+
+Licences
+
+  Source code, configuration, scripts and tests: MIT
+    (LICENSE, LICENSES/MIT.txt).
+  Documentation and the project's own artwork: CC-BY-4.0
+    (LICENSES/CC-BY-4.0.txt).
+  The UnixGram logo, the icons made from it and screenshots of the UnixGram
+    site: not licensed by this project
+    (LICENSES/LicenseRef-UnixGram-Third-Party.txt).
+  CODE_OF_CONDUCT.md is the Contributor Covenant 2.1 text by its authors,
+    CC-BY-4.0. The project filled in the contact line only.
+  REUSE.toml records the licence of every file.
+
+Trademarks
+
+  UnixGram Desktop is an unofficial community client and is not affiliated
+  with UnixGram. The UnixGram name and logo belong to their owner and are
+  used only to say which service the client works with. See TRADEMARKS.md.
+
+Third-party software
+
+  The application is built from open-source Rust crates and npm packages.
+  THIRD-PARTY-NOTICES.md lists their names, versions and licences. It does
+  not include the licence texts or the copyright lines.

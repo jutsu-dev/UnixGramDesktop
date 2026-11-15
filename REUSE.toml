@@ -1,0 +1,76 @@
+# Licence of every file in the repository, REUSE specification 3.3:
+# https://reuse.software/spec-3.3/
+#
+# When several blocks match a file, the last one applies, so the order of the
+# blocks matters. "override" makes this file the only source: licence tags
+# inside the files are not read.
+#
+# LICENSE and LICENSES/ hold the licence texts and need no entry.
+# How the parts fit together: docs/LICENSING.md
+
+version = 1
+
+# 1. Source code, configuration, scripts, tests, lock files, generated schemas.
+[[annotations]]
+path = [
+    ".*",
+    "*.cff",
+    "*.html",
+    "*.json",
+    "*.toml",
+    "*.ts",
+    "*.yaml",
+    "*.yml",
+    ".github/**",
+    ".storybook/**",
+    "scripts/**",
+    "src/**",
+    "src-tauri/**",
+    "tests/**",
+]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 UnixGram History contributors"
+SPDX-License-Identifier = "MIT"
+
+# 2. Documentation and the project's own artwork: the README artwork,
+#    settings screenshots, the cover image, the installer artwork, the spare
+#    application icon.
+[[annotations]]
+path = [
+    "*.md",
+    "**/*.md",
+    "NOTICE",
+    "assets/**",
+    "docs/**",
+    "src-tauri/installer/**",
+]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 UnixGram History contributors"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+# 3. The UnixGram logo, the application icons made from it, and screenshots
+#    that show the UnixGram site. Not owned and not licensed by this project.
+#    A new file of this kind must be added here by path.
+[[annotations]]
+path = [
+    "docs/images/app-main.png",
+    "docs/images/unixgram-current-gifts.png",
+    "docs/images/unixgram-current-profile.png",
+    "docs/images/unixgram-logo.svg",
+    "public/favicon.svg",
+    "src-tauri/icons/*.png",
+    "src-tauri/icons/**/*.png",
+    "src-tauri/icons/icon.icns",
+    "src-tauri/icons/icon.ico",
+]
+precedence = "override"
+SPDX-FileCopyrightText = "UnixGram and the respective rights holders"
+SPDX-License-Identifier = "LicenseRef-UnixGram-Third-Party"
+
+# 4. The code of conduct is the Contributor Covenant 2.1 text. The project
+#    filled in the contact line only.
+[[annotations]]
+path = "CODE_OF_CONDUCT.md"
+precedence = "override"
+SPDX-FileCopyrightText = "Contributor Covenant authors <https://www.contributor-covenant.org>"
+SPDX-License-Identifier = "CC-BY-4.0"

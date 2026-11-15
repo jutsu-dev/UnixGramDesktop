@@ -1,0 +1,14 @@
+UnixGram third-party content
+
+The files covered by this notice reproduce the name, the logo or the site
+content of UnixGram (https://unixgram.com). These materials belong to their
+respective owners. Content visible in screenshots of the site may also belong
+to the users who posted it.
+
+UnixGram Desktop is an unofficial community client. The project includes
+these files only to identify and illustrate the service the client works
+with. The project does not own these materials and does not license them.
+The MIT and CC-BY-4.0 licences used elsewhere in this repository do not
+apply to them.
+
+For any other use, ask the owners of the materials.
