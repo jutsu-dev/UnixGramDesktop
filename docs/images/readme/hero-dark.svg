@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="420" viewBox="0 0 880 420" role="img" aria-label="UnixGram Desktop: неофициальный клиент для Windows 10 и 11">
+<title>UnixGram Desktop: неофициальный клиент для Windows 10 и 11</title>
+<style>
+.t{font-family:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif}
+@media (prefers-reduced-motion:no-preference){
+.card{animation:open 1.6s cubic-bezier(.2,.75,.2,1) both}
+@keyframes open{from{transform:rotate(calc(var(--a)*.5))}to{transform:rotate(var(--a))}}
+}
+</style>
+<defs>
+<clipPath id="c"><rect width="880" height="420" rx="28"/></clipPath>
+<pattern id="d" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="11" cy="11" r="1" fill="#f4f5fa" fill-opacity="0.1"/></pattern>
+<radialGradient id="g" cx="50%" cy="100%" r="62%"><stop offset="0" stop-color="#6e5fe4" stop-opacity="0.42"/><stop offset="1" stop-color="#6e5fe4" stop-opacity="0"/></radialGradient>
+<linearGradient id="f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#08090d" stop-opacity="0"/><stop offset="1" stop-color="#08090d" stop-opacity="0.5"/></linearGradient>
+<filter id="s" x="-40%" y="-10%" width="180%" height="130%"><feDropShadow dx="-4" dy="2" stdDeviation="6" flood-color="#000" flood-opacity="0.5"/></filter>
+</defs>
+<g clip-path="url(#c)">
+<rect width="880" height="420" fill="#08090d"/>
+<rect width="880" height="420" fill="url(#d)"/>
+<rect width="880" height="420" fill="url(#g)"/>
+<g transform="translate(440 800)">
+<g class="card" style="--a:-36deg" transform="rotate(-36)" filter="url(#s)">
+<rect x="-37" y="-582" width="74" height="270" rx="13" fill="#08090d" stroke="#ffffff" stroke-opacity="0.14"/>
+<circle cx="0" cy="-557" r="9" fill="#6e5fe4"/>
+<rect x="-28" y="-536" width="56" height="230" rx="9" fill="#15151c"/>
+<rect x="-20" y="-522" width="26" height="5" rx="2.5" fill="#f4f5fa" fill-opacity=".85"/>
+<rect x="-20" y="-510" width="40" height="5" rx="2.5" fill="#f4f5fa" fill-opacity=".3"/>
+<rect x="-20" y="-498" width="33" height="5" rx="2.5" fill="#f4f5fa" fill-opacity=".3"/>
+<rect x="-20" y="-482" width="26" height="11" rx="5.5" fill="#6e5fe4"/>
+</g>
+<g class="card" style="--a:-30deg" transform="rotate(-30)" filter="url(#s)">
+<rect x="-37" y="-582" width="74" height="270" rx="13" fill="#0a0e1a" stroke="#ffffff" stroke-opacity="0.14"/>
+<circle cx="0" cy="-557" r="9" fill="#a097ff"/>
+<rect x="-28" y="-536" width="56" height="230" rx="9" fill="#151d30"/>
+<rect x="-20" y="-522" width="26" height="5" rx="2.5" fill="#edf0ff" fill-opacity=".85"/>
+<rect x="-20" y="-510" width="40" height="5" rx="2.5" fill="#edf0ff" fill-opacity=".3"/>
+<rect x="-20" y="-498" width="33" height="5" rx="2.5" fill="#edf0ff" fill-opacity=".3"/>
+<rect x="-20" y="-482" width="26" height="11" rx="5.5" fill="#a097ff"/>
+</g>
+<g class="card" style="--a:-24deg" transform="rotate(-24)" filter="url(#s)">
+<rect x="-37" y="-582" width="74" height="270" rx="13" fill="#000000" stroke="#ffffff" stroke-opacity="0.14"/>
+<circle cx="0" cy="-557" r="9" fill="#a397ff"/>
+<rect x="-28" y="-536" width="56" height="230" rx="9" fill="#0b0b0e"/>
+<rect x="-20" y="-522" width="26" height="5" rx="2.5" fill="#ffffff" fill-opacity=".85"/>
+<rect x="-20" y="-510" width="40" height="5" rx="2.5" fill="#ffffff" fill-opacity=".3"/>
+<rect x="-20" y="-498" width="33" height="5" rx="2.5" fill="#ffffff" fill-opacity=".3"/>
+<rect x="-20" y="-482" width="26" height="11" rx="5.5" fill="#a397ff"/>
+</g>
+<g class="card" style="--a:-18deg" transform="rotate(-18)" filter="url(#s)">
+<rect x="-37" y="-582" width="74" height="270" rx="13" fill="#121416" stroke="#ffffff" stroke-opacity="0.14"/>
+<circle cx="0" cy="-557" r="9" fill="#b3bdce"/>
+<rect x="-28" y="-536" width="56" height="230" rx="9" fill="#202328"/>
+<rect x="-20" y="-522" width="26" height="5" rx="2.5" fill="#f4f5f7" fill-opacity=".85"/>
+<rect x="-20" y="-510" width="40" height="5" rx="2.5" fill="#f4f5f7" fill-opacity=".3"/>
+<rect x="-20" y="-498" width="33" height="5" rx="2.5" fill="#f4f5f7" fill-opacity=".3"/>
+<rect x="-20" y="-482" width="26" height="11" rx="5.5" fill="#b3bdce"/>
+</g>
+<g class="card" style="--a:-12deg" transform="rotate(-12)" filter="url(#s)">
+<rect x="-37" y="-582" width="74" height="270" rx="13" fill="#091612" stroke="#ffffff" stroke-opacity="0.14"/>
+<circle cx="0" cy="-557" r="9" fill="#71dab5"/>
+<rect x="-28" y="-536" width="56" height="230" rx="9" fill="#142820"/>
+<rect x="-20" y="-522" width="26" height="5" rx="2.5" fill="#effffb" fill-opacity=".85"/>
+<rect x="-20" y="-510" width="40" height="5" rx="2.5" fill="#effffb" fill-opacity=".3"/>
+<rect x="-20" y="-498" width="33" height="5" rx="2.5" fill="#effffb" fill-opacity=".3"/>
+<rect x="-20" y="-482" width="26" height="11" rx="5.5" fill="#71dab5"/>
+</g>
+<g class="card" style="--a:-6deg" transform="rotate(-6)" filter="url(#s)">
+<rect x="-37" y="-582" width="74" height="270" rx="13" fill="#f1f2f5" stroke="#191b24" stroke-opacity="0.16"/>
+<circle cx="0" cy="-557" r="9" fill="#5948c7"/>
+<rect x="-28" y="-536" width="56" height="230" rx="9" fill="#ffffff"/>
+<rect x="-20" y="-522" width="26" height="5" rx="2.5" fill="#191b24" fill-opacity=".85"/>
+<rect x="-20" y="-510" width="40" height="5" rx="2.5" fill="#191b24" fill-opacity=".3"/>
+<rect x="-20" y="-498" width="33" height="5" rx="2.5" fill="#191b24" fill-opacity=".3"/>
+<rect x="-20" y="-482" width="26" height="11" rx="5.5" fill="#5948c7"/>
+</g>
+<g class="card" style="--a:0deg" transform="rotate(0)" filter="url(#s)">
+<rect x="-37" y="-582" width="74" height="270" rx="13" fill="#10080b" stroke="#ffffff" stroke-opacity="0.14"/>
+<circle cx="0" cy="-557" r="9" fill="#e78a9d"/>
+<rect x="-28" y="-536" width="56" height="230" rx="9" fill="#241018"/>
+<rect x="-20" y="-522" width="26" height="5" rx="2.5" fill="#fff1f3" fill-opacity=".85"/>
+<rect x="-20" y="-510" width="40" height="5" rx="2.5" fill="#fff1f3" fill-opacity=".3"/>
+<rect x="-20" y="-498" width="33" height="5" rx="2.5" fill="#fff1f3" fill-opacity=".3"/>
+<rect x="-20" y="-482" width="26" height="11" rx="5.5" fill="#e78a9d"/>
+</g>
+<g class="card" style="--a:6deg" transform="rotate(6)" filter="url(#s)">
+<rect x="-37" y="-582" width="74" height="270" rx="13" fill="#08050e" stroke="#ffffff" stroke-opacity="0.14"/>
+<circle cx="0" cy="-557" r="9" fill="#bb97ff"/>
+<rect x="-28" y="-536" width="56" height="230" rx="9" fill="#191023"/>
+<rect x="-20" y="-522" width="26" height="5" rx="2.5" fill="#f7efff" fill-opacity=".85"/>
+<rect x="-20" y="-510" width="40" height="5" rx="2.5" fill="#f7efff" fill-opacity=".3"/>
+<rect x="-20" y="-498" width="33" height="5" rx="2.5" fill="#f7efff" fill-opacity=".3"/>
+<rect x="-20" y="-482" width="26" height="11" rx="5.5" fill="#bb97ff"/>
+</g>
+<g class="card" style="--a:12deg" transform="rotate(12)" filter="url(#s)">
+<rect x="-37" y="-582" width="74" height="270" rx="13" fill="#15120b" stroke="#ffffff" stroke-opacity="0.14"/>
+<circle cx="0" cy="-557" r="9" fill="#dfc171"/>
+<rect x="-28" y="-536" width="56" height="230" rx="9" fill="#272115"/>
+<rect x="-20" y="-522" width="26" height="5" rx="2.5" fill="#fff8e6" fill-opacity=".85"/>
+<rect x="-20" y="-510" width="40" height="5" rx="2.5" fill="#fff8e6" fill-opacity=".3"/>
+<rect x="-20" y="-498" width="33" height="5" rx="2.5" fill="#fff8e6" fill-opacity=".3"/>
+<rect x="-20" y="-482" width="26" height="11" rx="5.5" fill="#dfc171"/>
+</g>
+<g class="card" style="--a:18deg" transform="rotate(18)" filter="url(#s)">
+<rect x="-37" y="-582" width="74" height="270" rx="13" fill="#08131c" stroke="#ffffff" stroke-opacity="0.14"/>
+<circle cx="0" cy="-557" r="9" fill="#79c8ec"/>
+<rect x="-28" y="-536" width="56" height="230" rx="9" fill="#112635"/>
+<rect x="-20" y="-522" width="26" height="5" rx="2.5" fill="#ecf8ff" fill-opacity=".85"/>
+<rect x="-20" y="-510" width="40" height="5" rx="2.5" fill="#ecf8ff" fill-opacity=".3"/>
+<rect x="-20" y="-498" width="33" height="5" rx="2.5" fill="#ecf8ff" fill-opacity=".3"/>
+<rect x="-20" y="-482" width="26" height="11" rx="5.5" fill="#79c8ec"/>
+</g>
+<g class="card" style="--a:24deg" transform="rotate(24)" filter="url(#s)">
+<rect x="-37" y="-582" width="74" height="270" rx="13" fill="#180f17" stroke="#ffffff" stroke-opacity="0.14"/>
+<circle cx="0" cy="-557" r="9" fill="#e9a4c2"/>
+<rect x="-28" y="-536" width="56" height="230" rx="9" fill="#2c1c29"/>
+<rect x="-20" y="-522" width="26" height="5" rx="2.5" fill="#fff1f8" fill-opacity=".85"/>
+<rect x="-20" y="-510" width="40" height="5" rx="2.5" fill="#fff1f8" fill-opacity=".3"/>
+<rect x="-20" y="-498" width="33" height="5" rx="2.5" fill="#fff1f8" fill-opacity=".3"/>
+<rect x="-20" y="-482" width="26" height="11" rx="5.5" fill="#e9a4c2"/>
+</g>
+<g class="card" style="--a:30deg" transform="rotate(30)" filter="url(#s)">
+<rect x="-37" y="-582" width="74" height="270" rx="13" fill="#11160f" stroke="#ffffff" stroke-opacity="0.14"/>
+<circle cx="0" cy="-557" r="9" fill="#b7cc8c"/>
+<rect x="-28" y="-536" width="56" height="230" rx="9" fill="#212b1b"/>
+<rect x="-20" y="-522" width="26" height="5" rx="2.5" fill="#f1f7e9" fill-opacity=".85"/>
+<rect x="-20" y="-510" width="40" height="5" rx="2.5" fill="#f1f7e9" fill-opacity=".3"/>
+<rect x="-20" y="-498" width="33" height="5" rx="2.5" fill="#f1f7e9" fill-opacity=".3"/>
+<rect x="-20" y="-482" width="26" height="11" rx="5.5" fill="#b7cc8c"/>
+</g>
+<g class="card" style="--a:36deg" transform="rotate(36)" filter="url(#s)">
+<rect x="-37" y="-582" width="74" height="270" rx="13" fill="#140911" stroke="#ffffff" stroke-opacity="0.14"/>
+<circle cx="0" cy="-557" r="9" fill="#e4007c"/>
+<rect x="-28" y="-536" width="56" height="230" rx="9" fill="#28121f"/>
+<rect x="-20" y="-522" width="26" height="5" rx="2.5" fill="#fff3f9" fill-opacity=".85"/>
+<rect x="-20" y="-510" width="40" height="5" rx="2.5" fill="#fff3f9" fill-opacity=".3"/>
+<rect x="-20" y="-498" width="33" height="5" rx="2.5" fill="#fff3f9" fill-opacity=".3"/>
+<rect x="-20" y="-482" width="26" height="11" rx="5.5" fill="#e4007c"/>
+</g>
+</g>
+<rect y="350" width="880" height="70" fill="url(#f)"/>
+<text class="t" x="440" y="62" text-anchor="middle" font-size="12.5" font-weight="600" letter-spacing="3.2" fill="#f4f5fa" fill-opacity=".62">НЕОФИЦИАЛЬНЫЙ КЛИЕНТ · WINDOWS 10 / 11</text>
+<text class="t" x="440" y="146" text-anchor="middle" font-size="80" fill="#f4f5fa"><tspan font-weight="800" letter-spacing="-1.5">UnixGram</tspan><tspan font-weight="300" dx="20" fill-opacity=".62">Desktop</tspan></text>
+<rect x="306" y="176" width="16" height="4" rx="2" fill="#6e5fe4"/><rect x="327" y="176" width="16" height="4" rx="2" fill="#a097ff"/><rect x="348" y="176" width="16" height="4" rx="2" fill="#a397ff"/><rect x="369" y="176" width="16" height="4" rx="2" fill="#b3bdce"/><rect x="390" y="176" width="16" height="4" rx="2" fill="#71dab5"/><rect x="411" y="176" width="16" height="4" rx="2" fill="#5948c7"/><rect x="432" y="176" width="16" height="4" rx="2" fill="#e78a9d"/><rect x="453" y="176" width="16" height="4" rx="2" fill="#bb97ff"/><rect x="474" y="176" width="16" height="4" rx="2" fill="#dfc171"/><rect x="495" y="176" width="16" height="4" rx="2" fill="#79c8ec"/><rect x="516" y="176" width="16" height="4" rx="2" fill="#e9a4c2"/><rect x="537" y="176" width="16" height="4" rx="2" fill="#b7cc8c"/><rect x="558" y="176" width="16" height="4" rx="2" fill="#e4007c"/>
+</g>
+<rect x=".5" y=".5" width="879" height="419" rx="27.5" fill="none" stroke="#ffffff" stroke-opacity="0.12"/>
+</svg>

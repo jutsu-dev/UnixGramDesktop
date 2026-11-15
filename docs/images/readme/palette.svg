@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="276" viewBox="0 0 880 276" role="img" aria-label="13 тем UnixGram Desktop">
+<title>13 тем UnixGram Desktop</title>
+<style>
+.t{font-family:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif}
+.m{font-family:ui-monospace,'Cascadia Mono','SF Mono',Consolas,'Liberation Mono',Menlo,monospace}
+text{text-rendering:geometricPrecision}
+@media (prefers-reduced-motion:no-preference){
+.ring{transform-box:fill-box;transform-origin:center;animation:ring 5.85s ease-out infinite}
+@keyframes ring{0%{transform:scale(1);opacity:.75}16%{transform:scale(1.55);opacity:0}100%{transform:scale(1.55);opacity:0}}
+}
+</style>
+<g transform="translate(0 2)">
+<rect x=".5" y=".5" width="57" height="271" rx="15" fill="#08090d" stroke="#8b90a0" stroke-opacity="0.34"/>
+<circle class="ring" style="animation-delay:0s" cx="29" cy="30" r="11" fill="none" stroke="#6e5fe4" stroke-width="2" opacity="0"/>
+<circle cx="29" cy="30" r="11" fill="#6e5fe4"/>
+<rect x="5" y="56" width="48" height="211" rx="11" fill="#15151c"/>
+<text class="m" x="29" y="78" text-anchor="middle" font-size="10.5" fill="#6e5fe4">01</text>
+<rect x="14" y="92" width="20" height="4" rx="2" fill="#f4f5fa" fill-opacity=".8"/>
+<rect x="14" y="101" width="30" height="4" rx="2" fill="#f4f5fa" fill-opacity=".28"/>
+<rect x="14" y="110" width="25" height="4" rx="2" fill="#f4f5fa" fill-opacity=".28"/>
+<rect x="14" y="121" width="20" height="9" rx="4.500" fill="#6e5fe4"/>
+<text class="t" transform="translate(26 254) rotate(-90)" font-size="16" font-weight="700" fill="#f4f5fa">UnixGram</text>
+<text class="t" transform="translate(44 254) rotate(-90)" font-size="11.5" fill="#f4f5fa" fill-opacity=".7">без изменений</text>
+</g>
+<g transform="translate(68.5 2)">
+<rect x=".5" y=".5" width="57" height="271" rx="15" fill="#0a0e1a" stroke="#8b90a0" stroke-opacity="0.34"/>
+<circle class="ring" style="animation-delay:0.45s" cx="29" cy="30" r="11" fill="none" stroke="#a097ff" stroke-width="2" opacity="0"/>
+<circle cx="29" cy="30" r="11" fill="#a097ff"/>
+<rect x="5" y="56" width="48" height="211" rx="11" fill="#151d30"/>
+<text class="m" x="29" y="78" text-anchor="middle" font-size="10.5" fill="#a097ff">02</text>
+<rect x="14" y="92" width="20" height="4" rx="2" fill="#edf0ff" fill-opacity=".8"/>
+<rect x="14" y="101" width="30" height="4" rx="2" fill="#edf0ff" fill-opacity=".28"/>
+<rect x="14" y="110" width="25" height="4" rx="2" fill="#edf0ff" fill-opacity=".28"/>
+<rect x="14" y="121" width="20" height="9" rx="4.500" fill="#a097ff"/>
+<text class="t" transform="translate(26 254) rotate(-90)" font-size="16" font-weight="700" fill="#edf0ff">Midnight</text>
+<text class="t" transform="translate(44 254) rotate(-90)" font-size="11.5" fill="#edf0ff" fill-opacity=".7">сине-чёрная</text>
+</g>
+<g transform="translate(137 2)">
+<rect x=".5" y=".5" width="57" height="271" rx="15" fill="#000000" stroke="#8b90a0" stroke-opacity="0.34"/>
+<circle class="ring" style="animation-delay:0.9s" cx="29" cy="30" r="11" fill="none" stroke="#a397ff" stroke-width="2" opacity="0"/>
+<circle cx="29" cy="30" r="11" fill="#a397ff"/>
+<rect x="5" y="56" width="48" height="211" rx="11" fill="#0b0b0e"/>
+<text class="m" x="29" y="78" text-anchor="middle" font-size="10.5" fill="#a397ff">03</text>
+<rect x="14" y="92" width="20" height="4" rx="2" fill="#ffffff" fill-opacity=".8"/>
+<rect x="14" y="101" width="30" height="4" rx="2" fill="#ffffff" fill-opacity=".28"/>
+<rect x="14" y="110" width="25" height="4" rx="2" fill="#ffffff" fill-opacity=".28"/>
+<rect x="14" y="121" width="20" height="9" rx="4.500" fill="#a397ff"/>
+<text class="t" transform="translate(26 254) rotate(-90)" font-size="16" font-weight="700" fill="#ffffff">OLED</text>
+<text class="t" transform="translate(44 254) rotate(-90)" font-size="11.5" fill="#ffffff" fill-opacity=".7">чистый чёрный</text>
+</g>
+<g transform="translate(205.5 2)">
+<rect x=".5" y=".5" width="57" height="271" rx="15" fill="#121416" stroke="#8b90a0" stroke-opacity="0.34"/>
+<circle class="ring" style="animation-delay:1.35s" cx="29" cy="30" r="11" fill="none" stroke="#b3bdce" stroke-width="2" opacity="0"/>
+<circle cx="29" cy="30" r="11" fill="#b3bdce"/>
+<rect x="5" y="56" width="48" height="211" rx="11" fill="#202328"/>
+<text class="m" x="29" y="78" text-anchor="middle" font-size="10.5" fill="#b3bdce">04</text>
+<rect x="14" y="92" width="20" height="4" rx="2" fill="#f4f5f7" fill-opacity=".8"/>
+<rect x="14" y="101" width="30" height="4" rx="2" fill="#f4f5f7" fill-opacity=".28"/>
+<rect x="14" y="110" width="25" height="4" rx="2" fill="#f4f5f7" fill-opacity=".28"/>
+<rect x="14" y="121" width="20" height="9" rx="4.500" fill="#b3bdce"/>
+<text class="t" transform="translate(26 254) rotate(-90)" font-size="16" font-weight="700" fill="#f4f5f7">Graphite</text>
+<text class="t" transform="translate(44 254) rotate(-90)" font-size="11.5" fill="#f4f5f7" fill-opacity=".7">серая</text>
+</g>
+<g transform="translate(274 2)">
+<rect x=".5" y=".5" width="57" height="271" rx="15" fill="#091612" stroke="#8b90a0" stroke-opacity="0.34"/>
+<circle class="ring" style="animation-delay:1.8s" cx="29" cy="30" r="11" fill="none" stroke="#71dab5" stroke-width="2" opacity="0"/>
+<circle cx="29" cy="30" r="11" fill="#71dab5"/>
+<rect x="5" y="56" width="48" height="211" rx="11" fill="#142820"/>
+<text class="m" x="29" y="78" text-anchor="middle" font-size="10.5" fill="#71dab5">05</text>
+<rect x="14" y="92" width="20" height="4" rx="2" fill="#effffb" fill-opacity=".8"/>
+<rect x="14" y="101" width="30" height="4" rx="2" fill="#effffb" fill-opacity=".28"/>
+<rect x="14" y="110" width="25" height="4" rx="2" fill="#effffb" fill-opacity=".28"/>
+<rect x="14" y="121" width="20" height="9" rx="4.500" fill="#71dab5"/>
+<text class="t" transform="translate(26 254) rotate(-90)" font-size="16" font-weight="700" fill="#effffb">Aurora</text>
+<text class="t" transform="translate(44 254) rotate(-90)" font-size="11.5" fill="#effffb" fill-opacity=".7">зелёная</text>
+</g>
+<g transform="translate(342.5 2)">
+<rect x=".5" y=".5" width="57" height="271" rx="15" fill="#f1f2f5" stroke="#191b24" stroke-opacity="0.22"/>
+<circle class="ring" style="animation-delay:2.25s" cx="29" cy="30" r="11" fill="none" stroke="#5948c7" stroke-width="2" opacity="0"/>
+<circle cx="29" cy="30" r="11" fill="#5948c7"/>
+<rect x="5" y="56" width="48" height="211" rx="11" fill="#ffffff"/>
+<text class="m" x="29" y="78" text-anchor="middle" font-size="10.5" fill="#5948c7">06</text>
+<rect x="14" y="92" width="20" height="4" rx="2" fill="#191b24" fill-opacity=".8"/>
+<rect x="14" y="101" width="30" height="4" rx="2" fill="#191b24" fill-opacity=".28"/>
+<rect x="14" y="110" width="25" height="4" rx="2" fill="#191b24" fill-opacity=".28"/>
+<rect x="14" y="121" width="20" height="9" rx="4.500" fill="#5948c7"/>
+<text class="t" transform="translate(26 254) rotate(-90)" font-size="16" font-weight="700" fill="#191b24">Daylight</text>
+<text class="t" transform="translate(44 254) rotate(-90)" font-size="11.5" fill="#191b24" fill-opacity=".7">светлая</text>
+</g>
+<g transform="translate(411 2)">
+<rect x=".5" y=".5" width="57" height="271" rx="15" fill="#10080b" stroke="#8b90a0" stroke-opacity="0.34"/>
+<circle class="ring" style="animation-delay:2.7s" cx="29" cy="30" r="11" fill="none" stroke="#e78a9d" stroke-width="2" opacity="0"/>
+<circle cx="29" cy="30" r="11" fill="#e78a9d"/>
+<rect x="5" y="56" width="48" height="211" rx="11" fill="#241018"/>
+<text class="m" x="29" y="78" text-anchor="middle" font-size="10.5" fill="#e78a9d">07</text>
+<rect x="14" y="92" width="20" height="4" rx="2" fill="#fff1f3" fill-opacity=".8"/>
+<rect x="14" y="101" width="30" height="4" rx="2" fill="#fff1f3" fill-opacity=".28"/>
+<rect x="14" y="110" width="25" height="4" rx="2" fill="#fff1f3" fill-opacity=".28"/>
+<rect x="14" y="121" width="20" height="9" rx="4.500" fill="#e78a9d"/>
+<text class="t" transform="translate(26 254) rotate(-90)" font-size="16" font-weight="700" fill="#fff1f3">Lucifer</text>
+<text class="t" transform="translate(44 254) rotate(-90)" font-size="11.5" fill="#fff1f3" fill-opacity=".7">в честь @Lucifer</text>
+</g>
+<g transform="translate(479.5 2)">
+<rect x=".5" y=".5" width="57" height="271" rx="15" fill="#08050e" stroke="#8b90a0" stroke-opacity="0.34"/>
+<circle class="ring" style="animation-delay:3.15s" cx="29" cy="30" r="11" fill="none" stroke="#bb97ff" stroke-width="2" opacity="0"/>
+<circle cx="29" cy="30" r="11" fill="#bb97ff"/>
+<rect x="5" y="56" width="48" height="211" rx="11" fill="#191023"/>
+<text class="m" x="29" y="78" text-anchor="middle" font-size="10.5" fill="#bb97ff">08</text>
+<rect x="14" y="92" width="20" height="4" rx="2" fill="#f7efff" fill-opacity=".8"/>
+<rect x="14" y="101" width="30" height="4" rx="2" fill="#f7efff" fill-opacity=".28"/>
+<rect x="14" y="110" width="25" height="4" rx="2" fill="#f7efff" fill-opacity=".28"/>
+<rect x="14" y="121" width="20" height="9" rx="4.500" fill="#bb97ff"/>
+<text class="t" transform="translate(26 254) rotate(-90)" font-size="16" font-weight="700" fill="#f7efff">by basaltes</text>
+<text class="t" transform="translate(44 254) rotate(-90)" font-size="11.5" fill="#f7efff" fill-opacity=".7">фиолетово-чёрная</text>
+</g>
+<g transform="translate(548 2)">
+<rect x=".5" y=".5" width="57" height="271" rx="15" fill="#15120b" stroke="#8b90a0" stroke-opacity="0.34"/>
+<circle class="ring" style="animation-delay:3.6s" cx="29" cy="30" r="11" fill="none" stroke="#dfc171" stroke-width="2" opacity="0"/>
+<circle cx="29" cy="30" r="11" fill="#dfc171"/>
+<rect x="5" y="56" width="48" height="211" rx="11" fill="#272115"/>
+<text class="m" x="29" y="78" text-anchor="middle" font-size="10.5" fill="#dfc171">09</text>
+<rect x="14" y="92" width="20" height="4" rx="2" fill="#fff8e6" fill-opacity=".8"/>
+<rect x="14" y="101" width="30" height="4" rx="2" fill="#fff8e6" fill-opacity=".28"/>
+<rect x="14" y="110" width="25" height="4" rx="2" fill="#fff8e6" fill-opacity=".28"/>
+<rect x="14" y="121" width="20" height="9" rx="4.500" fill="#dfc171"/>
+<text class="t" transform="translate(26 254) rotate(-90)" font-size="16" font-weight="700" fill="#fff8e6">Soft Honey</text>
+<text class="t" transform="translate(44 254) rotate(-90)" font-size="11.5" fill="#fff8e6" fill-opacity=".7">тёплая жёлтая</text>
+</g>
+<g transform="translate(616.5 2)">
+<rect x=".5" y=".5" width="57" height="271" rx="15" fill="#08131c" stroke="#8b90a0" stroke-opacity="0.34"/>
+<circle class="ring" style="animation-delay:4.05s" cx="29" cy="30" r="11" fill="none" stroke="#79c8ec" stroke-width="2" opacity="0"/>
+<circle cx="29" cy="30" r="11" fill="#79c8ec"/>
+<rect x="5" y="56" width="48" height="211" rx="11" fill="#112635"/>
+<text class="m" x="29" y="78" text-anchor="middle" font-size="10.5" fill="#79c8ec">10</text>
+<rect x="14" y="92" width="20" height="4" rx="2" fill="#ecf8ff" fill-opacity=".8"/>
+<rect x="14" y="101" width="30" height="4" rx="2" fill="#ecf8ff" fill-opacity=".28"/>
+<rect x="14" y="110" width="25" height="4" rx="2" fill="#ecf8ff" fill-opacity=".28"/>
+<rect x="14" y="121" width="20" height="9" rx="4.500" fill="#79c8ec"/>
+<text class="t" transform="translate(26 254) rotate(-90)" font-size="16" font-weight="700" fill="#ecf8ff">Ocean</text>
+<text class="t" transform="translate(44 254) rotate(-90)" font-size="11.5" fill="#ecf8ff" fill-opacity=".7">морская синяя</text>
+</g>
+<g transform="translate(685 2)">
+<rect x=".5" y=".5" width="57" height="271" rx="15" fill="#180f17" stroke="#8b90a0" stroke-opacity="0.34"/>
+<circle class="ring" style="animation-delay:4.5s" cx="29" cy="30" r="11" fill="none" stroke="#e9a4c2" stroke-width="2" opacity="0"/>
+<circle cx="29" cy="30" r="11" fill="#e9a4c2"/>
+<rect x="5" y="56" width="48" height="211" rx="11" fill="#2c1c29"/>
+<text class="m" x="29" y="78" text-anchor="middle" font-size="10.5" fill="#e9a4c2">11</text>
+<rect x="14" y="92" width="20" height="4" rx="2" fill="#fff1f8" fill-opacity=".8"/>
+<rect x="14" y="101" width="30" height="4" rx="2" fill="#fff1f8" fill-opacity=".28"/>
+<rect x="14" y="110" width="25" height="4" rx="2" fill="#fff1f8" fill-opacity=".28"/>
+<rect x="14" y="121" width="20" height="9" rx="4.500" fill="#e9a4c2"/>
+<text class="t" transform="translate(26 254) rotate(-90)" font-size="16" font-weight="700" fill="#fff1f8">Rose</text>
+<text class="t" transform="translate(44 254) rotate(-90)" font-size="11.5" fill="#fff1f8" fill-opacity=".7">дымчатая розовая</text>
+</g>
+<g transform="translate(753.5 2)">
+<rect x=".5" y=".5" width="57" height="271" rx="15" fill="#11160f" stroke="#8b90a0" stroke-opacity="0.34"/>
+<circle class="ring" style="animation-delay:4.95s" cx="29" cy="30" r="11" fill="none" stroke="#b7cc8c" stroke-width="2" opacity="0"/>
+<circle cx="29" cy="30" r="11" fill="#b7cc8c"/>
+<rect x="5" y="56" width="48" height="211" rx="11" fill="#212b1b"/>
+<text class="m" x="29" y="78" text-anchor="middle" font-size="10.5" fill="#b7cc8c">12</text>
+<rect x="14" y="92" width="20" height="4" rx="2" fill="#f1f7e9" fill-opacity=".8"/>
+<rect x="14" y="101" width="30" height="4" rx="2" fill="#f1f7e9" fill-opacity=".28"/>
+<rect x="14" y="110" width="25" height="4" rx="2" fill="#f1f7e9" fill-opacity=".28"/>
+<rect x="14" y="121" width="20" height="9" rx="4.500" fill="#b7cc8c"/>
+<text class="t" transform="translate(26 254) rotate(-90)" font-size="16" font-weight="700" fill="#f1f7e9">Forest</text>
+<text class="t" transform="translate(44 254) rotate(-90)" font-size="11.5" fill="#f1f7e9" fill-opacity=".7">хвойная зелёная</text>
+</g>
+<g transform="translate(822 2)">
+<rect x=".5" y=".5" width="57" height="271" rx="15" fill="#140911" stroke="#8b90a0" stroke-opacity="0.34"/>
+<circle class="ring" style="animation-delay:5.4s" cx="29" cy="30" r="11" fill="none" stroke="#e4007c" stroke-width="2" opacity="0"/>
+<circle cx="29" cy="30" r="11" fill="#e4007c"/>
+<rect x="5" y="56" width="48" height="211" rx="11" fill="#28121f"/>
+<text class="m" x="29" y="78" text-anchor="middle" font-size="10.5" fill="#e4007c">13</text>
+<rect x="14" y="92" width="20" height="4" rx="2" fill="#fff3f9" fill-opacity=".8"/>
+<rect x="14" y="101" width="30" height="4" rx="2" fill="#fff3f9" fill-opacity=".28"/>
+<rect x="14" y="110" width="25" height="4" rx="2" fill="#fff3f9" fill-opacity=".28"/>
+<rect x="14" y="121" width="20" height="9" rx="4.500" fill="#e4007c"/>
+<text class="t" transform="translate(26 254) rotate(-90)" font-size="16" font-weight="700" fill="#fff3f9">Mexican Pink</text>
+<text class="t" transform="translate(44 254) rotate(-90)" font-size="11.5" fill="#fff3f9" fill-opacity=".7">в честь @cekc</text>
+</g>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="208" height="124" viewBox="0 0 208 124" role="img" aria-label="MIT: исходный код">
+<title>MIT: исходный код</title>
+<style>.t{font-family:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif}</style>
+<rect x=".5" y=".5" width="207" height="123" rx="18" fill="#151d30" stroke="#a097ff" stroke-opacity=".34"/>
+<circle cx="186" cy="22" r="3.5" fill="#a097ff"/>
+<g transform="translate(18 16)" fill="none" stroke="#a097ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l-8 8 8 8M19 6l8 8-8 8M16 3l-4 22"/></g>
+<text class="t" x="18" y="86" font-size="25" font-weight="800" letter-spacing="-.3" fill="#edf0ff">MIT</text>
+<text class="t" x="18" y="106" font-size="11.5" fill="#edf0ff" fill-opacity=".68">исходный код</text>
+</svg>

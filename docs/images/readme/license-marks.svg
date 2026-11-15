@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="208" height="124" viewBox="0 0 208 124" role="img" aria-label="Знаки: имя и логотип UnixGram">
+<title>Знаки: имя и логотип UnixGram</title>
+<style>.t{font-family:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif}</style>
+<rect x=".5" y=".5" width="207" height="123" rx="18" fill="#241018" stroke="#e78a9d" stroke-opacity=".34"/>
+<circle cx="186" cy="22" r="3.5" fill="#e78a9d"/>
+<g transform="translate(18 16)" fill="none" stroke="#e78a9d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h18v14H5zM9 12V8a5 5 0 0 1 10 0v4M14 17.500v3.500"/></g>
+<text class="t" x="18" y="86" font-size="25" font-weight="800" letter-spacing="-.3" fill="#fff1f3">Знаки</text>
+<text class="t" x="18" y="106" font-size="11.5" fill="#fff1f3" fill-opacity=".68">имя и логотип UnixGram</text>
+</svg>
