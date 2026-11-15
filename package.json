@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "test:e2e": "playwright test desktop-shell.spec.ts theme-matrix.spec.ts responsive-settings.spec.ts desktop-runtime.spec.ts settings-palette.spec.ts",
+    "typecheck": "tsc -b",
+    "test:e2e": "playwright test settings.spec.ts responsive-settings.spec.ts desktop-runtime.spec.ts settings-palette.spec.ts",
     "test:native-e2e": "npm run tauri:test:windows && playwright test bot-theme-compatibility.spec.ts",
     "preview": "vite preview",
     "tauri:dev": "tauri dev",
@@ -23,7 +24,6 @@
   "dependencies": {
     "@tauri-apps/api": "^2.11.1",
     "lucide-react": "^1.33.0",
-    "qrcode": "^1.5.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
@@ -35,7 +35,6 @@
     "@storybook/react-vite": "^10.5.10",
     "@tauri-apps/cli": "^2.11.4",
     "@types/node": "^24.13.3",
-    "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",

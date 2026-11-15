@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 for (const theme of ['UnixGram', 'Midnight', 'OLED', 'Graphite', 'Aurora', 'Daylight', 'Lucifer', 'By Basaltes', 'Soft Honey', 'Ocean', 'Rose', 'Forest', 'Mexican Pink']) {
   test(`settings controls stay readable: ${theme}`, async ({ page }) => {
-    await page.goto('/?desktop-settings=1')
+    await page.goto('/')
     await page.locator('.theme-card').filter({ hasText: theme }).click()
     const contrast = await page.locator('.account-avatar').evaluate(el => {
       const style = getComputedStyle(el)

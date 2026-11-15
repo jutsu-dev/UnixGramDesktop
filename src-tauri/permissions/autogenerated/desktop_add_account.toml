@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-desktop-add-account"
+description = "Enables the desktop_add_account command without any pre-configured scope."
+commands.allow = ["desktop_add_account"]
+
+[[permission]]
+identifier = "deny-desktop-add-account"
+description = "Denies the desktop_add_account command without any pre-configured scope."
+commands.deny = ["desktop_add_account"]

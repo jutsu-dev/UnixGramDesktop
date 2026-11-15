@@ -1,193 +1,107 @@
 <p align="center">
-  <img src="docs/images/github-hero.png" width="100%" alt="Фирменная обложка UnixGram Desktop">
-</p>
-
-<p align="center">
-  <img src="docs/images/unixgram-official.svg" width="96" alt="UnixGram">
+  <img alt="UnixGram Desktop" src="docs/images/unixgram-logo.svg" width="96">
 </p>
 
 <h1 align="center">UnixGram Desktop</h1>
 
+<p align="center">Клиент соцсети UnixGram для Windows: сайт в отдельном окне, трей, темы и несколько аккаунтов.</p>
+
 <p align="center">
-  <strong>UnixGram для Windows</strong><br>
-  Проект UnixGram History
+  <a href="https://github.com/jutsu-dev/UnixGramDesktop/releases/latest"><img alt="Последний выпуск" src="https://img.shields.io/github/v/release/jutsu-dev/UnixGramDesktop?display_name=tag&label=release"></a>
+  <a href="LICENSE"><img alt="Лицензия MIT" src="https://img.shields.io/badge/license-MIT-blue"></a>
+  <a href="https://github.com/jutsu-dev/UnixGramDesktop/actions/workflows/release-quality.yml"><img alt="Проверки" src="https://github.com/jutsu-dev/UnixGramDesktop/actions/workflows/release-quality.yml/badge.svg?branch=main"></a>
+  <img alt="Windows 10 и 11, x64" src="https://img.shields.io/badge/Windows-10%20%7C%2011%20x64-0078D4">
 </p>
 
 <p align="center">
-  <a href="https://github.com/jutsu-dev/UnixGramDesktop/releases/latest"><img src="https://img.shields.io/github/v/release/jutsu-dev/UnixGramDesktop?display_name=tag&style=for-the-badge&color=7257E8&label=release&logo=github" alt="Последний релиз"></a>
-  <a href="https://github.com/jutsu-dev/UnixGramDesktop/actions/workflows/release-quality.yml"><img src="https://img.shields.io/github/actions/workflow/status/jutsu-dev/UnixGramDesktop/release-quality.yml?branch=main&style=for-the-badge&label=checks&color=27A96B&logo=githubactions" alt="Статус проверок"></a>
-  <img src="https://img.shields.io/badge/Windows-10%20%7C%2011-1976D2?style=for-the-badge&logo=windows11&logoColor=white" alt="Windows 10 и 11">
-</p>
-
-<p align="center">
-  <a href="https://github.com/jutsu-dev/UnixGramDesktop/releases/latest"><strong>Скачать</strong></a>
-  · <a href="docs/INSTALL-WINDOWS.md">Установка</a>
-  · <a href="https://t.me/unixgramhistory">Новости</a>
-  · <a href="https://t.me/UnixGramHistoryBot">Бот</a>
-  · <a href="https://github.com/jutsu-dev/UnixGramDesktop/issues/new/choose">Сообщить о проблеме</a>
+  <a href="https://github.com/jutsu-dev/UnixGramDesktop/releases/latest"><b>Скачать последнюю версию</b></a>
+  ·
+  <a href="docs/INSTALL-WINDOWS.md">Установка</a>
+  ·
+  <a href="CHANGELOG.md">История изменений</a>
 </p>
 
 > [!NOTE]
-> Это неофициальный клиент. К команде UnixGram проект не относится.
+> Клиент неофициальный. Его делает сообщество UnixGram History, с командой UnixGram проект не связан.
 
-## О приложении
-
-Внутри открывается сайт UnixGram. Лента, чаты, профили и подарки работают через сам сервис. Мы добавили трей, темы, настройки окна и статус в Discord.
-
-<a href="docs/images/app-main.png">
-  <img src="docs/images/app-main.png" alt="Лента UnixGram в окне UnixGram Desktop">
-</a>
-
-## Версия 1.3.4
-
-[Скачать для Windows](https://github.com/jutsu-dev/UnixGramDesktop/releases/download/v1.3.4/UnixGram-Desktop-1.3.4-x64-setup.exe) · [Что нового](docs/RELEASE-1.3.4.md) · [Все версии](https://github.com/jutsu-dev/UnixGramDesktop/releases)
-
-**Mexican Pink посвящена пользователю `@cekc` в UnixGram.**
-
-Розовый акцент, сливовые панели и светлый текст. Тема доступна всем: откройте настройки клиента → «Оформление» → Mexican Pink.
-
-![Предпросмотр настроек Mexican Pink](docs/images/settings-mexican-pink-1.3.4.png)
-
-| Оформление | Удобство | Discord |
-| --- | --- | --- |
-| 13 тем с согласованными кнопками и переключателями | Счётчик непрочитанных чатов с сервера | Исправлены названия разделов |
-| Светлая Daylight, матовое и прозрачное стекло | Восстановление связи без принудительной перезагрузки | Сохранённое отключение остаётся в силе |
-
-Об ошибках пишите в [Issues](https://github.com/jutsu-dev/UnixGramDesktop/issues).
-
-<details>
-<summary><strong>Настройки: Daylight и Lucifer</strong></summary>
-
-Предпросмотр окна настроек версии 1.3.3. Содержимое UnixGram остаётся интерфейсом сайта.
-
-| Daylight | Lucifer |
-| --- | --- |
-| ![Светлые настройки Daylight](docs/images/settings-daylight-1.3.3.png) | ![Бордовые настройки Lucifer](docs/images/settings-lucifer-1.3.3.png) |
-
-</details>
+<p align="center">
+  <img alt="Лента UnixGram в окне UnixGram Desktop" src="docs/images/app-main.png" width="820">
+</p>
 
 <table>
   <tr>
-    <td width="50%" valign="top">
-      <h3>Отдельное окно</h3>
-      Лента, сообщения и UnixPlace в окне Windows.
-    </td>
-    <td width="50%" valign="top">
-      <h3>Системный трей</h3>
-      Меню по правому клику, счётчик непрочитанных и работа в фоне.
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>Настройки</h3>
-      13 тем, масштаб, крупный текст, полный экран, окно поверх остальных и Liquid Glass.
-    </td>
-    <td width="50%" valign="top">
-      <h3>Discord Rich Presence</h3>
-      Показывает использование UnixGram и выбранный раздел. Сообщения, имена и личные данные не передаются.
-    </td>
+    <td align="center"><img alt="Настройки, тема Mexican Pink" src="docs/images/settings-mexican-pink-1.3.4.png" width="270"><br><sub>Mexican Pink</sub></td>
+    <td align="center"><img alt="Настройки, тема Daylight" src="docs/images/settings-daylight-1.3.3.png" width="270"><br><sub>Daylight</sub></td>
+    <td align="center"><img alt="Настройки, тема Lucifer" src="docs/images/settings-lucifer-1.3.3.png" width="270"><br><sub>Lucifer</sub></td>
   </tr>
 </table>
 
-<details>
-  <summary><strong>Посмотреть настройки клиента</strong></summary>
-  <br>
-  <a href="docs/images/app-discord.png"><img src="docs/images/app-discord.png" width="760" alt="Настройки UnixGram Desktop и Discord Rich Presence"></a>
-</details>
+## Возможности
+
+| | |
+| --- | --- |
+| Окна | UnixGram и UnixPlace в окнах WebView2. Закрытие окна сворачивает приложение в трей. |
+| Трей | Быстрые переходы и счётчик непрочитанных чатов на значке. |
+| Аккаунты | До трёх, у каждого свой профиль WebView2. |
+| Темы | 13 тем и режим Liquid Glass. |
+| Чтение | Размер текста в чатах, меньше анимаций, плавная прокрутка, подчёркивание ссылок. |
+| Окно | Полный экран, «поверх остальных окон», масштаб 80–140 %. |
+| Уведомления | Число непрочитанных, загрузка файла, восстановление связи. Без текста сообщений и имён. |
+| Горячие клавиши | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>1…4</kbd> и <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>U/M/G/S</kbd>, работают глобально. |
+| Discord | Статус Rich Presence, по желанию с названием раздела. Отключается. |
+
+Ленту, сообщения, профили и подарки отдаёт сайт UnixGram. Если сайт недоступен или его разметка изменилась, клиент может работать с ошибками.
 
 ## Установка
 
-1. Откройте [последний релиз](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest).
-2. Скачайте файл `UnixGram-Desktop-1.3.4-x64-setup.exe`.
-3. Сверьте SHA-256 с файлом `SHA256SUMS.txt` в том же релизе.
-4. Запустите установщик.
+1. Скачайте `UnixGram-Desktop-<версия>-x64-setup.exe` и `SHA256SUMS.txt` со страницы [последнего выпуска](https://github.com/jutsu-dev/UnixGramDesktop/releases/latest).
+2. Сверьте контрольную сумму со строкой из `SHA256SUMS.txt`:
 
-<p align="center">
-  <a href="https://github.com/jutsu-dev/UnixGramDesktop/releases/latest"><img src="https://img.shields.io/badge/Скачать_для_Windows-7257E8?style=for-the-badge&logo=windows11&logoColor=white" alt="Скачать UnixGram Desktop для Windows"></a>
-</p>
+   ```powershell
+   Get-FileHash -Algorithm SHA256 ".\UnixGram-Desktop-1.3.4-x64-setup.exe"
+   ```
+
+3. Запустите установщик. Он ставит приложение для текущего пользователя.
 
 > [!WARNING]
-> Установщик пока не подписан коммерческим Code Signing сертификатом. Windows может показать SmartScreen и издателя «Неизвестный». Скачивайте приложение только из [GitHub Releases](https://github.com/jutsu-dev/UnixGramDesktop/releases) и проверяйте контрольную сумму. Пошаговая инструкция: [INSTALL-WINDOWS.md](docs/INSTALL-WINDOWS.md).
+> Установщик не подписан, поэтому Windows покажет предупреждение SmartScreen. Скачивайте его только из [GitHub Releases](https://github.com/jutsu-dev/UnixGramDesktop/releases).
 
-### Проверка SHA-256
+Подробности: [docs/INSTALL-WINDOWS.md](docs/INSTALL-WINDOWS.md).
 
-```powershell
-Get-FileHash -Algorithm SHA256 ".\UnixGram-Desktop-1.3.4-x64-setup.exe"
-```
+## Сборка из исходного кода
 
-Полученная строка должна полностью совпасть с суммой из `SHA256SUMS.txt`.
-
-## Возможности клиента
-
-- до трёх изолированных аккаунтов с переключением и удалением локальной сессии;
-- счётчик непрочитанных в трее и приватные уведомления Windows;
-- автоматическое восстановление соединения и Discord RPC;
-- центр безопасности с состоянием сессий, сети и разрешённых ссылок;
-- глобальные сочетания `Ctrl+Shift+1…4` и запасные `Ctrl+Alt+U/M/G/S`;
-- исправления QR-входа, UnixPlace, переходов из достижений и привязки бота.
-
-Сборки и результаты проверок: [GitHub Actions](https://github.com/jutsu-dev/UnixGramDesktop/actions/workflows/release-quality.yml).
-
-## Приватность и безопасность
-
-| Принцип | Как это устроено |
-| --- | --- |
-| Пароль | Используется только для входа и не сохраняется приложением |
-| Сессия | Хранится локально средствами Windows и в изолированном профиле WebView2 |
-| Сеть | UnixGram и UnixPlace открываются внутри клиента; внешние HTTPS-ссылки требуют подтверждения для открытия в браузере |
-| Discord | Включён для новых установок; можно отключить. Содержимое аккаунта не передаётся |
-| Уведомления | Без текста сообщений, имён и превью личных данных |
-| Публичная сборка | Проверяется CI, npm audit, Gitleaks, Trivy, Rust-тестами и Playwright |
-
-Подробнее: [политика безопасности](SECURITY.md), [конфиденциальность](PRIVACY.md), [CycloneDX SBOM](docs/security/sbom.cdx.json).
-
-## Для разработчиков
-
-Понадобятся Node.js 22, Rust stable, WebView2 и Visual Studio Build Tools с компонентами C++.
+Нужны Windows 10 или 11, [Node.js](https://nodejs.org/) 22, [Rust](https://www.rust-lang.org/tools/install) stable (MSVC), WebView2 Runtime и Visual Studio Build Tools с нагрузкой «Разработка классических приложений на C++».
 
 ```powershell
 git clone https://github.com/jutsu-dev/UnixGramDesktop.git
 cd UnixGramDesktop
 npm ci
-npm run tauri:build:windows
+npm run tauri:build:windows   # установщик в src-tauri\target\release\bundle\nsis
+npm run tauri:dev             # запуск для разработки
 ```
 
-Основные команды:
+Проверки: `npm run lint`, `npm run typecheck`, `npm run test:e2e`, `npm run tauri:check:windows`, `npm run tauri:test:windows`. Остальные сценарии перечислены в `package.json`.
 
-```powershell
-npm run lint
-npm run build
-npm run test:e2e
-npm run tauri:test:windows
-```
+## Безопасность и конфиденциальность
 
-[Карта проекта](docs/PROJECT-STRUCTURE.md) · [чек-лист релиза](docs/RELEASE-CHECKLIST.md) · [визуальная система](docs/brand/VISUAL-PHILOSOPHY.md) · [как помочь](CONTRIBUTING.md)
+- Вход идёт на сайте UnixGram внутри WebView2. Пароль приложение не видит и не хранит.
+- Сессии лежат в профилях WebView2, у каждого аккаунта свой каталог.
+- Нативные команды доступны только локальному окну настроек. Страницы сайта их вызвать не могут.
+- В приложении открываются только `unixgram.com`, `www.unixgram.com` и `place.unixgram.com` по HTTPS. Остальные ссылки уходят в системный браузер после подтверждения.
+- Своего сервера у проекта нет, телеметрии нет.
 
-<p>
-  <img src="https://img.shields.io/badge/Tauri_2-24C8D8?style=flat-square&logo=tauri&logoColor=white" alt="Tauri 2">
-  <img src="https://img.shields.io/badge/Rust-111111?style=flat-square&logo=rust&logoColor=white" alt="Rust">
-  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
-  <img src="https://img.shields.io/badge/React_19-20232A?style=flat-square&logo=react&logoColor=61DAFB" alt="React 19">
-  <img src="https://img.shields.io/badge/Playwright-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-27A96B?style=flat-square" alt="MIT License"></a>
-</p>
+Подробнее: [SECURITY.md](SECURITY.md), [PRIVACY.md](PRIVACY.md).
 
-## Сообщество
+## Архитектура
 
-| | Ссылка |
-| --- | --- |
-| Новости и релизы | [t.me/unixgramhistory](https://t.me/unixgramhistory) |
-| UnixGram History Bot | [@UnixGramHistoryBot](https://t.me/UnixGramHistoryBot) |
-| Профиль автора в UnixGram | [@basaltes](https://unixgram.com/u/basaltes) |
-| Ошибка или идея | [GitHub Issues](https://github.com/jutsu-dev/UnixGramDesktop/issues/new/choose) |
-| Уязвимость | [SECURITY.md](SECURITY.md) |
+Нативный процесс на Rust (Tauri 2) держит окна WebView2: окна аккаунтов загружают `https://unixgram.com`, окна UnixPlace — `https://place.unixgram.com`, окно настроек — локальную страницу на React. Процесс внедряет в страницы сайта CSS темы и сценарий счётчика непрочитанных, управляет треем, горячими клавишами и статусом Discord.
+
+Полное описание: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Участие в разработке
+
+Порядок работы и обязательные проверки описаны в [CONTRIBUTING.md](CONTRIBUTING.md). Ошибки и предложения — в [Issues](https://github.com/jutsu-dev/UnixGramDesktop/issues/new/choose), об уязвимостях пишите приватно по [SECURITY.md](SECURITY.md). Новости выходят в [Telegram-канале UnixGram History](https://t.me/unixgramhistory).
 
 ## Лицензия
 
-[MIT License](LICENSE). При использовании кода сохраняйте текст лицензии и уведомление об авторских правах.
-
-<p align="center">
-  <img src="docs/images/unixgram-official.svg" width="52" alt="UnixGram"><br><br>
-  <strong>UnixGram History</strong><br>
-  <a href="https://t.me/unixgramhistory">Наш Telegram</a>
-</p>
+[MIT](LICENSE).

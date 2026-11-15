@@ -1,28 +1,31 @@
-name: Feature request
-description: Предложить новую функцию или улучшение
+name: Предложение
+description: Новая функция или улучшение клиента UnixGram Desktop
 title: "[idea] "
 labels:
   - enhancement
 body:
+  - type: markdown
+    attributes:
+      value: |
+        UnixGram Desktop — неофициальный клиент. Содержимое окон — лента, сообщения, профили, подарки — принадлежит сайту UnixGram и в этом репозитории не изменяется. Предложения принимаются по функциям оболочки: окнам, трею, темам, настройкам, горячим клавишам и интеграциям.
   - type: input
     id: summary
     attributes:
-      label: Коротко
-      placeholder: Что именно хотите добавить
+      label: Краткое описание
+      placeholder: Что предлагается добавить или изменить
     validations:
       required: true
   - type: dropdown
     id: section
     attributes:
-      label: Куда относится идея
+      label: Область
       options:
-        - Лента
-        - Сообщения
-        - Профиль
-        - Подарки
-        - UnixPlace
+        - Окна и навигация
         - Настройки
-        - Трей
+        - Темы оформления
+        - Аккаунты
+        - Трей и уведомления
+        - Горячие клавиши
         - Discord Rich Presence
         - Установщик
         - Документация
@@ -32,18 +35,19 @@ body:
   - type: textarea
     id: problem
     attributes:
-      label: Какую проблему это решает
+      label: Решаемая проблема
+      description: Какую задачу пользователя решает предложение.
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: Как это должно работать
-      placeholder: Опишите сценарий от лица пользователя
+      label: Предлагаемое поведение
+      placeholder: Опишите сценарий с точки зрения пользователя
     validations:
       required: true
   - type: textarea
     id: references
     attributes:
-      label: Примеры и референсы
-      description: Можно приложить снимки, ссылки на UnixGram или другие клиенты
+      label: Примеры
+      description: Снимки экрана или ссылки на аналогичные решения.

@@ -1,0 +1,34 @@
+/* Page-level defaults shared by everything the settings window renders. */
+
+:root {
+  color-scheme: dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --canvas: #000000;
+  --text: #e7e9ea;
+  --accent-light: #b7aaff;
+  --ui-scale: 1.08;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { width: 100%; min-width: 320px; min-height: 100%; }
+body { margin: 0; overflow: hidden; color: var(--text); background: var(--canvas); }
+#root { width: calc(100vw / var(--ui-scale)); height: calc(100vh / var(--ui-scale)); zoom: var(--ui-scale); }
+body, button, input { font: inherit; }
+body { font-family: Inter, 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; }
+button, input { border: 0; }
+button { color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+button:not(:disabled):active { transform: translateY(1px); }
+input { min-width: 0; color: inherit; background: transparent; outline: none; }
+h1, h2, h3, p { margin: 0; }
+:focus-visible { outline: 2px solid var(--accent-light); outline-offset: 2px; }
+
+@media (max-width: 680px) {
+  body { overflow: auto; }
+  #root { width: 100%; height: 100%; zoom: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

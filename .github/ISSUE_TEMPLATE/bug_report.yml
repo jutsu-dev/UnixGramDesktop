@@ -1,5 +1,5 @@
-name: Bug report
-description: Сообщить о баге в клиенте или установщике
+name: Сообщение об ошибке
+description: Ошибка в клиенте UnixGram Desktop или в его установщике
 title: "[bug] "
 labels:
   - bug
@@ -7,12 +7,15 @@ body:
   - type: markdown
     attributes:
       value: |
-        Спасибо за отчёт. Не прикладывайте токены, cookie, личные переписки и другие чувствительные данные.
+        UnixGram Desktop — неофициальный клиент. Ошибки самого сайта UnixGram, которые воспроизводятся в обычном браузере, в этом репозитории не исправляются.
+
+        Не прикладывайте токены, cookie, личную переписку и другие чувствительные данные. Об уязвимостях сообщайте приватно: см. SECURITY.md.
   - type: input
     id: version
     attributes:
       label: Версия клиента
-      placeholder: 1.3.0
+      description: Указана в настройках, раздел «Центр безопасности».
+      placeholder: 1.3.4
     validations:
       required: true
   - type: input
@@ -25,16 +28,17 @@ body:
   - type: dropdown
     id: area
     attributes:
-      label: Где проявляется баг
+      label: Область
       options:
-        - Вход
-        - Лента
-        - Сообщения
-        - Профиль
-        - Подарки
+        - Окно аккаунта (сайт UnixGram в клиенте)
         - UnixPlace
         - Настройки
+        - Темы оформления
+        - Аккаунты
+        - Трей и уведомления
+        - Горячие клавиши
         - Discord Rich Presence
+        - Внешние ссылки и навигация
         - Установщик
         - Другое
     validations:
@@ -42,28 +46,38 @@ body:
   - type: textarea
     id: steps
     attributes:
-      label: Как повторить
-      description: Опишите шаги по порядку
+      label: Шаги воспроизведения
+      description: Опишите действия по порядку.
       placeholder: |
         1. Открыть...
         2. Нажать...
-        3. Получить...
+        3. Наблюдать...
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
-      label: Что ожидалось
+      label: Ожидаемый результат
     validations:
       required: true
   - type: textarea
     id: actual
     attributes:
-      label: Что произошло
+      label: Фактический результат
+    validations:
+      required: true
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Воспроизводится ли ошибка на сайте UnixGram в обычном браузере
+      options:
+        - Нет, только в клиенте
+        - Да
+        - Не проверялось
     validations:
       required: true
   - type: textarea
     id: extra
     attributes:
-      label: Дополнительно
-      description: Снимок окна, тема, масштаб, способ входа, логи без секретов
+      label: Дополнительные сведения
+      description: Тема, масштаб, режим Liquid Glass, снимок окна без личных данных.

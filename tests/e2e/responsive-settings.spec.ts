@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test'
 
-// SETTINGS-UPDATE-PLAN R1/S1, R2/S2: new controls are interactive in preview.
+// New controls are interactive in the browser preview.
 test('new themes and reading preferences can be selected', async ({ page }) => {
-  await page.goto('/?desktop-settings=1')
+  await page.goto('/')
   await expect(page.locator('.theme-card')).toHaveCount(13)
   for (const name of ['Ocean', 'Rose', 'Forest', 'Mexican Pink']) {
     const theme = page.getByRole('button', { name: new RegExp(name) })
@@ -20,11 +20,11 @@ test('new themes and reading preferences can be selected', async ({ page }) => {
   await expect(page.getByRole('checkbox', { name: 'Показывать в Discord', exact: true })).toBeChecked()
 })
 
-// R1/S1: real settings page, not the legacy desktop preview.
+// The settings page stays usable across window sizes.
 for (const [width, height] of [[360, 480], [640, 360], [768, 512], [1024, 768], [1920, 1080], [2560, 1440]]) {
   test(`settings remain usable at ${width}x${height}`, async ({ page }) => {
     await page.setViewportSize({ width, height })
-    await page.goto('/?desktop-settings=1')
+    await page.goto('/')
     const app = page.locator('.settings-app')
     await expect(app).toBeVisible()
     const overflow = await app.evaluate(el => ({ content: el.scrollWidth - el.clientWidth, document: document.documentElement.scrollWidth - innerWidth }))
@@ -45,11 +45,11 @@ for (const [width, height] of [[360, 480], [640, 360], [768, 512], [1024, 768], 
   })
 }
 
-// R3/S3: both OS preference and the client's switch suppress transitions.
+// Both the OS preference and the client's switch suppress transitions.
 for (const mode of ['normal', 'system', 'client'] as const) {
   test(`settings motion: ${mode}`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: mode === 'system' ? 'reduce' : 'no-preference' })
-    await page.goto('/?desktop-settings=1')
+    await page.goto('/')
     if (mode === 'client') await page.getByText('Меньше анимаций', { exact: true }).click()
     const theme = page.getByRole('button', { name: /Midnight/ })
     await theme.click()

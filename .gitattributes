@@ -1,0 +1,29 @@
+# Text files are stored with LF line endings in the repository.
+# The working-tree style follows the contributor's Git configuration,
+# except for the file types listed below.
+* text=auto
+
+# Windows command scripts must keep CRLF to run reliably in cmd.exe.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binary assets: never normalised and never diffed as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.bmp binary
+*.ico binary
+*.icns binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+
+# Generated files: collapsed in GitHub diffs and excluded from language statistics.
+package-lock.json linguist-generated=true
+src-tauri/Cargo.lock linguist-generated=true
+src-tauri/gen/** linguist-generated=true

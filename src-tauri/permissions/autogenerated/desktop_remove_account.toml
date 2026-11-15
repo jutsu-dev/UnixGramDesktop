@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-desktop-remove-account"
+description = "Enables the desktop_remove_account command without any pre-configured scope."
+commands.allow = ["desktop_remove_account"]
+
+[[permission]]
+identifier = "deny-desktop-remove-account"
+description = "Denies the desktop_remove_account command without any pre-configured scope."
+commands.deny = ["desktop_remove_account"]

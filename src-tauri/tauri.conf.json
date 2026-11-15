@@ -21,7 +21,7 @@
     "targets": ["nsis"],
     "publisher": "UnixGram History Community",
     "shortDescription": "Независимый Windows-клиент UnixGram",
-    "longDescription": "Полноценный UnixGram в отдельном Windows-приложении с нативным окном и системным треем.",
+    "longDescription": "Неофициальный клиент UnixGram для Windows: сайт UnixGram в отдельном окне с системным треем, темами и несколькими аккаунтами.",
     "windows": {
       "nsis": {
         "displayLanguageSelector": true,

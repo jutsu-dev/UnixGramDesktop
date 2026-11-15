@@ -1,0 +1,177 @@
+/* Rules the settings page used to pick up from the stylesheets of the removed built-in client.
+   They are part of the shipped look, so they stay; the rules below override them where both apply. */
+.section-title { width: min(100% - 40px, 980px); margin-right: auto; margin-bottom: 14px; margin-left: auto; }
+.section-title p { display: none; }
+.theme-card { position: relative; }
+.theme-card > span:nth-child(2) { display: grid; gap: 5px; }
+.theme-card strong { text-transform: capitalize; }
+@media (max-width: 640px) {
+  .section-title { width: calc(100% - 16px); }
+}
+
+:root { font-family: Inter, "Segoe UI", sans-serif; color: #f4f5fa; background: #08090d; font-synthesis: none; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 0; min-height: 100vh; background: radial-gradient(circle at 12% 0%, rgba(110,95,228,.2), transparent 34%), #08090d; }
+html:has(.settings-app), body:has(.settings-app) { min-width: 0; height: 100%; overflow: hidden; }
+body:has(.settings-app) { overscroll-behavior: contain; scrollbar-color: #454653 transparent; }
+#root:has(> .settings-app) { width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: hidden; zoom: 1; }
+button, input { font: inherit; }
+.settings-app { width: min(720px, 100%); height: 100vh; height: 100dvh; margin: auto; overflow-y: auto; overflow-x: hidden; padding: 22px 22px 38px; outline: none; scrollbar-gutter: stable; overscroll-behavior: contain; overflow-wrap: anywhere; }
+.settings-app header { display: grid; grid-template-columns: 42px 1fr auto; align-items: center; gap: 12px; padding: 8px 4px 22px; }
+.settings-logo { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 13px; background: linear-gradient(145deg,#8173f1,#5748c8); box-shadow: 0 10px 30px rgba(110,95,228,.35); }
+.settings-app header span { color: #858794; font-size: 10px; font-weight: 800; letter-spacing: .14em; }
+.settings-app h1 { margin: 2px 0 0; font-size: 22px; letter-spacing: -.03em; }
+.settings-app header button, .settings-app footer button { display:flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:10px 14px;color:white;background:#6e5fe4;font-weight:750;cursor:pointer; }
+.settings-app button:focus-visible, .settings-app input:focus-visible { outline: 3px solid rgba(139,124,255,.5); outline-offset: 2px; }
+.settings-app button:disabled { cursor:not-allowed; opacity:.55; }
+.settings-app section { margin-bottom: 14px; overflow: hidden; border: 1px solid #272832; border-radius: 16px; background: rgba(17,18,24,.82); box-shadow: 0 18px 50px rgba(0,0,0,.18); backdrop-filter: blur(18px); }
+.section-title { display: flex; gap: 11px; align-items: flex-start; padding: 16px 17px 14px; border-bottom: 1px solid #24252e; }
+.section-title svg { margin-top: 2px; color: #8b7cff; }
+.section-title h2 { margin: 0; font-size: 15px; }
+.section-title p { margin: 3px 0 0; color: #9698a5; font-size: 12px; }
+.theme-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; padding: 12px; }
+.theme-card { display:grid;grid-template-columns:28px 1fr 12px;align-items:center;gap:9px;min-height:62px;padding:9px;border:1px solid #292a34;border-radius:11px;color:#f4f5fa;text-align:left;background:#15161c;cursor:pointer; }
+.theme-card:hover { border-color:#454653; }
+.theme-card.active { border-color:#7668e7;background:#1b192a; }
+.theme-card>i { width:28px;height:28px;border:1px solid rgba(255,255,255,.18);border-radius:9px; }
+.theme-card span { display:grid;gap:2px; }.theme-card strong { font-size:12px; }.theme-card small { color:#8e909d;font-size:9px;line-height:1.25; }
+.theme-card>b { width:9px;height:9px;border:2px solid #555765;border-radius:50%; }.theme-card.active>b { border-color:#887af5;background:#887af5;box-shadow:0 0 0 3px rgba(136,122,245,.14); }
+.setting-row { position:relative;display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:62px;padding:12px 17px;border-top:1px solid #24252e;cursor:pointer; }
+.theme-grid+.setting-row { border-top:1px solid #24252e; }.setting-row span { display:grid;gap:3px; }.setting-row strong { font-size:13px; }.setting-row small { color:#9294a0;font-size:11px; }
+.setting-row input { position:absolute;opacity:0; }.setting-row>i { width:38px;height:22px;padding:3px;border-radius:999px;background:#393a44;transition:.18s; }.setting-row>i:after { content:"";display:block;width:16px;height:16px;border-radius:50%;background:#fff;transition:.18s; }.setting-row input:checked+i { background:#6e5fe4; }.setting-row input:checked+i:after { transform:translateX(16px); }
+.setting-row:has(input:focus-visible) { box-shadow: inset 0 0 0 2px #8b7cff; }
+.zoom-row { display:grid;grid-template-columns:130px 1fr 44px;align-items:center;gap:12px;padding:15px 17px;border-top:1px solid #24252e; }.zoom-row span { display:flex;align-items:center;gap:8px;font-size:13px; }.zoom-row input { accent-color:#7567e5; }.zoom-row b { color:#b7b9c4;font-size:12px;text-align:right; }
+.account-list { display: grid; gap: 8px; padding: 12px; }
+.account-card { display: grid; grid-template-columns: 38px minmax(0,1fr) auto auto; align-items: center; gap: 10px; min-height: 62px; padding: 9px 10px; border: 1px solid #292a34; border-radius: 12px; background: #15161c; }
+.account-card.is-active { border-color: #7668e7; background: #1b192a; }
+.account-card > span:nth-child(2) { display: grid; gap: 3px; min-width: 0; }.account-card strong { font-size: 13px; }.account-card small { overflow: hidden; color: #9294a0; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.account-avatar { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; color: #fff; background: linear-gradient(145deg,#8173f1,#5748c8); font-weight: 850; }
+.account-card button, .account-add button { display: flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 11px; border: 1px solid #3b3c49; border-radius: 9px; color: #f4f5fa; background: #23242c; cursor: pointer; }
+.account-card .icon-danger { width: 36px; justify-content: center; padding: 0; color: #ff8798; border-color: #56303a; background: #28171c; }
+.account-add { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 10px; padding: 0 12px 12px; }.account-add label { display: grid; gap: 6px; color: #a5a7b4; font-size: 11px; }.account-add input { width: 100%; min-height: 38px; padding: 0 11px; border: 1px solid #30313b; border-radius: 9px; color: #f4f5fa; background: #101116; }
+.creator-follow { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 16px; border-top: 1px solid #24252e; }.creator-follow > span { display: grid; gap: 3px; }.creator-follow strong { font-size: 12px; }.creator-follow small { color: #9294a0; font-size: 10px; line-height: 1.35; }.creator-follow button { display: flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 11px; border: 1px solid #454653; border-radius: 9px; color: #f4f5fa; background: #23242c; cursor: pointer; white-space: nowrap; }
+.privacy-note { display: flex; align-items: center; gap: 8px; margin: 0; padding: 12px 16px; border-top: 1px solid #24252e; color: #9698a5; font-size: 11px; line-height: 1.45; }
+.shortcut-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; padding: 12px; border-top: 1px solid #24252e; }.shortcut-list > span { display: flex; align-items: center; gap: 5px; min-height: 46px; padding: 8px 10px; border: 1px solid #292a34; border-radius: 10px; background: #15161c; }.shortcut-list kbd { min-width: 25px; padding: 4px 6px; border: 1px solid #41424d; border-bottom-width: 2px; border-radius: 6px; color: #d9dae3; background: #22232b; font-size: 10px; text-align: center; }.shortcut-list b { margin-left: auto; color: #a6a8b5; font-size: 10px; font-weight: 650; }
+.shortcut-status,.shortcut-legacy { margin: 0 12px 10px; color: #a6a8b5; font-size: 11px; line-height: 1.45; }.shortcut-status { color: #d9dae3; }
+.security-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; padding: 12px; }.security-grid > span { display: grid; grid-template-columns: 26px 1fr auto; align-items: center; gap: 7px; min-height: 52px; padding: 9px 10px; border: 1px solid #292a34; border-radius: 10px; background: #15161c; }.security-grid svg { color: #71d8af; }.security-grid b { font-size: 11px; }.security-grid strong { color: #b7e9d5; font-size: 10px; }
+.security-details { border-top: 1px solid #24252e; }.security-details p { display: grid; grid-template-columns: 140px 1fr; gap: 12px; margin: 0; padding: 10px 16px; border-top: 1px solid #20212a; font-size: 11px; }.security-details p:first-child { border-top: 0; }.security-details b { color: #aeb0bc; }.security-details span { min-width: 0; overflow-wrap: anywhere; color: #858794; }
+.settings-app footer { display:flex;align-items:center;justify-content:flex-end;gap:14px;padding:4px; }.settings-app footer span { color:#8f91a0;font-size:12px; }
+.settings-app svg { flex-shrink: 0; }
+.settings-app header { grid-template-columns: 42px minmax(0,1fr) auto; }
+.settings-app header > div, .section-title > div, .setting-row > span,
+.theme-card > span, .account-add > label, .creator-follow > span { min-width: 0; }
+.theme-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.theme-card { min-width: 0; grid-template-columns: 28px minmax(0,1fr) 12px; }
+.setting-row > i { flex: 0 0 38px; }
+.setting-row > i { transition: background-color 180ms ease; }
+.setting-row > i:after { transition: transform 180ms cubic-bezier(.2,.7,.2,1); }
+.zoom-row { grid-template-columns: 130px minmax(0,1fr) 44px; }
+.zoom-row input { width: 100%; min-width: 0; }
+.account-card small { white-space: normal; overflow-wrap: anywhere; }
+.account-add { grid-template-columns: minmax(0,1fr) auto; }
+.shortcut-list > span { flex-wrap: wrap; }
+.security-grid > span { grid-template-columns: 26px minmax(0,1fr) auto; }
+.settings-app footer { flex-wrap: wrap; }
+.settings-app footer > span { min-width: 0; flex: 1 1 160px; }
+.settings-app footer > button { max-width: 100%; text-align: left; }
+.settings-app button { transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease; }
+@media (hover: hover) {
+  .settings-app header button:not(:disabled):hover,
+  .settings-app footer button:not(:disabled):hover { background: #7a6bea; }
+  .account-card button:not(:disabled):hover,
+  .account-add button:not(:disabled):hover,
+  .creator-follow button:not(:disabled):hover { border-color: #8173d7; background: #2c2b3b; }
+}
+@media (max-width: 650px) {
+  .settings-app { padding: 14px 14px 28px; }
+  .theme-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .account-add { grid-template-columns: minmax(0,1fr); }
+  .creator-follow { align-items: flex-start; flex-direction: column; }
+  .shortcut-list, .security-grid { grid-template-columns: minmax(0,1fr); }
+  .security-details p { grid-template-columns: minmax(0,1fr); gap: 4px; }
+}
+@media (max-width: 440px) {
+  .settings-app { padding-inline: 10px; }
+  .settings-app header { grid-template-columns: 40px minmax(0,1fr); gap: 10px; }
+  .settings-app header > button { grid-column: 1 / -1; justify-self: stretch; justify-content: center; }
+  .account-card { grid-template-columns: 38px minmax(0,1fr) 36px; }
+  .account-card > button:not(.icon-danger) { grid-column: 1 / 3; grid-row: 2; justify-content: center; }
+  .account-card .icon-danger { grid-column: 3; grid-row: 2; }
+  .zoom-row { grid-template-columns: minmax(0,1fr) 44px; gap: 10px; }
+  .zoom-row > span { grid-column: 1 / -1; }
+  .setting-row { gap: 12px; padding-inline: 12px; }
+  .section-title { padding-inline: 12px; }
+}
+@media (max-width: 330px) {
+  .theme-grid { grid-template-columns: minmax(0,1fr); }
+  .security-grid > span { grid-template-columns: 26px minmax(0,1fr); }
+  .security-grid strong { grid-column: 2; }
+  .settings-app footer > button { width: 100%; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .settings-app *, .settings-app *::before, .settings-app *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+.settings-app[data-motion="reduce"] *, .settings-app[data-motion="reduce"] *::before, .settings-app[data-motion="reduce"] *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+
+.settings-app {
+  --settings-muted: color-mix(in srgb, var(--settings-text) 73%, var(--settings-panel));
+  --settings-line: color-mix(in srgb, var(--settings-text) 23%, var(--settings-panel));
+  background: var(--settings-bg); color: var(--settings-text);
+  scrollbar-color: var(--settings-line) var(--settings-bg);
+}
+.settings-app section, .settings-app .theme-card, .settings-app .account-card,
+.settings-app .shortcut-list > span, .settings-app .security-grid > span {
+  background: var(--settings-panel); color: var(--settings-text); border-color: var(--settings-line);
+  backdrop-filter: none; box-shadow: none;
+}
+.settings-app .section-title, .settings-app .setting-row, .settings-app .zoom-row,
+.settings-app .privacy-note, .settings-app .creator-follow, .settings-app .security-details,
+.settings-app .shortcut-list { border-color: var(--settings-line); }
+.settings-app small, .settings-app .section-title p, .settings-app .privacy-note,
+.settings-app .shortcut-list b, .settings-app .shortcut-status, .settings-app .shortcut-legacy,
+.settings-app .zoom-row b, .settings-app header span, .settings-app .account-add label,
+.settings-app .security-details span, .settings-app footer span { color: var(--settings-muted); }
+.settings-app .theme-card.active, .settings-app .account-card.is-active {
+  border-color: var(--settings-accent); background: color-mix(in srgb, var(--settings-panel) 92%, var(--settings-accent));
+}
+.settings-app .section-title svg { color: var(--settings-accent); }
+.settings-app .security-grid strong { color: var(--settings-text); }
+.settings-app .account-add input { color: var(--settings-text); background: var(--settings-bg); border-color: var(--settings-line); }
+.settings-app .theme-card small { font-size: 11px; }
+.glass-modes { display: flex; gap: 8px; padding: 12px 17px; }
+.glass-modes button { flex: 1; min-height: 40px; border: 1px solid var(--settings-line); border-radius: 10px; background: var(--settings-panel); color: var(--settings-text); cursor: pointer; }
+.glass-modes button[aria-pressed="true"] { border-color: var(--settings-accent); background: color-mix(in srgb, var(--settings-panel) 88%, var(--settings-accent)); }
+.settings-app[data-glass="frosted"] section { background: color-mix(in srgb, var(--settings-panel) var(--settings-opacity), transparent); backdrop-filter: blur(10px); }
+.settings-app[data-glass="clear"] section { background: color-mix(in srgb, var(--settings-panel) var(--settings-opacity), transparent); backdrop-filter: blur(18px) saturate(115%); box-shadow: inset 0 1px color-mix(in srgb, var(--settings-text) 10%, transparent); }
+.settings-app[data-glass="clear"], .settings-app[data-glass="frosted"] { background-image: radial-gradient(ellipse at 100% 0, color-mix(in srgb, var(--settings-accent) 14%, transparent), transparent 55%); }
+@media (prefers-reduced-transparency: reduce), (forced-colors: active) {
+  .settings-app[data-glass] section { background: var(--settings-panel); backdrop-filter: none; box-shadow: none; }
+}
+body:has(.settings-app) { background: var(--settings-page-bg, #08090d); }
+.settings-app .section-title { justify-content: flex-start; text-align: left; }
+.settings-app .section-title > div { flex: 1; }
+.device-actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 17px; }
+.device-actions button { flex: 1; min-height: 40px; padding: 8px 12px; border: 1px solid var(--settings-line); border-radius: 10px; background: var(--settings-panel); color: var(--settings-text); cursor: pointer; }
+.settings-app { --settings-on-accent: #101118; --settings-danger: #ff99aa; }
+.settings-app[data-theme="native"], .settings-app[data-theme="light"], .settings-app[data-theme="mexican-pink"] { --settings-on-accent: #fff; }
+.settings-app[data-theme="light"] { --settings-danger: #a82039; }
+.settings-app header button, .settings-app footer button,
+.settings-app .account-avatar, .settings-app .settings-logo {
+  background: var(--settings-accent); color: var(--settings-on-accent); box-shadow: none;
+}
+.settings-app .account-card button, .settings-app .account-add button,
+.settings-app .creator-follow button, .settings-app .shortcut-list kbd {
+  color: var(--settings-text); background: var(--settings-panel); border-color: var(--settings-line);
+}
+.settings-app .account-card .icon-danger { color: var(--settings-danger); border-color: var(--settings-danger); }
+.settings-app .security-details b, .settings-app .security-grid svg { color: var(--settings-text); }
+.settings-app .setting-row input:checked+i { background: var(--settings-accent); }
+.settings-app .setting-row input:checked+i:after { background: var(--settings-on-accent); }
+.settings-app .theme-card.active>b { border-color: var(--settings-accent); background: var(--settings-accent); box-shadow: none; }
+.settings-app .zoom-row input { accent-color: var(--settings-accent); }
+.settings-app button:focus-visible, .settings-app input:focus-visible { outline: 2px solid var(--settings-accent); outline-offset: 3px; }
+.settings-app .setting-row:has(input:focus-visible) { box-shadow: inset 0 0 0 2px var(--settings-accent); }
+@media (hover:hover) {
+  .settings-app button:not(:disabled):hover { filter: brightness(.95); }
+  .settings-app header button:not(:disabled):hover, .settings-app footer button:not(:disabled):hover { background: var(--settings-accent); }
+}

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { expect, test, type Page } from '@playwright/test'
 
-const runtime = readFileSync(new URL('../../src-tauri/src/desktop-runtime.js', import.meta.url), 'utf8')
+const runtime = readFileSync(new URL('../../src-tauri/src/webview/desktop-runtime.js', import.meta.url), 'utf8')
 async function fixture(page: Page, payload: unknown = { success: true, data: { unreadChats: 4 } }, status = 200, headers = {}) {
   let requests = 0
   await page.route('https://unixgram.com/**', async route => {
@@ -87,7 +87,7 @@ test('no authenticated polling on login page', async ({ page }) => {
 })
 
 test('settings glass and daylight preview are interactive', async ({ page }) => {
-  await page.goto('/?desktop-settings=1')
+  await page.goto('/')
   await page.getByRole('button', { name: /Daylight/ }).click()
   await page.getByText('Liquid Glass', { exact: true }).click()
   await page.getByRole('button', { name: 'Прозрачное', exact: true }).click()

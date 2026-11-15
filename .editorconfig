@@ -1,0 +1,30 @@
+# https://editorconfig.org
+root = true
+
+# Line endings are controlled by .gitattributes, so end_of_line is set
+# only where a specific style is required.
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.rs]
+indent_size = 4
+
+[*.toml]
+indent_size = 4
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{cmd,bat}]
+end_of_line = crlf
+
+[*.{png,jpg,jpeg,gif,webp,avif,bmp,ico,icns,woff,woff2,ttf,otf}]
+charset = unset
+indent_style = unset
+indent_size = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset

@@ -4,7 +4,7 @@ import { expect, test } from '@playwright/test'
 type Fixture = { theme: string; compact: boolean; glass: boolean; mode: string; css: string }
 const fixtures: Fixture[] = JSON.parse(readFileSync(new URL('../../diagnostics/native-theme-fixtures.json', import.meta.url), 'utf8'))
 
-// S4 / R3: these fixtures test CSS compatibility, not live Unixgram Bot API.
+// These fixtures test CSS compatibility, not live Unixgram Bot API.
 for (const fixture of fixtures) {
   test(`native bot controls ${fixture.theme} compact=${fixture.compact} glass=${fixture.mode}`, async ({ page }) => {
     await page.setContent(`<!doctype html><html data-ugd-page="messages"><head><style>

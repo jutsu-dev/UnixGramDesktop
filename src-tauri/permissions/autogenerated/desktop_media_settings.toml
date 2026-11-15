@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-desktop-media-settings"
+description = "Enables the desktop_media_settings command without any pre-configured scope."
+commands.allow = ["desktop_media_settings"]
+
+[[permission]]
+identifier = "deny-desktop-media-settings"
+description = "Denies the desktop_media_settings command without any pre-configured scope."
+commands.deny = ["desktop_media_settings"]

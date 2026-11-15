@@ -1,0 +1,18 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "settings-window",
+  "description": "Единственная capability приложения: IPC-команды доступны только локальному окну настроек. Окна с unixgram.com и UnixPlace не получают ни одной команды.",
+  "windows": ["settings"],
+  "permissions": [
+    "core:default",
+    "allow-desktop-preferences",
+    "allow-desktop-save-preferences",
+    "allow-desktop-add-account",
+    "allow-desktop-switch-account",
+    "allow-desktop-remove-account",
+    "allow-desktop-open-creator-profile",
+    "allow-desktop-media-settings",
+    "allow-desktop-security-status",
+    "allow-discord-presence"
+  ]
+}

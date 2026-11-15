@@ -177,6 +177,114 @@
       "description": "Permission identifier",
       "oneOf": [
         {
+          "description": "Enables the desktop_add_account command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-desktop-add-account",
+          "markdownDescription": "Enables the desktop_add_account command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the desktop_media_settings command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-desktop-media-settings",
+          "markdownDescription": "Enables the desktop_media_settings command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the desktop_open_creator_profile command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-desktop-open-creator-profile",
+          "markdownDescription": "Enables the desktop_open_creator_profile command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the desktop_preferences command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-desktop-preferences",
+          "markdownDescription": "Enables the desktop_preferences command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the desktop_remove_account command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-desktop-remove-account",
+          "markdownDescription": "Enables the desktop_remove_account command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the desktop_save_preferences command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-desktop-save-preferences",
+          "markdownDescription": "Enables the desktop_save_preferences command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the desktop_security_status command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-desktop-security-status",
+          "markdownDescription": "Enables the desktop_security_status command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the desktop_switch_account command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-desktop-switch-account",
+          "markdownDescription": "Enables the desktop_switch_account command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the discord_presence command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-discord-presence",
+          "markdownDescription": "Enables the discord_presence command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the desktop_add_account command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-desktop-add-account",
+          "markdownDescription": "Denies the desktop_add_account command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the desktop_media_settings command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-desktop-media-settings",
+          "markdownDescription": "Denies the desktop_media_settings command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the desktop_open_creator_profile command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-desktop-open-creator-profile",
+          "markdownDescription": "Denies the desktop_open_creator_profile command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the desktop_preferences command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-desktop-preferences",
+          "markdownDescription": "Denies the desktop_preferences command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the desktop_remove_account command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-desktop-remove-account",
+          "markdownDescription": "Denies the desktop_remove_account command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the desktop_save_preferences command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-desktop-save-preferences",
+          "markdownDescription": "Denies the desktop_save_preferences command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the desktop_security_status command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-desktop-security-status",
+          "markdownDescription": "Denies the desktop_security_status command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the desktop_switch_account command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-desktop-switch-account",
+          "markdownDescription": "Denies the desktop_switch_account command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the discord_presence command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-discord-presence",
+          "markdownDescription": "Denies the discord_presence command without any pre-configured scope."
+        },
+        {
           "description": "Default core plugins set.\n#### This default permission set includes:\n\n- `core:path:default`\n- `core:event:default`\n- `core:window:default`\n- `core:webview:default`\n- `core:app:default`\n- `core:image:default`\n- `core:resources:default`\n- `core:menu:default`\n- `core:tray:default`",
           "type": "string",
           "const": "core:default",
@@ -211,6 +319,12 @@
           "type": "string",
           "const": "core:app:allow-default-window-icon",
           "markdownDescription": "Enables the default_window_icon command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the exit command without any pre-configured scope.",
+          "type": "string",
+          "const": "core:app:allow-exit",
+          "markdownDescription": "Enables the exit command without any pre-configured scope."
         },
         {
           "description": "Enables the fetch_data_store_identifiers command without any pre-configured scope.",
@@ -301,6 +415,12 @@
           "type": "string",
           "const": "core:app:deny-default-window-icon",
           "markdownDescription": "Denies the default_window_icon command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the exit command without any pre-configured scope.",
+          "type": "string",
+          "const": "core:app:deny-exit",
+          "markdownDescription": "Denies the exit command without any pre-configured scope."
         },
         {
           "description": "Denies the fetch_data_store_identifiers command without any pre-configured scope.",
@@ -1563,6 +1683,12 @@
           "markdownDescription": "Enables the set_fullscreen command without any pre-configured scope."
         },
         {
+          "description": "Enables the set_fullscreen_on_monitor command without any pre-configured scope.",
+          "type": "string",
+          "const": "core:window:allow-set-fullscreen-on-monitor",
+          "markdownDescription": "Enables the set_fullscreen_on_monitor command without any pre-configured scope."
+        },
+        {
           "description": "Enables the set_icon command without any pre-configured scope.",
           "type": "string",
           "const": "core:window:allow-set-icon",
@@ -2031,6 +2157,12 @@
           "markdownDescription": "Denies the set_fullscreen command without any pre-configured scope."
         },
         {
+          "description": "Denies the set_fullscreen_on_monitor command without any pre-configured scope.",
+          "type": "string",
+          "const": "core:window:deny-set-fullscreen-on-monitor",
+          "markdownDescription": "Denies the set_fullscreen_on_monitor command without any pre-configured scope."
+        },
+        {
           "description": "Denies the set_icon command without any pre-configured scope.",
           "type": "string",
           "const": "core:window:deny-set-icon",
@@ -2325,10 +2457,10 @@
           "markdownDescription": "Denies the unregister_all command without any pre-configured scope."
         },
         {
-          "description": "This permission set configures which\nnotification features are by default exposed.\n\n#### Granted Permissions\n\nIt allows all notification related features.\n\n\n#### This default permission set includes:\n\n- `allow-is-permission-granted`\n- `allow-request-permission`\n- `allow-notify`\n- `allow-register-action-types`\n- `allow-register-listener`\n- `allow-cancel`\n- `allow-get-pending`\n- `allow-remove-active`\n- `allow-get-active`\n- `allow-check-permissions`\n- `allow-show`\n- `allow-batch`\n- `allow-list-channels`\n- `allow-delete-channel`\n- `allow-create-channel`\n- `allow-permission-state`",
+          "description": "This permission set configures which\nnotification features are by default exposed.\n\n#### Granted Permissions\n\nIt allows all notification related features.\n\n\n#### This default permission set includes:\n\n- `allow-is-permission-granted`\n- `allow-request-permission`\n- `allow-notify`\n- `allow-register-action-types`\n- `allow-register-listener`\n- `allow-remove-listener`\n- `allow-cancel`\n- `allow-get-pending`\n- `allow-remove-active`\n- `allow-get-active`\n- `allow-check-permissions`\n- `allow-show`\n- `allow-batch`\n- `allow-list-channels`\n- `allow-delete-channel`\n- `allow-create-channel`\n- `allow-permission-state`",
           "type": "string",
           "const": "notification:default",
-          "markdownDescription": "This permission set configures which\nnotification features are by default exposed.\n\n#### Granted Permissions\n\nIt allows all notification related features.\n\n\n#### This default permission set includes:\n\n- `allow-is-permission-granted`\n- `allow-request-permission`\n- `allow-notify`\n- `allow-register-action-types`\n- `allow-register-listener`\n- `allow-cancel`\n- `allow-get-pending`\n- `allow-remove-active`\n- `allow-get-active`\n- `allow-check-permissions`\n- `allow-show`\n- `allow-batch`\n- `allow-list-channels`\n- `allow-delete-channel`\n- `allow-create-channel`\n- `allow-permission-state`"
+          "markdownDescription": "This permission set configures which\nnotification features are by default exposed.\n\n#### Granted Permissions\n\nIt allows all notification related features.\n\n\n#### This default permission set includes:\n\n- `allow-is-permission-granted`\n- `allow-request-permission`\n- `allow-notify`\n- `allow-register-action-types`\n- `allow-register-listener`\n- `allow-remove-listener`\n- `allow-cancel`\n- `allow-get-pending`\n- `allow-remove-active`\n- `allow-get-active`\n- `allow-check-permissions`\n- `allow-show`\n- `allow-batch`\n- `allow-list-channels`\n- `allow-delete-channel`\n- `allow-create-channel`\n- `allow-permission-state`"
         },
         {
           "description": "Enables the batch command without any pre-configured scope.",
@@ -2413,6 +2545,12 @@
           "type": "string",
           "const": "notification:allow-remove-active",
           "markdownDescription": "Enables the remove_active command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the remove_listener command without any pre-configured scope.",
+          "type": "string",
+          "const": "notification:allow-remove-listener",
+          "markdownDescription": "Enables the remove_listener command without any pre-configured scope."
         },
         {
           "description": "Enables the request_permission command without any pre-configured scope.",
@@ -2509,6 +2647,12 @@
           "type": "string",
           "const": "notification:deny-remove-active",
           "markdownDescription": "Denies the remove_active command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the remove_listener command without any pre-configured scope.",
+          "type": "string",
+          "const": "notification:deny-remove-listener",
+          "markdownDescription": "Denies the remove_listener command without any pre-configured scope."
         },
         {
           "description": "Denies the request_permission command without any pre-configured scope.",
