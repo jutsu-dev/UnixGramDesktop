@@ -4,7 +4,7 @@
 
 ## [Не выпущено]
 
-Реорганизация кода и документации. Для пользователя ничего не меняется.
+Реорганизация кода и документации, лицензии по файлам, новое оформление README. Работа приложения для пользователя не меняется.
 
 ### Добавлено
 
@@ -12,6 +12,10 @@
 - Сценарий `npm run typecheck`.
 - Проверки `cargo fmt --check` и `cargo clippy` в GitHub Actions.
 - Файлы `.gitattributes` и `.editorconfig`.
+- Лицензии по файлам: карта `REUSE.toml`, каталог `LICENSES/`, файлы `NOTICE` и `TRADEMARKS.md`, обзор [docs/LICENSING.md](docs/LICENSING.md).
+- Список сторонних библиотек `THIRD-PARTY-NOTICES.md` и сценарий `npm run licenses:notices`, который его строит.
+- Задание `reuse`, сверка `THIRD-PARTY-NOTICES.md` и ручной запуск в workflow `Release quality`.
+- Документы `CODE_OF_CONDUCT.md`, `SUPPORT.md`, `GOVERNANCE.md`, `CITATION.cff` и `.github/CODEOWNERS`.
 
 ### Изменено
 
@@ -26,7 +30,9 @@
 - Удалены зависимости, которые использовал только прежний интерфейс: `qrcode` и `@types/qrcode` (npm), `image`, `mime_guess` и `urlencoding` (Cargo). Основные версии остальных зависимостей не менялись.
 - Зависимости обновлены в пределах прежних диапазонов версий: Tauri 2.11 → 2.12 (крейт и пакеты `@tauri-apps/api`, `@tauri-apps/cli`), плагины Tauri, `vite`, `storybook`.
 - Заметки о выпусках приведены к единой схеме `docs/releases/vX.Y.Z.md`.
-- README, CONTRIBUTING, SECURITY, PRIVACY и шаблоны GitHub переписаны в соответствии с новой структурой.
+- README, CONTRIBUTING, SECURITY, PRIVACY и шаблоны GitHub переписаны в соответствии с новой структурой. README оформлен заново, иллюстрации к нему лежат в `docs/images/readme/`.
+- Документация и собственная графика проекта распространяются по CC BY 4.0. Код остаётся под MIT. Логотип UnixGram и снимки сайта отмечены как сторонние: проект прав на них не даёт.
+- В чек-лист выпуска добавлены обновление `CITATION.cff` и сверка `THIRD-PARTY-NOTICES.md`.
 
 ### Удалено
 

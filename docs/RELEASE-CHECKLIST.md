@@ -5,6 +5,7 @@
 ## Подготовка версии
 
 - [ ] номер версии обновлён в `package.json`, `package-lock.json`, `src-tauri/Cargo.toml`, `src-tauri/Cargo.lock` и `src-tauri/tauri.conf.json`;
+- [ ] версия и дата выпуска обновлены в `CITATION.cff`;
 - [ ] раздел «Не выпущено» в [CHANGELOG.md](../CHANGELOG.md) перенесён в раздел новой версии с датой;
 - [ ] созданы заметки о выпуске `docs/releases/vX.Y.Z.md` по образцу предыдущих;
 - [ ] версия и имя установщика обновлены в [README.md](../README.md) и [INSTALL-WINDOWS.md](INSTALL-WINDOWS.md).
@@ -20,6 +21,7 @@
 - [ ] `npm run tauri:test:windows`
 - [ ] `npm run test:native-e2e`
 - [ ] `npm audit --audit-level=high`
+- [ ] `node scripts/third-party-notices.mjs --check`
 - [ ] `gitleaks detect --no-git --source src --redact`
 - [ ] `gitleaks detect --no-git --source src-tauri/src --redact`
 - [ ] `semgrep scan --config auto --error src src-tauri/src`
@@ -39,17 +41,17 @@
 Get-FileHash -Algorithm SHA256 ".\artifacts\releases\current\UnixGram-Desktop-X.Y.Z-x64-setup.exe"
 ```
 
-Значение вместе с именем файла записывается в `SHA256SUMS.txt`. Файл публикуется рядом с установщиком.
+Значение и имя файла записываются в `SHA256SUMS.txt`. Файл публикуется рядом с установщиком.
 
 ### SBOM
 
-SBOM в формате CycloneDX формируется для каждого выпуска на коммите выпуска, после `npm ci`:
+SBOM в формате CycloneDX формируется на коммите выпуска после `npm ci`:
 
 ```powershell
 trivy fs --format cyclonedx --output artifacts\security\sbom.cdx.json .
 ```
 
-Файл прикладывается к выпуску на GitHub рядом с установщиком и `SHA256SUMS.txt`. В репозитории он не хранится, потому что устаревает при каждом обновлении зависимостей.
+Файл прикладывается к выпуску рядом с установщиком. В репозитории он не хранится: устаревает при каждом обновлении зависимостей.
 
 ## Проверка в Windows
 

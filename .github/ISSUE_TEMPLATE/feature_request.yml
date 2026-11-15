@@ -7,12 +7,12 @@ body:
   - type: markdown
     attributes:
       value: |
-        UnixGram Desktop — неофициальный клиент. Содержимое окон — лента, сообщения, профили, подарки — принадлежит сайту UnixGram и в этом репозитории не изменяется. Предложения принимаются по функциям оболочки: окнам, трею, темам, настройкам, горячим клавишам и интеграциям.
+        UnixGram Desktop — неофициальный клиент. Ленту, сообщения, профили и подарки отдаёт сайт UnixGram, здесь они не меняются. Предложения принимаются по оболочке: окна, трей, темы, настройки, горячие клавиши, интеграции.
   - type: input
     id: summary
     attributes:
       label: Краткое описание
-      placeholder: Что предлагается добавить или изменить
+      placeholder: Что добавить или изменить
     validations:
       required: true
   - type: dropdown
@@ -43,11 +43,18 @@ body:
     id: proposal
     attributes:
       label: Предлагаемое поведение
-      placeholder: Опишите сценарий с точки зрения пользователя
+      placeholder: Сценарий глазами пользователя
     validations:
       required: true
   - type: textarea
     id: references
     attributes:
       label: Примеры
-      description: Снимки экрана или ссылки на аналогичные решения.
+      description: Снимки экрана или ссылки на похожие решения.
+  - type: checkboxes
+    id: conduct
+    attributes:
+      label: Кодекс поведения
+      options:
+        - label: "[Кодекс поведения](https://github.com/jutsu-dev/UnixGramDesktop/blob/main/CODE_OF_CONDUCT.md) прочитан."
+          required: true

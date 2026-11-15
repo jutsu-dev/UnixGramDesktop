@@ -2,7 +2,10 @@ blank_issues_enabled: false
 contact_links:
   - name: Сообщение об уязвимости
     url: https://github.com/jutsu-dev/UnixGramDesktop/blob/main/SECURITY.md
-    about: Порядок приватного сообщения об уязвимости. Не создавайте для этого публичную задачу.
+    about: Об уязвимостях пишите приватно. Публичную задачу не создавайте.
+  - name: Вопросы и поддержка
+    url: https://github.com/jutsu-dev/UnixGramDesktop/blob/main/SUPPORT.md
+    about: Куда писать и что указать.
   - name: Telegram-канал UnixGram History
     url: https://t.me/unixgramhistory
     about: Новости проекта и обратная связь.
